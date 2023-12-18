@@ -1,0 +1,29 @@
+.lay-skeleton-item .lay-skeleton-type--image {
+    height: 2vh
+}
+
+.title-container {
+    min-height: 500px;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.8;
+}
+
+.title {
+    letter-spacing: 10px;
+    font-size: 36px!important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: #ffffff;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.main-container {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
