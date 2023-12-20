@@ -83,8 +83,7 @@ module.exports = {
             cacheGroups: {
                 // Split `node_modules` files.
                 commons: {
-                    chunks: 'initial',
-                    minChunks: 2,
+                    chunks: 'all',
                     test: /[\\/]node_modules[\\/]/,
                     // cacheGroupKey here is `commons` as the key of the cacheGroup
                     name(module, chunks, cacheGroupKey) {
@@ -94,12 +93,31 @@ module.exports = {
                             .reduceRight((item) => item);
                         const allChunksNames = chunks.map((item) => item.name).join('~');
                         return `${cacheGroupKey}-${allChunksNames}-${moduleFileName}`;
-                    }
+                    },
+                    priority: 10,
+                    reuseExistingChunk: true,
                 },
-                defaultVendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10
+                // Split each vue component into a separate chunk
+                vueComponents: {
+                    chunks: "all",
+                    test: /[\\/]src[\\/]components[\\/]/,
+                    name(module, chunks, cacheGroupKey) {
+                        const moduleFileName = module
+                            .identifier()
+                            .split('/')
+                            .reduceRight((item) => item);
+                        const allChunksNames = chunks.map((item) => item.name).join('~');
+                        return `${cacheGroupKey}-${allChunksNames}-${moduleFileName}`;
+                    },
+                    priority: 5,
+                    reuseExistingChunk: true,
                 },
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true,
+                },
+
                 chunks: 'all',
             },
         },
