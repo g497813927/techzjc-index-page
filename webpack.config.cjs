@@ -1,7 +1,18 @@
 const path = require('path');
-const {VueLoaderPlugin} = require('vue-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const VueLoaderPlugin = require('vue-loader').VueLoaderPlugin;
+const vuePlugin = new VueLoaderPlugin();
+const htmlPlugin = new HtmlWebpackPlugin({
+    template: './index.html',
+    filename: 'index.html',
+    inject: true,
+    chunks: ['main']
+});
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+// Compress the output
+const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
     mode: 'production',
@@ -14,6 +25,11 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /\.js$/,
+                loader: 'babel-loader',
+                exclude: /node_modules/
+            },
             {
                 test: /\.(woff|woff2|eot|ttf|otf)$/i,
                 type: 'asset/resource',
@@ -30,17 +46,29 @@ module.exports = {
     },
     resolve: {
         alias: {
+            'vue': '@vue/runtime-dom',
             '@': path.resolve(__dirname, 'src')
         }
     },
     plugins: [
-        // make sure to include the plugin for the magic
-        new VueLoaderPlugin(),
+        vuePlugin,
+        htmlPlugin,
         new HtmlWebpackPlugin({
             template: './index.html',
             filename: 'index.html',
             inject: true,
             chunks: ['main']
+        }),
+        new MiniCssExtractPlugin({
+            filename: '[name].[hash:8].css',
+            chunkFilename: '[name].[hash:8].css'
+        }),
+        new CleanWebpackPlugin(),
+        new BundleAnalyzerPlugin(),
+        new CompressionPlugin({
+            deleteOriginalAssets: false,
+            algorithm: 'gzip',
+            test: /.(js|css|svg)$/,
         })
     ],
     optimization: {
