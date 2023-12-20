@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from "vue";
+import {/* webpackPrefetch: true */ ref} from 'vue'
 
 const loading = ref(true);
 
@@ -58,19 +58,6 @@ import VueScrollTo from 'vue-scrollto';
         <lay-icon type="layui-icon-app"/>&nbsp;应用
       </a>
     </lay-menu-item>
-    <!-- Right side -->
-
-    <lay-menu-item class="right" v-if="width > 768">
-      <span class="global">
-        <lay-icon type="layui-icon-website"/>&nbsp;
-        <lay-select v-model="language" style="width: 120px;">
-          <lay-select-option id="auto" value="auto">Auto</lay-select-option>
-          <lay-select-option id="zh-cn" value="zh-cn">简体中文</lay-select-option>
-          <lay-select-option id="en-US" value="en">English</lay-select-option>
-        </lay-select>
-      </span>
-
-    </lay-menu-item>
     <!-- Check if screen width is less than 768px -->
     <lay-menu-item v-if="width <= 768" @click="expand" class="right">
       <!-- Show the transition animation -->
@@ -96,15 +83,6 @@ import VueScrollTo from 'vue-scrollto';
           <lay-icon type="layui-icon-app"/>&nbsp;应用
         </a>
       </lay-menu-item>
-
-      <span class="global layui-nav-item menu-item-select">
-          <lay-icon type="layui-icon-website" />&nbsp;
-          <lay-select v-model="language" style="width: 120px;" >
-            <lay-select-option id="auto" value="auto">Auto</lay-select-option>
-            <lay-select-option id="zh-cn" value="zh-cn">简体中文</lay-select-option>
-            <lay-select-option id="en-US" value="en">English</lay-select-option>
-          </lay-select>
-      </span>
     </lay-menu>
   </div>
   </lay-transition>
@@ -125,7 +103,8 @@ import VueScrollTo from 'vue-scrollto';
   left: 0;
   width: 100%;
   padding-left: 2vw;
-  z-index: 100;
+  padding-top: 4vh;
+  z-index: 99;
 }
 
 #logo {
@@ -134,19 +113,6 @@ import VueScrollTo from 'vue-scrollto';
 
 .right {
   float: right;
-}
-
-.global {
-  display: flex;
-}
-
-.menu-item-select {
-  line-height: 40px;
-
-  justify-items: center;
-  align-items: center;
-  padding: 5px 23px 5px 25px;
-  white-space: nowrap;
 }
 
 </style>

@@ -1,8 +1,8 @@
 <script setup>
-import {ref} from "vue";
+import {/* webpackPrefetch: true */ ref} from 'vue'
 
 const currentYear = new Date().getFullYear()
-const language = ref('auto')
+// const language = ref('auto')
 const ICP_NUMBER = ref('浙ICP备2020032105号')
 
 const CHINA_BEI_AN_NUMBER = ref('浙公网安备 33010402004325号')
@@ -26,12 +26,13 @@ const CHINA_BEI_AN_REF_URL = ref('http://www.beian.gov.cn/portal/registerSystemI
           src="https://static.techzjc.com/icon/icon-YouTube-white.svg" class="icon-img"/></a>
     </div>
     <p>友情链接 ｜ Credits</p>
+<!--    <p><lay-icon type="layui-icon-website"/>&nbsp;跟随系统 / 简体 / English</p>-->
     <p>© 2016-{{ currentYear }} Techzjc 版权所有</p>
     <div class="china-icp-info">
       <a href="https://beian.miit.gov.cn/" target="_blank" class="china-miit-icp-style">{{ ICP_NUMBER }}</a>
       <span>    |    </span>
       <a target="_blank" :href="CHINA_BEI_AN_REF_URL" class="china-bei-an-style"><img
-          src="https://static.techzjc.com/icon/icon-beian.png" alt="公安联网备案图标"/>
+          data-src="https://static.techzjc.com/icon/icon-beian.png" class="lazyload" alt="公安联网备案图标"/>
         <div>
           {{ CHINA_BEI_AN_NUMBER }}
         </div>

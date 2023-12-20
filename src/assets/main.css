@@ -13,7 +13,7 @@
 
 .title {
     letter-spacing: 10px;
-    font-size: 36px!important;
+    font-size: 36px !important;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -26,4 +26,22 @@
     margin-top: 50px;
     margin-bottom: 50px;
     text-align: center;
+}
+
+p, i, a, li, ol, ul, dl, dt, dd, hr, pre, blockquote, figure, table, fieldset, form, legend, caption, tbody, tfoot, thead, tr, th, td {
+    font-family: 'JinhuaSerifC', serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Smiley Sans', sans-serif;
+}
+
+@font-face {
+    font-family: 'JinhuaSerifC';
+    src: local('Jinhua Serif C'), url("@/assets/fonts/JinhuaSerifC/JinhuaSerifC-Regular.ttf.woff2") format('woff2'), url("@/assets/fonts/JinhuaSerifC/JinhuaSerifC-Regular.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Smiley Sans';
+    src: local('Smiley Sans'), url("@/assets/fonts/SmileySans/SmileySans-Oblique.ttf.woff2") format('woff2'), url("@/assets/fonts/SmileySans/SmileySans-Oblique.ttf") format('truetype');
 }

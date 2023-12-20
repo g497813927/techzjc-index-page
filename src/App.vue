@@ -1,16 +1,10 @@
 <script setup>
-import {ref, onMounted} from 'vue'
-import {useCookies} from 'vue3-cookies'
 // Import necessary components for router-link
-import NavBar from "@/components/NavBar.vue";
-import Footer from "@/components/Footer.vue";
-import About from "@/components/About.vue";
-import Apps from "@/components/Apps.vue";
-import Cover from "@/components/Cover.vue";
-
-
-
-
+import /* webpackPrefetch: true */ NavBar from "@/components/NavBar.vue"
+import /* webpackPrefetch: true */ Footer from "@/components/Footer.vue"
+import /* webpackPrefetch: true */ About from "@/components/About.vue"
+import /* webpackPrefetch: true */ Apps from "@/components/Apps.vue"
+import /* webpackPrefetch: true */ Cover from "@/components/Cover.vue"
 </script>
 
 <template>
@@ -19,10 +13,9 @@ import Cover from "@/components/Cover.vue";
   <Cover />
   <!-- Main Content -->
   <About />
-  <lay-skeleton :loading="true" animated :rows="100">
-  </lay-skeleton>
-
-  <Apps id="apps" />
+  <Apps />
+<!--  <lay-skeleton :loading="true" animated :rows="100">-->
+<!--  </lay-skeleton>-->
   <!-- Footer -->
   <Footer />
 </template>
