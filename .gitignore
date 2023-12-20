@@ -28,3 +28,7 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# Ignore the fonts
+*.ttf
+*.woff2
