@@ -1,0 +1,61 @@
+.about-section {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin: 10px;
+    margin-left: 0;
+    width: 100%;
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.education-card ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.education-card li {
+    margin: 20px;
+    margin-top: 0;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+}
+
+.card-icon {
+    height: fit-content;
+    width: fit-content;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.hobby-card ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.hobby-card li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    width: 120px;
+    height: 120px;
+    text-align: center;
+}

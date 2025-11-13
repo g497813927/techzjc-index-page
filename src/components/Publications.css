@@ -1,15 +1,10 @@
-.publication {
-    background: lightgray;
-    padding: 80px 40px;
-    margin: 0;
-}
-
-.publication ul {
+.publication-section ul {
     list-style-type: none;
+    padding: 0;
 }
 
-.publication li {
-    background: white;
+.publication-section li {
+    background: rgba(255, 255, 255, 0.4);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 10px;

@@ -11,7 +11,7 @@ export function HeroSection() {
                     left: 0,
                     behavior: 'smooth'
                 });
-            }}>scroll down
+            }} aria-label="Scroll down">
                 <div className="arrow">
                     <span></span>
                     <span></span>

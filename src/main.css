@@ -1,4 +1,18 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
+    background: linear-gradient(to top, #a3bded 0%, #6991c7 100%);
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 30px 40px;
+    margin: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+li:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
 }
