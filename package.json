@@ -4,12 +4,15 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "ascii-art-webcomponents": "^0.0.2",
+    "figlet": "^1.9.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
