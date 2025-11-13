@@ -1,0 +1,34 @@
+
+.move-to-top .move-to-top-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #555;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    color: white;
+}
+
+.move-to-top .move-to-top-button span {
+    display: block;
+    width: 20px;
+    height: 4px;
+    background: white;
+    position: absolute;
+    border-radius: 2px;
+    top: calc(50% - 8px);
+}
+
+.move-to-top .move-to-top-button span:first-child {
+    transform: rotate(45deg) translateX(8px);
+}
+
+.move-to-top .move-to-top-button span:last-child {
+    transform: rotate(-45deg) translateX(-8px);
+}

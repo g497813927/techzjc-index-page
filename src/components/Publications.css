@@ -1,0 +1,23 @@
+.publication {
+    background: lightgray;
+    padding: 80px 40px;
+    margin: 0;
+}
+
+.publication ul {
+    list-style-type: none;
+}
+
+.publication li {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    min-height: 60px;
+    /* Make text vertical aligned */
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row;
+
+}
