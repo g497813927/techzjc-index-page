@@ -5,6 +5,7 @@ import { Footer } from './components/Footer'
 import './App.css'
 import { MoveToTop } from './components/MoveToTop'
 import { About } from './components/About';
+import { PhotoWall } from './components/PhotoWall';
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
       <NavBar />
       <HeroSection />
       <About />
+      <PhotoWall />
       <Publications />
       <Footer />
       <MoveToTop />
