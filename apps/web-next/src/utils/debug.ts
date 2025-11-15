@@ -1,3 +1,5 @@
+"use client";
+
 export function triggerDebuggerListeners() {
   const keySequence = atob("dGVjaHpqYy1kZWJ1Zw==");
   let currentIndex = 0;
