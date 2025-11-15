@@ -1,16 +1,33 @@
+// Clear the flag to avoid multiple triggers
+if (localStorage.getItem('start-debug-listener') === 'true') {
+  localStorage.removeItem('start-debug-listener');
+}
+
+import { triggerDebuggerListeners } from './utils.ts';
+triggerDebuggerListeners();
+
+
+if (localStorage.getItem('enable-debug') === 'true') {
+  const { default: VConsole } = await import('vconsole');
+  new VConsole();
+}
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import figlet from 'figlet'
 import Larry3D from "figlet/fonts/Larry 3D";
-import './main.css'
+import Standard from "figlet/fonts/Standard";
 
 figlet.parseFont("Larry3D", Larry3D);
+figlet.parseFont("Standard", Standard);
+
+const fontToUse = window.innerWidth < 600 ? "Standard" : "Larry3D";
 
 console.log(
   "%c" +
   figlet.textSync('TECHZJC', {
-      font: 'Larry3D',
+      font: fontToUse
     }
   ) + 
   "%c\n" +
@@ -29,8 +46,17 @@ console.log(
   "background: transparent; padding: 1px;"
 )
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-)
+if (localStorage.getItem('i-wanna-go-back') === '1') {
+  // Load the old html version of the site
+  const { legacyHTML } = await import('./legacy.ts');
+  createRoot(document.getElementsByTagName('body')[0]!).render(
+    <span dangerouslySetInnerHTML={{ __html: legacyHTML }} />
+  )
+}  else {
+  await import('./main.css');
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  )
+}
