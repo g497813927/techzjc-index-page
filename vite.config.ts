@@ -13,8 +13,5 @@ export default defineConfig({
       new Date().toISOString()
     ),
     __VERCEL_ENV__: JSON.stringify(process.env.VERCEL_ENV || ''),
-  },
-  base: process.env.NODE_ENV === 'production' && process.env.SERVER_FULL === 'true'
-    ? 'https://static.techzjc.com/index/'
-    : '/',
+  }
 })
