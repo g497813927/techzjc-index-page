@@ -10,12 +10,6 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
-  if (__VERCEL_ENV__ === 'true') {
-    console.log(`%c VERCEL ENVIRONMENT DETECTED %c`, 
-      "background: #000000; color: #FFFFFF; padding: 4px 8px; border-radius: 4px 0 0 4px;",
-      "background: transparent;"
-    );
-  }
 
   return (
     <>
