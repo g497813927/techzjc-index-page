@@ -15,7 +15,6 @@
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.0",
-    "ascii-art-webcomponents": "^0.0.2",
     "figlet": "^1.9.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -34,8 +33,5 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.3",
     "vite": "^7.2.2"
-  },
-  "optionalDependencies": {
-      "canvas": "2.11.2"
   }
 }
