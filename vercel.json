@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "cdn.techzjc.net"
+        }
+      ],
+      "destination": "https://www.techzjc.com",
+      "permanent": true
+    }
+  ]
+}
