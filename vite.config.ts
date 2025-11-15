@@ -13,7 +13,7 @@ export default defineConfig({
       new Date().toISOString()
     ),
   },
-  base: process.env.NODE_ENV === 'production'
+  base: process.env.NODE_ENV === 'production' && process.env.SERVER_FULL === 'true'
     ? 'https://static.techzjc.com/index/'
     : '/',
 })
