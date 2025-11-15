@@ -1,20 +1,74 @@
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Footer.css';
+import { faBilibili, faFacebook, faGithub, faGitlab, faGoogleScholar, faInstagram, faLinkedin, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
+
 export function Footer() {
+    const [clickCount, setClickCount] = useState(0);
+
+    useEffect(() => {
+        if (localStorage.getItem('start-debug-listener') !== 'true') {
+            return;
+        }
+        if (clickCount === 3) {
+            if (localStorage.getItem('enable-debug') !== 'true') {
+                localStorage.setItem('enable-debug', 'true');
+                localStorage.removeItem('start-debug-listener');
+                alert('Debug mode enabled!');
+                window.location.reload();
+            } else {
+                localStorage.setItem('enable-debug', 'false');
+                localStorage.removeItem('start-debug-listener');
+                alert('Debug mode disabled!');
+                window.location.reload();
+            }
+        }
+    }, [clickCount]);
     return (
         <footer className="footer">
-            <div>
-                <a href="https://space.bilibili.com/30023942"><img src="https://static.techzjc.com/icon/icon-bilibili-white.svg" width="32" alt="bilibili" /></a>
-                <a href="https://www.facebook.com/techzjc"><img src="https://static.techzjc.com/icon/icon-facebook-white.svg" width="32" alt="facebook" /></a>
-                <a href="https://github.com/g497813927"><img src="https://static.techzjc.com/icon/icon-GitHub-white.svg" width="32" alt="github" /></a>
-                <a href="https://www.instagram.com/techzjc/"><img src="https://static.techzjc.com/icon/icon-Instagram-white.svg" width="32" alt="instagram" /></a>
-                <a href="https://www.youtube.com/channel/UC_UevpLekFBbIRv7wWEMe7w"><img src="https://static.techzjc.com/icon/icon-YouTube-white.svg" width="32" alt="youtube" /></a>
+            <div className="social-icons">
+                <a href="https://space.bilibili.com/30023942" className="social-icon" title="bilibili">
+                    <FontAwesomeIcon icon={faBilibili} size="2x" />
+                </a>
+                <a href="mailto:admin@techzjc.com" className="social-icon" title="email">
+                    <FontAwesomeIcon icon={faEnvelope} size="2x" />
+                </a>
+                <a href="https://www.facebook.com/techzjc" className="social-icon" title="facebook">
+                    <FontAwesomeIcon icon={faFacebook} size="2x" />
+                </a>
+                <a href="https://git.cs.vt.edu/techzjc" className="social-icon" title="gitlab">
+                    <FontAwesomeIcon icon={faGitlab} size="2x" />
+                </a>
+                <a href="https://github.com/g497813927" className="social-icon" title="github">
+                    <FontAwesomeIcon icon={faGithub} size="2x" />
+                </a>
+                <a href="https://scholar.google.com/citations?user=bfAU2pYAAAAJ" className="social-icon" title="google-scholar">
+                    <FontAwesomeIcon icon={faGoogleScholar} size="2x" />
+                </a>
+                <a href="https://www.instagram.com/techzjc/" className="social-icon" title="instagram">
+                    <FontAwesomeIcon icon={faInstagram} size="2x" />
+                </a>
+                <a href="https://www.linkedin.com/in/techzjc/" className="social-icon" title="linkedin">
+                    <FontAwesomeIcon icon={faLinkedin} size="2x" />
+                </a>
+                <a href="https://www.youtube.com/channel/UC_UevpLekFBbIRv7wWEMe7w" className="social-icon" title="youtube">
+                    <FontAwesomeIcon icon={faYoutube} size="2x" />
+                </a>
             </div>
             <p>友情链接 | <a href="./credits.html" target="_blank" style={{
                 textDecorationLine: 'none',
                 color: 'white'
             }}>Credits</a></p>
-            <p>© 2016-{new Date().getFullYear()} Techzjc 版权所有</p>
+            <p id="copyright" onClick={() => {
+                if (localStorage.getItem('start-debug-listener') === 'true') {
+                    setClickCount(prevCount => prevCount + 1);
+                    setTimeout(() => {
+                        setClickCount(0);
+                    }, 1000);
+                }
+            }}>© 2016-{new Date().getFullYear()} Techzjc 版权所有</p>
             <div style={{
                 margin: '0 auto',
                 padding: '20px 0'
@@ -33,7 +87,7 @@ export function Footer() {
                     textDecoration: 'none',
                     height: '20px',
                     lineHeight: '20px'
-                }}><img src="https://static.techzjc.com/icon/icon-beian.png" style={{
+                }}><img src="https://static.techzjc.com/icon/icon-beian.webp" style={{
                     float: 'left'
                 }} alt="公安联网备案" /><div style={{
                     float: 'left',
