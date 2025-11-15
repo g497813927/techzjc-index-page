@@ -1,0 +1,23 @@
+.publication-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.publication-section li {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    padding: 20px 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    min-height: 60px;
+    /* Make text vertical aligned */
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+}
+
+.publication-section li:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease-in-out;
+}

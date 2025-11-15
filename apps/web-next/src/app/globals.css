@@ -1,0 +1,53 @@
+.test {
+    height: 100vh;
+    display: flex;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Make sizing predictable for responsive layouts */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:where(h1) {
+  margin-block: 0.67em;
+  font-size: 2rem;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: linear-gradient(to top, #a3bded 0%, #6991c7 100%);
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 24px;
+    margin: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* ensure children don't overflow on small screens */
+    max-width: calc(100% - 48px);
+}
+
+/* Reduce spacing on very small screens to avoid horizontal overflow */
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+        margin: 12px;
+        max-width: calc(100% - 24px);
+    }
+}
+
+.vc-log-val-string {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+li:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}

@@ -1,0 +1,26 @@
+.photo-wall {
+    overflow: hidden;
+    width: 100%;
+    padding: 1rem;
+}
+
+.photos {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: scroll-left 20s linear infinite;
+    margin-bottom: 2rem;
+}
+
+.photos.reverse {
+    animation-direction: reverse;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
