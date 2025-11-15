@@ -53,22 +53,22 @@ export function Footer() {
                 <a href="https://www.linkedin.com/in/techzjc/" className="social-icon" title="linkedin">
                     <FontAwesomeIcon icon={faLinkedin} size="2x" />
                 </a>
-                <a href="https://www.youtube.com/channel/UC_UevpLekFBbIRv7wWEMe7w" className="social-icon" title="youtube">
+                <a href="https://www.youtube.com/@techzjc" className="social-icon" title="youtube">
                     <FontAwesomeIcon icon={faYoutube} size="2x" />
                 </a>
             </div>
-            <p>友情链接 | <a href="./credits.html" target="_blank" style={{
-                textDecorationLine: 'none',
-                color: 'white'
-            }}>Credits</a></p>
-            <p id="copyright" onClick={() => {
-                if (localStorage.getItem('start-debug-listener') === 'true') {
-                    setClickCount(prevCount => prevCount + 1);
-                    setTimeout(() => {
-                        setClickCount(0);
-                    }, 1000);
-                }
-            }}>© 2016-{new Date().getFullYear()} Techzjc 版权所有</p>
+            <p
+                id="copyright" 
+                className={localStorage.getItem('start-debug-listener') === 'true' ? 'disable-select' : ''}
+                onClick={() => {
+                    if (localStorage.getItem('start-debug-listener') === 'true') {
+                        setClickCount(prevCount => prevCount + 1);
+                        setTimeout(() => {
+                            setClickCount(0);
+                        }, 1000);
+                    }
+                }}
+            >© 2016-{new Date().getFullYear()} Techzjc 版权所有</p>
             <div style={{
                 margin: '0 auto',
                 padding: '20px 0'

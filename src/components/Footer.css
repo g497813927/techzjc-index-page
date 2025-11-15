@@ -32,7 +32,7 @@
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-#copyright {
+#copyright.disable-select {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
