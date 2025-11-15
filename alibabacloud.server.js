@@ -1,55 +1,66 @@
-import http from "http";
-import fs from "fs";
-import path from "path";
-import url from "url";
+// alibabacloud.server.js (CommonJS)
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const distDir = path.join(__dirname, "dist");
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
 
-// Helper to serve file
-function serveFile(filePath, res) {
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      return res.end("Not Found");
-    }
-
-    const ext = path.extname(filePath);
-    const type =
-      ext === ".html" ? "text/html" :
-      ext === ".js"   ? "application/javascript" :
-      ext === ".css"  ? "text/css" :
-      ext === ".json" ? "application/json" :
-      ext === ".png"  ? "image/png" :
-      ext === ".jpg"  ? "image/jpeg" :
-      ext === ".svg"  ? "image/svg+xml" :
-      "text/plain";
-
-    res.writeHead(200, { "Content-Type": type });
-    res.end(data);
-  });
-}
+// In Alibaba Cloud FC, you'll usually get the port from env
+const PORT = process.env.PORT || process.env.FC_SERVER_PORT || 3000;
+const DIST_DIR = path.join(__dirname, "dist");
 
 const server = http.createServer((req, res) => {
-  let reqPath = req.url.split("?")[0];
+  // Normalize URL, default to /
+  let urlPath = req.url.split("?")[0];
 
-  // Try to match a static file in /dist
-  let filePath = path.join(distDir, reqPath);
-
-  if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
-    // Serve static asset
-    return serveFile(filePath, res);
+  if (urlPath === "/") {
+    urlPath = "/index.html";
   }
 
-  // Otherwise, return index.html for SPA routing
-  serveFile(path.join(distDir, "index.html"), res);
+  const filePath = path.join(DIST_DIR, urlPath);
+
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      // Simple 404 fallback to index.html for SPA routes
+      if (urlPath !== "/index.html") {
+        const indexPath = path.join(DIST_DIR, "index.html");
+        fs.readFile(indexPath, (indexErr, indexData) => {
+          if (indexErr) {
+            res.writeHead(404, { "Content-Type": "text/plain" });
+            res.end("Not found");
+          } else {
+            res.writeHead(200, { "Content-Type": "text/html" });
+            res.end(indexData);
+          }
+        });
+      } else {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        res.end("Not found");
+      }
+      return;
+    }
+
+    // Very minimal content-type handling
+    const ext = path.extname(filePath).toLowerCase();
+    const mimeTypes = {
+      ".html": "text/html",
+      ".js": "application/javascript",
+      ".css": "text/css",
+      ".json": "application/json",
+      ".png": "image/png",
+      ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg",
+      ".gif": "image/gif",
+      ".svg": "image/svg+xml",
+      ".ico": "image/x-icon",
+    };
+
+    const contentType = mimeTypes[ext] || "application/octet-stream";
+
+    res.writeHead(200, { "Content-Type": contentType });
+    res.end(data);
+  });
 });
 
-// Local dev: `node server.js`
-const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log("Server running on http://localhost:" + PORT);
+  console.log(`Server running on port ${PORT}`);
 });
-
-// Export handler for Alibaba Function Compute
-export default server;
