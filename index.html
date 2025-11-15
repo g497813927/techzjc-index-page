@@ -1,13 +1,258 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="keywords" content="techzjc, 科技ZJC网, ZJC科技网, Techzjc, ZJC, 赵佳成, g497813927">
+    <meta name="description" content="Techzjc是一个持续拥有创新热情的网站，由赵佳成建立。">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="https://static.techzjc.com/icon/favicon_index_page.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="https://static.techzjc.com/icon/favicon_index_page.ico" type="image/x-icon">
+    <link rel="bookmark" href="https://static.techzjc.com/icon/bookmark_icon_index_page.png">
+    <meta name="apple-mobile-web-app-title" content="主页-ZJC技术网">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://static.techzjc.com/icon/bookmark_icon_index_page.png">
     <title>Techzjc</title>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <!-- Fallback to the non-JS version of the app -->
+      <div
+        class="w3-animate-down alert alert-danger alert-dismissible show"
+        id="alert-no-JS"
+      >
+        <link rel="stylesheet" href="https://static.techzjc.com/css/w3.css" />
+        <link
+          rel="stylesheet"
+          href="https://static.techzjc.com/css/index.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://static.techzjc.com/css/bootstrap.min.css"
+        />
+        <div class="w3-animate-down alert alert-danger alert-dismissible show">
+          <h3>请注意！</h3>
+          <hr />
+          <p>ZJC技术网（techzjc）需要JavaScript才可以正常运作！</p>
+          <p>
+            看起来你的浏览器不支持JavaScript或者你使用了NoScript之类的插件禁用了JavaScript！
+          </p>
+          <p>
+            如果你是前者，建议下载最新的Google Chrome或Mozilla
+            Firefox以便正常访问
+          </p>
+          <p>如果你是后者，建议在对应插件内设置临时允许或信任JavaScript</p>
+          <p>给您带来的不便，敬请谅解！</p>
+        </div>
+      </div>
+      <div class="w3-bar w3-card w3-animate-top w3-white" id="myNavbar">
+        <a href="#home" class="w3-bar-item w3-button"
+          ><img
+            src="https://static.techzjc.com/icon/icon-logo-black-no-subtitle.svg"
+            height="16"
+        /></a>
+        <a href="#about" class="w3-bar-item w3-button w3-hide-small"
+          ><img
+            src="https://static.techzjc.com/icon/icon-user-black.svg"
+            height="16"
+          />
+          关于Techzjc</a
+        >
+        <a href="#apps" class="w3-bar-item w3-button w3-hide-small"
+          ><img
+            src="https://static.techzjc.com/icon/icon-apps-black.svg"
+            height="16"
+          />
+          应用</a
+        >
+        <a
+          href="./index_en-US.html"
+          class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-red"
+        >
+          <img
+            src="https://static.techzjc.com/icon/icon-global-black.svg"
+            height="16"
+          />
+          English Version
+        </a>
+      </div>
+      <div
+        id="navDemo"
+        class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium"
+      >
+        <a href="#about" class="w3-bar-item w3-button">关于Techzjc</a>
+        <a href="#apps" class="w3-bar-item w3-button">应用</a>
+        <a href="./index_en-US.html" class="w3-bar-item w3-button"
+          >English Version</a
+        >
+      </div>
+      <div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
+        <div class="w3-display-middle" style="white-space: nowrap">
+          <span
+            class="w3-center w3-padding-large w3-xlarge w3-wide w3-animate-opacity"
+            ><img src="https://static.techzjc.com/icon/icon-logo-white.svg" width="100%"
+          /></span>
+        </div>
+      </div>
+      <div class="w3-content w3-container w3-padding-64" id="about">
+        <h3 class="w3-center">关于 TECHZJC</h3>
+        <p class="w3-center">
+          <em>Techzjc是一个持续拥有创新热情的网站，由赵佳成建立。</em>
+        </p>
+        <p></p>
+        <p class="w3-large w3-center w3-padding-16">这一个网站包含了：</p>
+        <p class="w3-wide">
+          <img
+            src="https://static.techzjc.com/icon/icon-camera-black.svg"
+            width="20"
+          />
+          图片
+        </p>
+        <div class="w3-light-grey">
+          <div
+            class="w3-container w3-padding-small w3-dark-grey w3-center"
+            style="width: 40%"
+          >
+            40%
+          </div>
+        </div>
+        <p class="w3-wide">
+          <img
+            src="https://static.techzjc.com/icon/icon-note-black.svg"
+            width="20"
+          />
+          教程
+        </p>
+        <div class="w3-light-grey">
+          <div
+            class="w3-container w3-padding-small w3-dark-grey w3-center"
+            style="width: 40%"
+          >
+            40%
+          </div>
+        </div>
+        <p class="w3-wide">
+          <img
+            src="https://static.techzjc.com/icon/icon-film-black.svg"
+            width="20"
+          />
+          Vlog
+        </p>
+        <div class="w3-light-grey">
+          <div
+            class="w3-container w3-padding-small w3-dark-grey w3-center"
+            style="width: 20%"
+          >
+            20%
+          </div>
+        </div>
+      </div>
+      <div class="w3-row w3-center w3-dark-grey w3-padding-16">
+        <div class="w3-quarter w3-section">
+          <span class="w3-xlarge">9+</span><br />
+          在B站上传的<br />视频
+        </div>
+        <div class="w3-quarter w3-section">
+          <span class="w3-xlarge">5+</span><br />
+          目前正在研究的<br />Github项目
+        </div>
+        <em>网站虽小，但自强</em>
+      </div>
+      <div class="bgimg-2 w3-display-container w3-opacity-min" id="apps">
+        <div class="w3-display-middle">
+          <span class="w3-xxlarge w3-text-white w3-wide">应用</span>
+        </div>
+      </div>
+      <footer
+        class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-off"
+      >
+        <a href="#home" class="w3-button w3-light-grey"
+          ><img
+            src="https://static.techzjc.com/icon/icon-arrow-up-black.svg"
+            width="16px"
+          />
+          返回顶部</a
+        >
+
+        <div class="w3-xlarge w3-section">
+          <a href="https://space.bilibili.com/30023942"
+            ><img
+              src="https://static.techzjc.com/icon/icon-bilibili-white.svg"
+              width="32"
+          /></a>
+          <a href="https://www.facebook.com/techzjc"
+            ><img
+              src="https://static.techzjc.com/icon/icon-facebook-white.svg"
+              width="32"
+          /></a>
+          <a href="https://github.com/g497813927"
+            ><img
+              src="https://static.techzjc.com/icon/icon-GitHub-white.svg"
+              width="32"
+          /></a>
+          <a href="https://www.instagram.com/techzjc/"
+            ><img
+              src="https://static.techzjc.com/icon/icon-Instagram-white.svg"
+              width="32"
+          /></a>
+          <a href="https://www.youtube.com/channel/UC_UevpLekFBbIRv7wWEMe7w"
+            ><img
+              src="https://static.techzjc.com/icon/icon-YouTube-white.svg"
+              width="32"
+          /></a>
+        </div>
+        <p>
+          友情链接 ｜
+          <a
+            href="./credits.html"
+            target="_blank"
+            style="text-decoration-line: none; color: #ffffff"
+            >Credits</a
+          >
+        </p>
+        <p>© 2016-2025 Techzjc 版权所有</p>
+        <div style="margin: 0 auto; padding: 20px 0">
+          <a
+            href="https://beian.miit.gov.cn/"
+            target="_blank"
+            style="
+              display: inline-block;
+              text-decoration: none;
+              height: 20px;
+              line-height: 20px;
+              margin: 0px 0px 0px 5px;
+              color: #ffffff;
+            "
+            >浙ICP备2020032105号</a
+          >
+          <span> | </span>
+          <a
+            target="_blank"
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010402004325"
+            style="
+              display: inline-block;
+              text-decoration: none;
+              height: 20px;
+              line-height: 20px;
+            "
+            ><img
+              src="https://static.techzjc.com/icon/icon-beian.png"
+              style="float: left"
+            />
+            <div
+              style="
+                float: left;
+                height: 20px;
+                line-height: 20px;
+                margin: 0px 0px 0px 5px;
+                color: #ffffff;
+              "
+            >
+              浙公网安备 33010402004325号
+            </div></a
+          >
+        </div>
+      </footer>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
