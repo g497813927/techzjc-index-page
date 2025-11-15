@@ -7,15 +7,11 @@ import { About } from '@/components/About';
 import { PhotoWall } from '@/components/PhotoWall';
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Helmet } from "react-helmet";
 
 function App() {
 
   return (
     <>
-      <Helmet>
-        <link rel="canonical" href={`https://techzjc.com${window.location.pathname}`} />
-      </Helmet>
       <NavBar />
       <HeroSection />
       <About />
