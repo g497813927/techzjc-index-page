@@ -3,29 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Footer.css';
 import { faBilibili, faFacebook, faGithub, faGitlab, faGoogleScholar, faInstagram, faLinkedin, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { DebugItem } from './DebugItem';
 
 export function Footer() {
-    const [clickCount, setClickCount] = useState(0);
-
-    useEffect(() => {
-        if (localStorage.getItem('start-debug-listener') !== 'true') {
-            return;
-        }
-        if (clickCount === 3) {
-            if (localStorage.getItem('enable-debug') !== 'true') {
-                localStorage.setItem('enable-debug', 'true');
-                localStorage.removeItem('start-debug-listener');
-                alert('Debug mode enabled!');
-                window.location.reload();
-            } else {
-                localStorage.setItem('enable-debug', 'false');
-                localStorage.removeItem('start-debug-listener');
-                alert('Debug mode disabled!');
-                window.location.reload();
-            }
-        }
-    }, [clickCount]);
+    
     return (
         <footer className="footer">
             <div className="social-icons">
@@ -57,18 +39,7 @@ export function Footer() {
                     <FontAwesomeIcon icon={faYoutube} size="2x" />
                 </a>
             </div>
-            <p
-                id="copyright" 
-                className={localStorage.getItem('start-debug-listener') === 'true' ? 'disable-select' : ''}
-                onClick={() => {
-                    if (localStorage.getItem('start-debug-listener') === 'true') {
-                        setClickCount(prevCount => prevCount + 1);
-                        setTimeout(() => {
-                            setClickCount(0);
-                        }, 1000);
-                    }
-                }}
-            >© 2016-{new Date().getFullYear()} Techzjc 版权所有</p>
+            <DebugItem />
             <div style={{
                 margin: '0 auto',
                 padding: '20px 0'
@@ -87,7 +58,7 @@ export function Footer() {
                     textDecoration: 'none',
                     height: '20px',
                     lineHeight: '20px'
-                }}><img src="https://static.techzjc.com/icon/icon-beian.webp" style={{
+                }}><Image src="https://static.techzjc.com/icon/icon-beian.webp" style={{
                     float: 'left'
                 }} alt="公安联网备案" /><div style={{
                     float: 'left',

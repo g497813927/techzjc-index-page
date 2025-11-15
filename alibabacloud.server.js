@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 const port = process.env.PORT || 9000;
-const distDir = path.join(__dirname, "dist");
+const nextDir = path.join(__dirname, ".next");
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -27,12 +27,12 @@ const server = http.createServer((req, res) => {
     urlPath = "/index.html";
   }
 
-  const filePath = path.join(distDir, urlPath);
+  const filePath = path.join(nextDir, urlPath);
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
       // SPA fallback: always serve index.html for unknown routes
-      const indexPath = path.join(distDir, "index.html");
+      const indexPath = path.join(nextDir, "index.html");
       fs.readFile(indexPath, (err2, content) => {
         if (err2) {
           res.writeHead(500);

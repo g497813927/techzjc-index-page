@@ -1,5 +1,8 @@
+"use client";
+
 import { useState } from "react";
 import './ImageSkeleton.css';
+import Image from "next/image";
 
 export function ImageSkeleton({ url, alt }: { url: string; alt: string }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -10,7 +13,7 @@ export function ImageSkeleton({ url, alt }: { url: string; alt: string }) {
                 <div className="concave"></div>
                 <div className="convex"></div>
             </div>
-            <img
+            <Image
                 src={url}
                 loading="lazy"
                 alt={`${alt}`}
