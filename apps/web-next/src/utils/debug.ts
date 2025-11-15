@@ -1,6 +1,7 @@
 "use client";
 
 export function triggerDebuggerListeners() {
+  if (typeof window === "undefined") return;
   const keySequence = atob("dGVjaHpqYy1kZWJ1Zw==");
   let currentIndex = 0;
   document.addEventListener("keydown", (event) => {
