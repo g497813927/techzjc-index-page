@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import './ImageSkeleton.css';
 import Image from "next/image";
