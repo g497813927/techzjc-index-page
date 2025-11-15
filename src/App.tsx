@@ -6,6 +6,7 @@ import './App.css'
 import { MoveToTop } from './components/MoveToTop'
 import { About } from './components/About';
 import { PhotoWall } from './components/PhotoWall';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
       <Publications />
       <Footer />
       <MoveToTop />
+      {process.env.VERCEL === 'true' && <Analytics />}
     </>
   )
 }
