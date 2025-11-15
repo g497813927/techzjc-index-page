@@ -7,6 +7,7 @@ import { MoveToTop } from './components/MoveToTop'
 import { About } from './components/About';
 import { PhotoWall } from './components/PhotoWall';
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
 
@@ -19,7 +20,10 @@ function App() {
       <Publications />
       <Footer />
       <MoveToTop />
-      {process.env.VERCEL === 'true' && <Analytics />}
+      {process.env.VERCEL === 'true' && <>
+        <SpeedInsights />
+        <Analytics />
+      </>}
     </>
   )
 }
