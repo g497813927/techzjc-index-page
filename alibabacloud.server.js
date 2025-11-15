@@ -1,66 +1,67 @@
-// alibabacloud.server.js (CommonJS)
-
+// alibabacloud.server.js
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-// In Alibaba Cloud FC, you'll usually get the port from env
-const PORT = process.env.PORT || process.env.FC_SERVER_PORT || 3000;
-const DIST_DIR = path.join(__dirname, "dist");
+const port = process.env.PORT || 9000;
+const distDir = path.join(__dirname, "dist");
+
+const mimeTypes = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+};
 
 const server = http.createServer((req, res) => {
-  // Normalize URL, default to /
   let urlPath = req.url.split("?")[0];
 
-  if (urlPath === "/") {
+  // Default to index.html for root
+  if (urlPath === "/" || urlPath === "") {
     urlPath = "/index.html";
   }
 
-  const filePath = path.join(DIST_DIR, urlPath);
+  const filePath = path.join(distDir, urlPath);
 
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      // Simple 404 fallback to index.html for SPA routes
-      if (urlPath !== "/index.html") {
-        const indexPath = path.join(DIST_DIR, "index.html");
-        fs.readFile(indexPath, (indexErr, indexData) => {
-          if (indexErr) {
-            res.writeHead(404, { "Content-Type": "text/plain" });
-            res.end("Not found");
-          } else {
-            res.writeHead(200, { "Content-Type": "text/html" });
-            res.end(indexData);
-          }
+  fs.stat(filePath, (err, stats) => {
+    if (err || !stats.isFile()) {
+      // SPA fallback: always serve index.html for unknown routes
+      const indexPath = path.join(distDir, "index.html");
+      fs.readFile(indexPath, (err2, content) => {
+        if (err2) {
+          res.writeHead(500);
+          res.end("Internal Server Error");
+          return;
+        }
+        res.writeHead(200, {
+          "Content-Type": "text/html; charset=utf-8",
         });
-      } else {
-        res.writeHead(404, { "Content-Type": "text/plain" });
-        res.end("Not found");
-      }
+        res.end(content);
+      });
       return;
     }
 
-    // Very minimal content-type handling
     const ext = path.extname(filePath).toLowerCase();
-    const mimeTypes = {
-      ".html": "text/html",
-      ".js": "application/javascript",
-      ".css": "text/css",
-      ".json": "application/json",
-      ".png": "image/png",
-      ".jpg": "image/jpeg",
-      ".jpeg": "image/jpeg",
-      ".gif": "image/gif",
-      ".svg": "image/svg+xml",
-      ".ico": "image/x-icon",
-    };
-
     const contentType = mimeTypes[ext] || "application/octet-stream";
 
-    res.writeHead(200, { "Content-Type": contentType });
-    res.end(data);
+    fs.readFile(filePath, (err2, content) => {
+      if (err2) {
+        res.writeHead(500);
+        res.end("Internal Server Error");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": contentType });
+      res.end(content);
+    });
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
