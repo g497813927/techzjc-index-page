@@ -20,7 +20,7 @@ function App() {
       <Publications />
       <Footer />
       <MoveToTop />
-      {import.meta.env.VERCEL === 'true' && <>
+      {__VERCEL_ENV__ === 'true' && <>
         <SpeedInsights />
         <Analytics />
       </>}
