@@ -10,6 +10,9 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
+  if (import.meta.env.VERCEL === 'true') {
+    console.log('%cRunning on Vercel!', 'color: #00C2FF; font-weight: bold;');
+  }
 
   return (
     <>
@@ -20,7 +23,7 @@ function App() {
       <Publications />
       <Footer />
       <MoveToTop />
-      {process.env.VERCEL === 'true' && <>
+      {import.meta.env.VERCEL === 'true' && <>
         <SpeedInsights />
         <Analytics />
       </>}
