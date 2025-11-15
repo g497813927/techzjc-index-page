@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { triggerDebuggerListeners } from "@/utils/debug";
-import { execSync } from "child_process";
 import figlet from 'figlet'
 import Larry3D from "figlet/fonts/Larry 3D";
 import Standard from "figlet/fonts/Standard";
@@ -25,7 +24,7 @@ export function DebugBootstrap() {
         }
       ) + 
       "%c\n" +
-      "%c Commit %c " + execSync('git rev-parse --short HEAD').toString().trim() + " %c %c </> %c React + TypeScript %c" +
+      "%c Commit %c " + process.env.COMMIT_SHA + " %c %c </> %c React + TypeScript %c" +
       "color: #2181c2; font-weight: bold;",
       "color: transparent;",
       "background: #5c5c5c; padding: 1px; border-radius: 3px 0 0 3px; color: #FFFFFF",
