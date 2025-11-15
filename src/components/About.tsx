@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './About.css';
-import { faCamera, faCode, faFilm, faGamepad, faGraduationCap, faHeart, faMusic } from '@fortawesome/free-solid-svg-icons';
-import { faEllipsis } from '@fortawesome/free-solid-svg-icons/faEllipsis';
+import { faCamera, faCode, faFilm, faGamepad, faGraduationCap, faHeart, faMusic, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 
 
 export function About() {
@@ -16,19 +15,38 @@ export function About() {
                     <h2>Hobbies</h2>
                     <ul>
                         <li>
-                            <FontAwesomeIcon icon={faCode} size="3x" /><br />Programming
+                            <FontAwesomeIcon icon={faCode} size="3x" style={{
+                                color: "darkgreen"
+                            }}/><br />Programming
                         </li>
                         <li>
-                            <FontAwesomeIcon icon={faCamera} size="3x" /><br />Photography
+                            <FontAwesomeIcon icon={faCamera} size="3x" style={{
+                                color: "grey"
+                            }} /><br />Photography
                         </li>
                         <li>
-                            <FontAwesomeIcon icon={faFilm} size="3x" /><br />Video Editing
+                            <FontAwesomeIcon icon={faFilm} size="3x" style={{
+                                color: "maroon"
+                            }}/><br />Video Editing
                         </li>
                         <li>
-                            <FontAwesomeIcon icon={faMusic} size="3x" /><br />Listen to Music
+                            <FontAwesomeIcon icon={faMusic} size="3x" style={{
+                                color: "hotpink"
+                            }}/><br />Listen to Music
                         </li>
                         <li>
-                            <FontAwesomeIcon icon={faGamepad} size="3x" /><br />Playing Games
+                            <FontAwesomeIcon icon={faGamepad} size="3x" style={{
+                                color: "darksalmon"
+                            }} /><br />Playing Games
+                        </li>
+                        <li>
+                            {/* Use twitter emoji's \ud83d\udc4b to make an icon appears like waving hand */}
+                            <span className="hand-wave">
+                                👋
+                            </span>
+                            Help Others
+
+
                         </li>
                         <li>
                             <FontAwesomeIcon icon={faEllipsis} size="3x" /><br />More

@@ -44,6 +44,7 @@
     padding: 0;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .hobby-card li {
@@ -54,8 +55,25 @@
     margin: 10px;
     padding: 20px;
     background: rgba(255, 255, 255, 0.4);
+    min-width: 108px;
     border-radius: 8px;
-    width: 120px;
-    height: 120px;
+    /* responsive width: cap at 120px but allow shrinking on small screens */
+    width: min(120px, 40vw);
+    /* let content determine height on small screens */
+    height: auto;
     text-align: center;
 }
+
+@media (max-width: 420px) {
+    .hobby-card li {
+        width: calc(50% - 24px);
+        padding: 12px;
+        margin: 6px;
+    }
+}
+
+.hand-wave {
+    font-size: 3rem;
+    filter: brightness(0) saturate(100%) invert(70%) sepia(82%) saturate(3632%) hue-rotate(0deg) brightness(103%) contrast(106%);
+}
+
