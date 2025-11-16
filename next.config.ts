@@ -4,7 +4,14 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
-    domains: ['static.techzjc.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'static.techzjc.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 };
 
