@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "COMMIT_SHA=$(git rev-parse --short HEAD) next dev",
-    "build": "COMMIT_SHA=$(git rev-parse --short HEAD) next build",
+    "build": "COMMIT_SHA=$(git rev-parse --short HEAD) next build --turbopack",
     "start": "COMMIT_SHA=$(git rev-parse --short HEAD) next start",
     "lint": "eslint"
   },
