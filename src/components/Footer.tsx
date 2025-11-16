@@ -59,7 +59,9 @@ export function Footer() {
                     height: '20px',
                     lineHeight: '20px'
                 }}><Image src="https://static.techzjc.com/icon/icon-beian.webp" style={{
-                    float: 'left'
+                    float: 'left',
+                    width: '20px',
+                    height: '20px'
                 }} alt="公安联网备案" /><div style={{
                     float: 'left',
                     height: '20px',
