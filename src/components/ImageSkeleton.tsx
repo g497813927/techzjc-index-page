@@ -19,7 +19,6 @@ export function ImageSkeleton({ url, alt }: { url: string; alt: string }) {
                 alt={`${alt}`}
                 onLoad={() => setIsLoaded(true)}
                 width={374}
-                sizes="(max-width: 600px) 100vw, 374px"
                 className={isLoaded ? 'show move-in' : 'hidden'}
                 onError={(e) => {
                     console.log(`Failed to load image: ${url}`);
