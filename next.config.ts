@@ -13,19 +13,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack: (config) => {
-    // Remove Node.js polyfills Next.js 11/12 added for browser builds
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      path: false,
-      crypto: false,
-      stream: false,
-      buffer: false,
-    };
-
-    return config;
-  },
 };
 
 export default nextConfig;
