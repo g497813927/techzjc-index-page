@@ -1,11 +1,3 @@
-.test {
-    height: 100vh;
-    display: flex;
-    margin: 0;
-    align-items: center;
-    justify-content: center;
-}
-
 /* Make sizing predictable for responsive layouts */
 *, *::before, *::after {
     box-sizing: border-box;
@@ -48,6 +40,16 @@ body {
 }
 
 li:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
     transition: transform 0.2s ease-in-out;
 }
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+

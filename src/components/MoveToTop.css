@@ -1,5 +1,5 @@
 
-.move-to-top .move-to-top-button {
+.move-to-top-button {
     position: fixed;
     bottom: 30px;
     right: 30px;
@@ -15,7 +15,7 @@
     color: white;
 }
 
-.move-to-top .move-to-top-button span {
+.move-to-top-button span {
     display: block;
     width: 20px;
     height: 4px;
@@ -25,10 +25,10 @@
     top: calc(50% - 8px);
 }
 
-.move-to-top .move-to-top-button span:first-child {
+.move-to-top-button span:first-child {
     transform: rotate(45deg) translateX(8px);
 }
 
-.move-to-top .move-to-top-button span:last-child {
+.move-to-top-button span:last-child {
     transform: rotate(-45deg) translateX(-8px);
 }

@@ -16,8 +16,3 @@
     flex-direction: row;
     width: 100%;
 }
-
-.publication-section li:hover {
-    transform: scale(1.02);
-    transition: transform 0.2s ease-in-out;
-}
