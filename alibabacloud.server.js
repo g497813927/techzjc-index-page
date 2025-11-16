@@ -2,16 +2,14 @@
 
 const http = require("http");
 const next = require("next");
-const path = require("path");
 
+// In FC this should usually be "production"
 const dev = process.env.NODE_ENV !== "production";
 const port = process.env.PORT || 9000;
 
-// If this file is in the project root (same folder as package.json, pages/app),
-// use __dirname. If it's in a /server subfolder, use path.join(__dirname, "..")
 const app = next({
   dev,
-  dir: path.join(__dirname, "."), // or ".." if server file is in a subfolder
+  dir: __dirname,
 });
 
 const handle = app.getRequestHandler();
