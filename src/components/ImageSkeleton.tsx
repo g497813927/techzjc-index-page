@@ -18,6 +18,7 @@ export function ImageSkeleton({ url, alt }: { url: string; alt: string }) {
                 loading="lazy"
                 alt={`${alt}`}
                 onLoad={() => setIsLoaded(true)}
+                width={374}
                 height={250}
                 className={isLoaded ? 'show move-in' : 'hidden'}
                 onError={(e) => {
