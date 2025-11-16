@@ -1,12 +1,19 @@
-// alibabacloud.server.js (CommonJS, works with Node 20 default settings)
+// alibabacloud.server.js
 
 const http = require("http");
 const next = require("next");
+const path = require("path");
 
 const dev = process.env.NODE_ENV !== "production";
-const port = process.env.PORT || 9000; // or 3000, but 9000 is common in FC
+const port = process.env.PORT || 9000;
 
-const app = next({ dev });
+// If this file is in the project root (same folder as package.json, pages/app),
+// use __dirname. If it's in a /server subfolder, use path.join(__dirname, "..")
+const app = next({
+  dev,
+  dir: path.join(__dirname, "."), // or ".." if server file is in a subfolder
+});
+
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
