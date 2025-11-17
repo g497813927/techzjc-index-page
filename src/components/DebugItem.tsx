@@ -14,6 +14,10 @@ export function DebugItem() {
             return;
         }
 
+        if (selectable) {
+            document.getElementById('copyright')?.classList.add('disable-select');
+        }
+
         if (clickCount === 3) {
             if (localStorage.getItem('enable-debug') !== 'true') {
                 localStorage.setItem('enable-debug', 'true');
@@ -27,11 +31,10 @@ export function DebugItem() {
                 window.location.reload();
             }
         }
-    }, [clickCount]);
+    }, [clickCount, selectable]);
     return (
     <p
         id="copyright" 
-        className={!selectable ? 'disable-select' : ''}
         onClick={() => {
             if (localStorage.getItem('start-debug-listener') === 'true') {
                 setClickCount(prevCount => prevCount + 1);
