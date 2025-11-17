@@ -10,19 +10,22 @@ export function DebugBootstrap() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    
-
     figlet.parseFont("Larry3D", Larry3D);
     figlet.parseFont("Standard", Standard);
 
     const fontToUse = window.innerWidth < 600 ? "Standard" : "Larry3D";
+    
+    if (localStorage.getItem("enable-debug") === "true") {
+      import("vconsole").then(({ default: VConsole }) => {
+        new VConsole();
+      });
+    }
 
     console.log(
       "%c" +
       figlet.textSync('TECHZJC', {
-          font: fontToUse
-        }
-      ) + 
+        font: fontToUse
+      }) +
       "%c\n" +
       "%c Commit %c " + process.env.NEXT_PUBLIC_COMMIT_SHA + " %c %c </> %c React + TypeScript %c\n\n" +
       "%c Build at %c " + process.env.NEXT_PUBLIC_BUILD_TIME + " %c",
@@ -52,12 +55,7 @@ export function DebugBootstrap() {
 
     triggerDebuggerListeners();
 
-    if (localStorage.getItem("enable-debug") === "true") {
-      import("vconsole").then(({ default: VConsole }) => {
-        new VConsole();
-      });
-    }
   }, []);
 
-  return null; // Just side-effects
+  return null;
 }

@@ -15,6 +15,11 @@
     color: white;
 }
 
+.move-to-top-button:hover {
+    background-color: #777;
+    transition: background-color 0.2s ease-in-out;
+}
+
 .move-to-top-button span {
     display: block;
     width: 20px;

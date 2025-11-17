@@ -19,9 +19,7 @@ export const metadata: Metadata = {
     shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
   },
   alternates: {
-    canonical: "https://techzjc.com/",
-    
-
+    canonical: "https://techzjc.com/"
   },
 }
 export default function RootLayout({ children }: { children: ReactNode }) {
