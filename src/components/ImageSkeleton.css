@@ -71,13 +71,10 @@
     max-height: 250px;
     object-fit: cover;
     z-index: 100;
-}
-
-.photo-card img.hidden {
     opacity: 0;
 }
 
-img.move-in {
+.photo-card img.move-in {
     opacity: 1;
     transition: opacity 0.5s ease-in;
 }
