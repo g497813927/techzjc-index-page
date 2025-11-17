@@ -73,8 +73,13 @@
     z-index: 100;
 }
 
+.photo-card img.hidden {
+    opacity: 0;
+}
+
 img.move-in {
-    animation: move-in 0.5s ease forwards;
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
 }
 
 @keyframes move-in {
