@@ -8,6 +8,6 @@
   "author": "",
   "private": true,
   "dependencies": {
-    "nextjs": "^0.0.3"
+    "next": "^16.0.3"
   }
 }
