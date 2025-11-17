@@ -13,6 +13,9 @@ export function ImageSkeleton({ url, alt }: { url: string; alt: string }) {
                 <div className="concave"></div>
                 <div className="convex"></div>
             </div>
+            <noscript>
+                <Image src={url} alt={alt} width={374} height={250} className="show move-in" />
+            </noscript>
             <Image
                 src={url}
                 loading="lazy"
