@@ -1,0 +1,15 @@
+.back-home-link {
+    border: 3px solid #222;
+    color: #222;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1.2rem;
+}
+
+.back-home-link:hover {
+    background: #eee;
+    color: #222;
+    border: 3px solid #eee;
+    transition: all 0.3s ease;
+}

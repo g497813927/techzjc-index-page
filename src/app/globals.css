@@ -53,3 +53,31 @@ li:hover {
     }
 }
 
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.column-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.page-body {
+    min-height: calc(100vh - 189px); /* Adjust based on header and footer height */
+    top:  calc(2rem + 2 * 0.67em - 5px);
+    position: relative;
+}
+
+.warning-icon:not(:hover) {
+    transform: rotate(0deg) scale(1);
+    transition: transform 500ms;
+}
+
+
+.warning-icon:hover {
+    transform: rotate(360deg) scale(2);
+    transition: transform 500ms;
+}

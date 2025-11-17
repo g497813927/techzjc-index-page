@@ -12,7 +12,7 @@ function App() {
 
   return (
     <>
-      <NavBar />
+      <NavBar hasHero={true} />
       <HeroSection />
       <About />
       <PhotoWall />
