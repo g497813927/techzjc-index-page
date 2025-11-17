@@ -4,8 +4,9 @@ import next from 'next'
  
 const port = process.env.PORT || 9000
 const dev = process.env.NODE_ENV !== 'production'
-const buildDir = '.next'
-const app = next({ dev, dir: '.', conf: { distDir: buildDir } })
+const buildDir = '../.next'
+const hostname = '0.0.0.0'
+const app = next({ dev, dir: '.', conf: { distDir: buildDir }, hostname: hostname })
 const handle = app.getRequestHandler()
 
 
@@ -17,7 +18,7 @@ app.prepare().then(() => {
   }).listen(port)
  
   console.log(
-    `> Server listening at http://localhost:${port} as ${
+    `> Server listening at http://${hostname}:${port} as ${
       dev ? 'development' : process.env.NODE_ENV
     }`
   )
