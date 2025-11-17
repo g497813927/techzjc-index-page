@@ -4,7 +4,7 @@ import next from 'next'
  
 const port = process.env.PORT || 9000
 const dev = process.env.NODE_ENV !== 'production'
-const buildDir = '../.next'
+const buildDir = '.next'
 const hostname = '0.0.0.0'
 const app = next({ dev, dir: '.', conf: { distDir: buildDir }, hostname: hostname })
 const handle = app.getRequestHandler()
