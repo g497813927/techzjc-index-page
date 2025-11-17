@@ -1,6 +1,7 @@
 .skeleton {
     width: 100%;
     height: 100%;
+    z-index: 1;
 }
 
 .skeleton .convex {
@@ -69,6 +70,7 @@
     min-width: 374px;
     max-height: 250px;
     object-fit: cover;
+    z-index: 100;
 }
 
 img.move-in {
