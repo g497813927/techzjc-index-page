@@ -14,12 +14,6 @@ export function DebugBootstrap() {
     figlet.parseFont("Standard", Standard);
 
     const fontToUse = window.innerWidth < 600 ? "Standard" : "Larry3D";
-    
-    if (localStorage.getItem("enable-debug") === "true") {
-      import("vconsole").then(({ default: VConsole }) => {
-        new VConsole();
-      });
-    }
 
     console.log(
       "%c" +
@@ -55,6 +49,20 @@ export function DebugBootstrap() {
 
     triggerDebuggerListeners();
 
+    if (localStorage.getItem("enable-debug") === "true") {
+      import("vconsole").then(({ default: VConsole }) => {
+        const vConsole = new VConsole();
+        const vercel_build = process.env.NEXT_PUBLIC_VERCEL_ENV === "true" ? "\n▲ Deployed on Vercel" : ""
+        vConsole.log.log(figlet.textSync('TECHZJC', {
+          font: fontToUse
+        }) +
+          "\nCommit: " + process.env.NEXT_PUBLIC_COMMIT_SHA +
+          "\n</> React + TypeScript\n" +
+          "Build at: " + process.env.NEXT_PUBLIC_BUILD_TIME + "\n" +
+          vercel_build
+        );
+      });
+    }
   }, []);
 
   return null;
