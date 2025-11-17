@@ -71,13 +71,13 @@ li:hover {
     position: relative;
 }
 
-.warning-icon:not(:hover) {
+.warning-icon {
     transform: rotate(0deg) scale(1);
-    transition: transform 500ms;
+    transition: transform 500ms ease-in-out;
+    transform-origin: center center;
+    will-change: transform;
 }
 
-
 .warning-icon:hover {
-    transform: rotate(360deg) scale(2);
-    transition: transform 500ms;
+    transform: rotate(360deg) scale(1.25);
 }
