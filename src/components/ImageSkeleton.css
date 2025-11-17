@@ -71,10 +71,12 @@
     max-height: 250px;
     object-fit: cover;
     z-index: 100;
+    opacity: 0;
 }
 
-img.move-in {
-    animation: move-in 0.5s ease forwards;
+.photo-card img.move-in {
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
 }
 
 @keyframes move-in {
