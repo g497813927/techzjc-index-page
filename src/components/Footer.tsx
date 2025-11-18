@@ -58,7 +58,7 @@ export function Footer() {
                     textDecoration: 'none',
                     height: '20px',
                     lineHeight: '20px'
-                }}><Image src="https://static.techzjc.com/icon/icon-beian.webp" 
+                }}><Image src="/assets/icon/icon-beian.webp"
                         width={20}
                         height={20}
                         style={{
