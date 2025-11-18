@@ -13,6 +13,7 @@
     cursor: pointer;
     border: none;
     color: white;
+    z-index: 1000;
 }
 
 .move-to-top-button:hover {

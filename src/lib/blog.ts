@@ -1,14 +1,20 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { notFound } from 'next/navigation';
 
 const postsDirectory = path.join(process.cwd(), 'src/content/blog');
 
 export type PostMeta = {
+  year: string;
+  month: string;
+  day: string;
   title: string;
   slug: string;
   time: string;
   description?: string;
+  tags?: string[];
+  content?: string;
 };
 
 export type Post = PostMeta & {
@@ -16,19 +22,33 @@ export type Post = PostMeta & {
 };
 
 export function getAllPosts(): PostMeta[] {
-  const fileNames = fs.readdirSync(postsDirectory);
+  const fileNames = fs.readdirSync(
+    postsDirectory,
+    {
+      recursive: true,
+      withFileTypes: true
+    }
+  );
 
   const posts = fileNames
-    .filter((file) => file.endsWith('.mdx') || file.endsWith('.md'))
+    .filter((file) => {
+      if (!file.isFile()) return false;
+      return file.name.endsWith('.mdx') || file.name.endsWith('.md');
+    })
     .map((fileName) => {
-      const fullPath = path.join(postsDirectory, fileName);
+      const fullPath = path.join(fileName.parentPath ?? "", fileName.name);
+      console.log("Reading post file:", fullPath);
       const fileContents = fs.readFileSync(fullPath, 'utf8');
       const { data } = matter(fileContents);
-
+    
       return {
+        year: data.time.split(' ')[0].split('-')[0],
+        month: data.time.split(' ')[0].split('-')[1],
+        day: data.time.split(' ')[0].split('-')[2],
         title: data.title,
-        slug: fileName.replace(/\.mdx?$/, ''),
+        slug: fileName.name.replace(/\.mdx?$/, ''),
         time: data.time,
+        tags: data.tags || [],
         description: data.description || '',
       } as PostMeta;
     })
@@ -37,10 +57,68 @@ export function getAllPosts(): PostMeta[] {
   return posts;
 }
 
-export function getPostBySlug(slug: string): Post {
+export function getPostByYear(year: string): PostMeta[] {
+  const allPosts = getAllPosts();
+  return allPosts.filter((post) => post.year === year);
+}
+
+export function getPostByYearAndMonth(year: string, month: string): PostMeta[] {
+  const allPosts = getAllPosts();
+  return allPosts.filter((post) => post.year === year && post.month === month);
+}
+
+export function getPostByYearMonthAndDay(year: string, month: string, day: string): PostMeta[] {
+  const allPosts = getAllPosts();
+  return allPosts.filter((post) => post.year === year && post.month === month && post.day === day);
+}
+
+export function getPostBySlug(slug: string, year?: string, month?: string, day?: string): Post {
+  if (!year && !month && !day) {
+    // Search all directories for the slug
+    const allPosts = getAllPosts();
+    const postMeta = allPosts.find((post) => post.slug === slug);
+    if (!postMeta) {
+      throw new Error(`Post with slug "${slug}" not found.`);
+    }
+    year = postMeta.year;
+    month = postMeta.month;
+    day = postMeta.day;
+    const fileContents = fs.readFileSync(
+      path.join(
+        postsDirectory,
+        year,
+        month,
+        day,
+        `${slug}.mdx`
+      ),
+      'utf8'
+    );
+    const { data, content } = matter(fileContents);
+    return {
+      title: data.title,
+      slug: data.slug,
+      time: data.time,
+      year: year,
+      month: month,
+      day: day,
+      description: data.description || '',
+      tags: data.tags || [],
+      content
+    }
+  }
+    // Check if year, month, day are all provided, if not, 404 for now
+    if (!year || !month || !day) {
+      return notFound();
+    }
   // Make sure to revert the slug from URL encoded to normal string
   const decodedSlug = decodeURIComponent(slug);
-  const filePath = path.join(postsDirectory, `${decodedSlug}.mdx`);
+  const filePath = path.join(
+    postsDirectory,
+    year,
+    month,
+    day,
+    `${decodedSlug}.mdx`
+  );
   const fileContents = fs.readFileSync(filePath, 'utf8');
   const { data, content } = matter(fileContents);
 
@@ -48,14 +126,27 @@ export function getPostBySlug(slug: string): Post {
     title: data.title,
     slug: data.slug,
     time: data.time,
+    year: data.time.split(' ')[0].split('-')[0],
+    month: data.time.split(' ')[0].split('-')[1],
+    day: data.time.split(' ')[0].split('-')[2],
     description: data.description || '',
+    tags: data.tags || [],
     content,
   };
 }
 
 export function getAllSlugs(): string[] {
-  const fileNames = fs.readdirSync(postsDirectory);
+  const fileNames = fs.readdirSync(
+    postsDirectory, 
+    {
+      recursive: true,
+      withFileTypes: true
+    }
+  );
   return fileNames
-    .filter((file) => file.endsWith('.mdx') || file.endsWith('.md'))
-    .map((fileName) => fileName.replace(/\.mdx?$/, ''));
+    .filter((file) => {
+      if (!file.isFile()) return false;
+      return file.name.endsWith('.mdx') || file.name.endsWith('.md');
+    })
+    .map((fileName) => fileName.name.replace(/\.mdx?$/, ''));
 }

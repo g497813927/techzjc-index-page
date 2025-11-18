@@ -11,16 +11,26 @@ import Link from "next/link";
 
 
 type Props = {
-    params: { slug: string };
+    params: {
+        slugOrYear: string;
+        month: string;
+        day: string;
+        slug: string;
+    };
 };
 
 export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
-    const { slug } = await params;
+    const {
+        slugOrYear: year,
+        month,
+        day,
+        slug
+    } = await params;
     let Post = null;
     try {
-        Post = getPostBySlug(slug);
+        Post = getPostBySlug(slug, year, month, day);
     } catch (error) {
         console.error("Error fetching post for metadata:", error);
         return {
@@ -32,7 +42,21 @@ export async function generateMetadata(
     return {
         title: `${Post.title} - Techzjc`,
         description: Post.description || `Read the blog post titled "${Post.title}" on Techzjc.`,
-        keywords: ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", Post.title],
+        keywords: [
+            "techzjc",
+            "科技ZJC网",
+            "ZJC科技网",
+            "Techzjc",
+            "ZJC",
+            "赵佳成",
+            "g497813927",
+            "Jiacheng Zhao",
+            "John Zhao",
+            "blog",
+            "techzjc blog",
+            Post.title,
+            ...(Post.tags || [])
+        ],
         icons: {
             icon: "https://static.techzjc.com/icon/favicon_index_page.ico",
             apple: [
@@ -45,7 +69,7 @@ export async function generateMetadata(
             shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
         },
         alternates: {
-            canonical: `https://techzjc.com/blog/${slug}`,
+            canonical: `https://techzjc.com/blog/${year}/${month}/${day}/${slug}`,
         },
     };
 }
@@ -58,10 +82,15 @@ export async function generateStaticParams() {
 
 
 export default async function PostPage({ params }: Props) {
-    const { slug } = await params;
+    const {
+        slugOrYear: year,
+        month,
+        day,
+        slug
+    } = await params;
     let Post = null;
     try {
-        Post = getPostBySlug(slug);
+        Post = getPostBySlug(slug, year, month, day);
     } catch (error) {
         console.error("Error fetching post:", error);
         return notFound();
@@ -71,7 +100,11 @@ export default async function PostPage({ params }: Props) {
             <NavBar hasHero={false} />
             <article className="page-body article-content column-content container markdown-body dissolve-in">
                 <div className="breadcumb-link">
-                    <Link href="/blog" className="breadcumb">Blog</Link>/<Link href={`/blog/${slug}`} className="back-to-blog-link">{Post.title}</Link>
+                    <Link href="/blog" className="breadcumb">Blog</Link>/
+                    <Link href={`/blog/${year}`} className="breadcumb">{year}</Link>/
+                    <Link href={`/blog/${year}/${month}`} className="breadcumb">{month}</Link>/
+                    <Link href={`/blog/${year}/${month}/${day}`} className="breadcumb">{day}</Link>/
+                    <Link href={`/blog/${year}/${month}/${day}/${slug}`} className="back-to-blog-link">{Post.title}</Link>
                 </div>
                 <h1 className="article-title">{Post.title}</h1>
                 <p className="article-date">{Post.time}</p>
