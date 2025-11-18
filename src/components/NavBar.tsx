@@ -22,6 +22,8 @@ export function NavBar({ hasHero }: { hasHero?: boolean }) {
 
             window.addEventListener("scroll", handleScroll);
             return () => window.removeEventListener("scroll", handleScroll);
+        } else {
+            document.getElementById("navbar")?.classList.add("scrolled");
         }
     }, [hasHero]);
 
