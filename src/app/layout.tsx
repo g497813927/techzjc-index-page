@@ -22,7 +22,8 @@ export const metadata: Metadata = {
     shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
   },
   alternates: {
-    canonical: "https://techzjc.com/"
+    // Make it based on the path
+    canonical: `https://techzjc.com/${typeof window !== 'undefined' ? window.location.pathname : ''}`,
   },
 }
 export default function RootLayout({ children }: { children: ReactNode }) {
