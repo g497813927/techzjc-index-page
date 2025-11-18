@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import './NavBar.css';
+import Link from "next/link";
 export function NavBar({ hasHero }: { hasHero?: boolean }) {
     // Check if the user scolled below the hero section, if so, the show the navbar with a background
     const [scrolled, setScrolled] = useState(
@@ -26,7 +27,12 @@ export function NavBar({ hasHero }: { hasHero?: boolean }) {
     return (
         <nav className={scrolled ? "navbar scrolled" : "navbar"}>
             <div className="nav-content">
-                <h1 className="logo">TECHZJC</h1>
+                <Link href={"/"} className="home-link">
+                    <h1 className="logo">TECHZJC</h1>
+                </Link>
+                <div className="nav-links">
+                    <Link href={"/blog"} className="nav-link">Blog</Link>
+                </div>
             </div>
         </nav>
     )

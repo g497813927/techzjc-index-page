@@ -1,0 +1,35 @@
+ul.blog-post-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.blog-post-list li a {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    padding: 20px 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    width: 100%;
+    color: black;
+}
+
+.blog-post-list li a h2, .blog-post-list li a p {
+    margin: 4px 0;
+}
+
+.blog-post-list li a:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(1.02);
+    text-decoration: black;
+    transition: transform 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+.end-of-page {
+    text-align: center;
+    color: #666;
+    margin-top: 40px;
+}

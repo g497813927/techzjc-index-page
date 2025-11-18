@@ -66,8 +66,8 @@ li:hover {
 }
 
 .page-body {
-    min-height: calc(100vh - 189px); /* Adjust based on header and footer height */
-    top:  calc(2rem + 2 * 0.67em - 5px);
+    min-height: calc(100vh - 189px - 4.5rem - 2 * 0.67em - 24px);
+    margin-top: calc(2rem + 1.34em + 2.5rem);
     position: relative;
 }
 
@@ -80,4 +80,17 @@ li:hover {
 
 .warning-icon:hover {
     transform: rotate(360deg) scale(1.25);
+}
+
+@keyframes dissolve-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.dissolve-in {
+    animation: dissolve-in 300ms ease-in forwards;
 }
