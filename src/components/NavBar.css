@@ -13,6 +13,17 @@
     z-index: 10;
 }
 
+.vercel-env {
+    margin-top: 54px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.vercel-env p {
+    margin: 0;
+    padding-top: 24px;
+}
+
 .navbar .nav-content {
     display: flex;
     justify-content: space-between;
