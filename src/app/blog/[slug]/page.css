@@ -1,0 +1,24 @@
+.article-content {
+    margin: 24px !important;
+    margin-top: calc(2rem + 1.34em + 2.5rem) !important;
+}
+
+.blog-page-title a {
+    text-decoration: none;
+    color: black;
+}
+
+.breadcumb-link {
+    font-size: 0.9rem;
+}
+
+.breadcumb-link a {
+    text-decoration: none;
+    color: #555 !important;
+}
+
+.breadcumb-link a:hover {
+    text-decoration: underline;
+    scale: 1.02;
+    transition: all 0.2s ease-in-out;
+}
