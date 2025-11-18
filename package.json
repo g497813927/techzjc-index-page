@@ -26,10 +26,8 @@
     "next-mdx-remote": "^5.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "rehype-raw": "^7.0.0",
-    "remark-admonitions": "^1.2.1",
+    "rehype-github-alerts": "^4.1.1",
     "remark-gfm": "^4.0.1",
-    "remark-github-markdown-alerts": "^1.2.2",
     "vconsole": "^3.15.1"
   },
   "devDependencies": {

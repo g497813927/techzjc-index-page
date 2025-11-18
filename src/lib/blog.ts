@@ -7,7 +7,7 @@ const postsDirectory = path.join(process.cwd(), 'src/content/blog');
 export type PostMeta = {
   title: string;
   slug: string;
-  date: string;
+  time: string;
   description?: string;
 };
 
@@ -28,24 +28,26 @@ export function getAllPosts(): PostMeta[] {
       return {
         title: data.title,
         slug: fileName.replace(/\.mdx?$/, ''),
-        date: data.date,
+        time: data.time,
         description: data.description || '',
       } as PostMeta;
     })
-    .sort((a, b) => (a.date < b.date ? 1 : -1)); // newest first
+    .sort((a, b) => (a.time < b.time ? 1 : -1)); // newest first
 
   return posts;
 }
 
 export function getPostBySlug(slug: string): Post {
-  const filePath = path.join(postsDirectory, `${slug}.mdx`);
+  // Make sure to revert the slug from URL encoded to normal string
+  const decodedSlug = decodeURIComponent(slug);
+  const filePath = path.join(postsDirectory, `${decodedSlug}.mdx`);
   const fileContents = fs.readFileSync(filePath, 'utf8');
   const { data, content } = matter(fileContents);
 
   return {
     title: data.title,
     slug: data.slug,
-    date: data.date,
+    time: data.time,
     description: data.description || '',
     content,
   };

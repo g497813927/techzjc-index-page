@@ -14,7 +14,7 @@ export default async function sitemap() {
     },
     ...getAllPosts().map((post) => ({
       url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: new Date(post.date),
+      lastModified: new Date(post.time),
     })),
   ];
 }

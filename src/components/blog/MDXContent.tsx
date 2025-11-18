@@ -1,20 +1,21 @@
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
-import { remarkGitHubAlerts } from 'remark-github-markdown-alerts';
-import rehypeRaw from 'rehype-raw'
+import { rehypeGithubAlerts } from 'rehype-github-alerts';
 
 const mdxOptions = {
   mdxOptions: {
     remarkPlugins: [
-      remarkGfm,
-      remarkGitHubAlerts,
+      remarkGfm
     ],
     rehypePlugins: [
-        rehypeRaw
+        rehypeGithubAlerts
     ],
   },
 };
 
 export function MDXContent({ source }: { source: string }) {
-  return <MDXRemote source={source} options={mdxOptions} />;
+  return <MDXRemote
+        source={source}
+        options={mdxOptions}
+    />;
 }
