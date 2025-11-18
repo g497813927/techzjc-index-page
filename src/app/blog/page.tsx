@@ -2,7 +2,28 @@ import Link from 'next/link';
 import { getAllPosts } from '@/lib/blog';
 import { NavBar } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
+import { Metadata } from 'next';
 import './page.css';
+
+export const metadata: Metadata = {
+  title: "Techzjc - Blog",
+  keywords: ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog"],
+  description: "Techzjc的博客 - 文章列表页。此处汇集了所有Techzjc的博客文章",
+  icons: {
+    icon: "https://static.techzjc.com/icon/favicon_index_page.ico",
+    apple: [
+      {
+        url: "https://static.techzjc.com/icon/bookmark_icon_index_page.png",
+        sizes: "180x180",
+        type: "image/png"
+      }
+    ],
+    shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
+  },
+  alternates: {
+    canonical: `https://techzjc.com/blog`,
+  },
+}
 
 export default function BlogPage() {
     const posts = getAllPosts();
