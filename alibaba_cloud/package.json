@@ -8,6 +8,7 @@
   "author": "",
   "private": true,
   "dependencies": {
-    "next": "^16.0.3"
+    "next": "^16.0.3",
+    "next-mdx-remote": "^5.0.0"
   }
 }
