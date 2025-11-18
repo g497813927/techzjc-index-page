@@ -25,6 +25,11 @@
     justify-content: center;
 }
 
+.social-icons .social-icon svg {
+    height: 50px;
+    width: 50px;
+}
+
 .social-icons .social-icon:hover {
     background-color: #555;
     color: white;

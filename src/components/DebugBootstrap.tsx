@@ -23,7 +23,7 @@ export function DebugBootstrap() {
       "%c\n" +
       "%c Commit %c " + process.env.NEXT_PUBLIC_COMMIT_SHA + " %c %c </> %c React + TypeScript %c\n\n" +
       "%c Build at %c " + process.env.NEXT_PUBLIC_BUILD_TIME + " %c",
-      "color: #2181c2; font-weight: bold;",
+      "color: #2181c2; font-weight: bold; font-family: monospace;",
       "color: transparent;",
       "background: #5c5c5c; padding: 1px; border-radius: 3px 0 0 3px; color: #FFFFFF",
       "background: #52BF04; padding: 1px; border-radius: 0 3px 3px 0; color: #FFFFFF",
