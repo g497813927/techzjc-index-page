@@ -22,7 +22,7 @@ export default function CommentSection() {
             repoId="R_kgDOQYYKNw"
             category="Announcements"
             categoryId="DIC_kwDOQYYKN84Cx8L7"
-            mapping="pathname"
+            mapping="title"
             reactionsEnabled="1"
             emitMetadata="1"
             inputPosition="top"

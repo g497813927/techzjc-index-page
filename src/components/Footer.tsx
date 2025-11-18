@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { DebugItem } from './DebugItem';
 
 export function Footer() {
-    
+
     return (
         <footer className="footer">
             <div className="social-icons">
@@ -40,25 +40,27 @@ export function Footer() {
                 </a>
             </div>
             <DebugItem />
-            <div style={{
-                margin: '0 auto',
-                padding: '20px 0'
-            }}>
-                <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style={{
-                    display: 'inline-block',
-                    textDecoration: 'none',
-                    height: '20px',
-                    lineHeight: '20px',
-                    margin: '0px 0px 0px 5px',
-                    color: "white"
-                }}>浙ICP备2020032105号</a>
-                <span>    |    </span>
-                <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010402004325" style={{
-                    display: 'inline-block',
-                    textDecoration: 'none',
-                    height: '20px',
-                    lineHeight: '20px'
-                }}><Image src="/assets/icon/icon-beian.webp"
+            { /* ICP and Public Security Filing Info, only show if not in vercel env */}
+            {process.env.NEXT_PUBLIC_VERCEL_ENV !== "true" && (
+                <div style={{
+                    margin: '0 auto',
+                    padding: '20px 0'
+                }}>
+                    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style={{
+                        display: 'inline-block',
+                        textDecoration: 'none',
+                        height: '20px',
+                        lineHeight: '20px',
+                        margin: '0px 0px 0px 5px',
+                        color: "white"
+                    }}>浙ICP备2020032105号</a>
+                    <span>    |    </span>
+                    <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010402004325" style={{
+                        display: 'inline-block',
+                        textDecoration: 'none',
+                        height: '20px',
+                        lineHeight: '20px'
+                    }}><Image src="/assets/icon/icon-beian.webp"
                         width={20}
                         height={20}
                         style={{
@@ -66,14 +68,15 @@ export function Footer() {
                             width: '20px',
                             height: '20px'
                         }} alt="公安联网备案" />
-                <div style={{
-                    float: 'left',
-                    height: '20px',
-                    lineHeight: '20px',
-                    margin: '0px 0px 0px 5px',
-                    color: 'white'
-                }}>浙公网安备 33010402004325号</div></a>
-            </div>
+                        <div style={{
+                            float: 'left',
+                            height: '20px',
+                            lineHeight: '20px',
+                            margin: '0px 0px 0px 5px',
+                            color: 'white'
+                        }}>浙公网安备 33010402004325号</div></a>
+                </div>
+            )}
         </footer>
     )
 }
