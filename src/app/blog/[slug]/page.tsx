@@ -74,7 +74,7 @@ export default async function PostPage({ params }: Props) {
                     <Link href="/blog" className="breadcumb">Blog</Link>/<Link href={`/blog/${slug}`} className="back-to-blog-link">{Post.title}</Link>
                 </div>
                 <h1 className="article-title">{Post.title}</h1>
-                <p className="article-date">{Post.date}</p>
+                <p className="article-date">{Post.time}</p>
                 <MDXContent source={Post.content} />
             </article>
             <Footer />

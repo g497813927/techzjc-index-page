@@ -38,8 +38,8 @@ export default function BlogPage() {
                             <li key={post.slug}>
                                 <Link href={`/blog/${post.slug}`}>
                                     <h2>{post.title}</h2>
-                                    <p className="blog-post-date">{post.date}</p>
-                                    <p>{post.description}</p>
+                                    <p className="blog-post-date">{post.time}</p>
+                                    <p>{post.description || 'No description available.'}</p>
                                 </Link>
                             </li>
                     ))}
