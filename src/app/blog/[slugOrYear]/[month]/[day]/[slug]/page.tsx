@@ -7,6 +7,7 @@ import { MDXContent } from "@/components/blog/MDXContent";
 import { Metadata } from "next";
 import 'github-markdown-css/github-markdown.css';
 import Link from "next/link";
+import CommentSection from "@/components/blog/CommentSection";
 // import 'github-markdown-css/github-markdown-dark.css';
 
 
@@ -109,6 +110,8 @@ export default async function PostPage({ params }: Props) {
                 <h1 className="article-title">{Post.title}</h1>
                 <p className="article-date">{Post.time}</p>
                 <MDXContent source={Post.content} />
+                <hr />
+                <CommentSection />
             </article>
             <Footer />
         </>
