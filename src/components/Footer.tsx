@@ -9,7 +9,7 @@ import { DebugItem } from './DebugItem';
 export function Footer() {
 
     return (
-        <footer className="footer">
+        <footer className={process.env.NEXT_PUBLIC_VERCEL_ENV === "true" ? "footer vercel-env" : "footer"}>
             <div className="social-icons">
                 <a href="https://space.bilibili.com/30023942" className="social-icon" title="bilibili">
                     <FontAwesomeIcon icon={faBilibili} size="2x" />
@@ -41,7 +41,7 @@ export function Footer() {
             </div>
             <DebugItem />
             { /* ICP and Public Security Filing Info, only show if not in vercel env */}
-            {process.env.NEXT_PUBLIC_VERCEL_ENV !== "true" && (
+            {process.env.NEXT_PUBLIC_VERCEL_ENV !== "true" ? (
                 <div style={{
                     margin: '0 auto',
                     padding: '20px 0'
@@ -76,7 +76,9 @@ export function Footer() {
                             color: 'white'
                         }}>浙公网安备 33010402004325号</div></a>
                 </div>
-            )}
+            ) : <p>
+                &nbsp;
+            </p>}
         </footer>
     )
 }
