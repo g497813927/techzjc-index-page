@@ -36,7 +36,7 @@ export default function BlogPage() {
                 <ul className="blog-post-list">
                     {posts.map((post) => (
                             <li key={post.slug}>
-                                <Link href={`/blog/${post.slug}`}>
+                                <Link href={`/blog/${post.year}/${post.month}/${post.day}/${post.slug}`} className="blog-post-link">
                                     <h2>{post.title}</h2>
                                     <p className="blog-post-date">{post.time}</p>
                                     <p>{post.description || 'No description available.'}</p>
