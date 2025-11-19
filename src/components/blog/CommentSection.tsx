@@ -33,7 +33,7 @@ export default function CommentSection() {
                     'Accept': 'application/json',
                 },
             }).then((response) => {
-                if (response.ok) {
+                if (response.ok || response.status === 404) {
                     setGiscusStatus("loaded");
                 } else {
                     setGiscusStatus("error");
