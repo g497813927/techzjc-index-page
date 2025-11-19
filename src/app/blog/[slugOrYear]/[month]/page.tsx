@@ -4,16 +4,18 @@ import { getPostByYearAndMonth } from "@/lib/blog";
 import { Metadata } from "next";
 import Link from "next/link";
 import "@/app/blog/page.css";
+import resolveParams from "@/lib/resolveParams";
 
+type RouteParams = { slugOrYear: string; month: string };
 
 type Props = {
-    params: { slugOrYear: string, month: string };
+    params?: Promise<RouteParams>;
 };
 
 export async function generateMetadata(
     { params }: Props
 ): Promise<Metadata> {
-    const { slugOrYear: year, month } = await params;
+    const { slugOrYear: year, month } = await resolveParams(params);
 
     try {
         return {
@@ -46,7 +48,7 @@ export async function generateMetadata(
 }
 
 export default async function PostPage({ params }: Props) {
-    const { slugOrYear: year, month } = await params;
+    const { slugOrYear: year, month } = await resolveParams(params);
     const posts = getPostByYearAndMonth(year, month);
     return (
         <>

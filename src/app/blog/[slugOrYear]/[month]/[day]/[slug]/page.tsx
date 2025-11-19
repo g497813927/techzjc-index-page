@@ -9,15 +9,19 @@ import "./style-theme.css";
 import Link from "next/link";
 import CommentComponent from "@/components/blog/CommentComponent";
 import CopyCodeButton from "@/components/blog/CopyCodeButton";
+import resolveParams from "@/lib/resolveParams";
 
 
+type RouteParams = {
+    slugOrYear: string;
+    month: string;
+    day: string;
+    slug: string;
+};
+
+// Match Next.js PageProps constraint: `params` is often `Promise<any> | undefined`.
 type Props = {
-    params: {
-        slugOrYear: string;
-        month: string;
-        day: string;
-        slug: string;
-    };
+    params?: Promise<RouteParams>;
 };
 
 export async function generateMetadata(
@@ -28,7 +32,7 @@ export async function generateMetadata(
         month,
         day,
         slug
-    } = await params;
+    } = await resolveParams(params);
     let Post = null;
     try {
         Post = getPostBySlug(slug, year, month, day);
@@ -88,7 +92,7 @@ export default async function PostPage({ params }: Props) {
         month,
         day,
         slug
-    } = await params;
+    } = await resolveParams(params);
     let Post = null;
     try {
         Post = getPostBySlug(slug, year, month, day);

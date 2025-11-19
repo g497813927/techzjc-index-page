@@ -6,16 +6,19 @@ import { getPostBySlug, getPostByYear, PostMeta } from "@/lib/blog";
 import { Metadata } from "next";
 import Link from "next/link";
 import "../page.css";
+import resolveParams from "@/lib/resolveParams";
 
+
+type RouteParams = { slugOrYear: string };
 
 type Props = {
-    params: { slugOrYear: string };
+    params?: Promise<RouteParams>;
 };
 
 export async function generateMetadata(
     { params }: Props
 ): Promise<Metadata> {
-    const { slugOrYear } = await params;
+    const { slugOrYear } = await resolveParams(params);
     // Check if slugOrYear is decimal (year) or string (slug)
     let slug = null;
     let year_acutal = null;
@@ -82,7 +85,7 @@ export async function generateMetadata(
 }
 
 export default async function PostPage({ params }: Props) {
-    const { slugOrYear } = await params;
+    const { slugOrYear } = await resolveParams(params);
     let Post: PostMeta | null = null;
     if (/^\d{4}$/.test(slugOrYear)) {
         const posts = getPostByYear(slugOrYear);
