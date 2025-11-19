@@ -120,9 +120,10 @@ export default async function PostPage({ params }: Props) {
     }
     try {
         Post = getPostBySlug(slugOrYear);
-        permanentRedirect(`/blog/${Post.year}/${Post.month}/${Post.day}/${slugOrYear}`);
     } catch (error) {
         console.error("Error fetching post:", error);
         return notFound();
     }
+    const url_to_redirect = `/blog/${Post.year}/${Post.month}/${Post.day}/${encodeURIComponent(Post.slug)}`;
+    permanentRedirect(url_to_redirect);
 }

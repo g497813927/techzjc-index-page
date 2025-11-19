@@ -96,7 +96,7 @@ export function getPostBySlug(slug: string, year?: string, month?: string, day?:
     const { data, content } = matter(fileContents);
     return {
       title: data.title,
-      slug: data.slug,
+      slug: slug,
       time: data.time,
       year: year,
       month: month,
