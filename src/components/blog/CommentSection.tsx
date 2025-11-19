@@ -4,7 +4,7 @@ import './CommentSection.css';
 import { useEffect, useState } from 'react';
 
 function isBot(ua: string) {
-    return /(bot|yandex|spider|slurp)/i.test(ua);
+    return /(bot|yandex|spider|slurp|Google-InspectionTool)/i.test(ua);
 }
 
 export default function CommentSection() {
