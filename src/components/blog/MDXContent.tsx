@@ -1,6 +1,7 @@
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import { rehypeGithubAlerts } from 'rehype-github-alerts';
+import rehypeHighlight from "rehype-highlight";
 
 const mdxOptions = {
   mdxOptions: {
@@ -8,7 +9,8 @@ const mdxOptions = {
       remarkGfm
     ],
     rehypePlugins: [
-        rehypeGithubAlerts
+        rehypeGithubAlerts,
+        rehypeHighlight
     ],
   },
 };

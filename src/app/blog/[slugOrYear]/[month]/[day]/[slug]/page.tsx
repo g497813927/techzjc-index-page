@@ -5,10 +5,9 @@ import { notFound } from 'next/navigation';
 import { getAllSlugs, getPostBySlug } from "@/lib/blog";
 import { MDXContent } from "@/components/blog/MDXContent";
 import { Metadata } from "next";
-import 'github-markdown-css/github-markdown.css';
+import "./style-theme.css";
 import Link from "next/link";
 import CommentSection from "@/components/blog/CommentSection";
-// import 'github-markdown-css/github-markdown-dark.css';
 
 
 type Props = {
