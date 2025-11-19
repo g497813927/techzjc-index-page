@@ -42,3 +42,24 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+.icp-beian {
+    margin: 0 auto;
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+}
+
+.icp-beian a {
+    color: white;
+    text-decoration: none;
+}
+
+.beian-link {
+    display: flex;
+    align-items: center;
+}

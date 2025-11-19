@@ -5,11 +5,12 @@ import { faBilibili, faFacebook, faGithub, faGitlab, faGoogleScholar, faInstagra
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import { DebugItem } from './DebugItem';
+import Link from 'next/link';
 
 export function Footer() {
 
     return (
-        <footer className={process.env.NEXT_PUBLIC_VERCEL_ENV === "true" ? "footer vercel-env" : "footer"}>
+        <footer className="footer">
             <div className="social-icons">
                 <a href="https://space.bilibili.com/30023942" className="social-icon" title="bilibili">
                     <FontAwesomeIcon icon={faBilibili} size="2x" />
@@ -40,45 +41,22 @@ export function Footer() {
                 </a>
             </div>
             <DebugItem />
-            { /* ICP and Public Security Filing Info, only show if not in vercel env */}
-            {process.env.NEXT_PUBLIC_VERCEL_ENV !== "true" ? (
-                <div style={{
-                    margin: '0 auto',
-                    padding: '20px 0'
-                }}>
-                    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style={{
-                        display: 'inline-block',
-                        textDecoration: 'none',
-                        height: '20px',
-                        lineHeight: '20px',
-                        margin: '0px 0px 0px 5px',
-                        color: "white"
-                    }}>浙ICP备2020032105号</a>
-                    <span>    |    </span>
-                    <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010402004325" style={{
-                        display: 'inline-block',
-                        textDecoration: 'none',
-                        height: '20px',
-                        lineHeight: '20px'
-                    }}><Image src="/assets/icon/icon-beian.webp"
+            <div className="icp-beian">
+                <Link href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">浙ICP备2020032105号</Link>
+                <Link 
+                    target="_blank"
+                    rel="noopener"
+                    href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010402004325"
+                    className="beian-link"
+                >
+                    <Image src="/assets/icon/icon-beian.webp"
                         width={20}
                         height={20}
-                        style={{
-                            float: 'left',
-                            width: '20px',
-                            height: '20px'
-                        }} alt="公安联网备案" />
-                        <div style={{
-                            float: 'left',
-                            height: '20px',
-                            lineHeight: '20px',
-                            margin: '0px 0px 0px 5px',
-                            color: 'white'
-                        }}>浙公网安备 33010402004325号</div></a>
-                </div>
-            ) : <p>
-                &nbsp;
-            </p>}
+                        alt="公安联网备案"
+                    />
+                    浙公网安备 33010402004325号
+                </Link>
+            </div>
         </footer>
     )
 }
