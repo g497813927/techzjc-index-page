@@ -103,7 +103,7 @@ export default async function PostPage({ params }: Props) {
     return (
         <>
             <NavBar hasHero={false} />
-            <article className="page-body article-content column-content container markdown-body dissolve-in">
+            <article className="page-body article-content column-content container markdown-body dissolve-in" role="main">
                 <div className="breadcumb-link">
                     <Link href="/blog" className="breadcumb">Blog</Link>/
                     <Link href={`/blog/${year}`} className="breadcumb">{year}</Link>/
