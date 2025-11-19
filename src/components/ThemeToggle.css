@@ -1,0 +1,27 @@
+.theme-toggle .theme-dropdown {
+    position: fixed;
+    top: -200px;
+    right: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    color: #333;
+}
+
+/* Make it show when hovering over the toggle */
+.theme-toggle:hover .theme-dropdown {
+    top: 35px;
+    transition: top 0.5s ease-in-out;
+}
+
+.dark .theme-toggle .theme-dropdown {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #ddd;
+}
+
+.theme-toggle .theme-dropdown li {
+    list-style: none;
+    padding: 10px;
+    cursor: pointer;
+}

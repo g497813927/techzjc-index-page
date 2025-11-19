@@ -2,6 +2,8 @@
 import { useEffect } from "react";
 import './NavBar.css';
 import Link from "next/link";
+import { ThemeToggle } from "./ThemeToggle";
+
 export function NavBar({ hasHero }: { hasHero?: boolean }) {
 
     useEffect(() => {
@@ -35,6 +37,7 @@ export function NavBar({ hasHero }: { hasHero?: boolean }) {
                 </Link>
                 <div className="nav-links">
                     <Link href={"/blog"} className="nav-link">Blog</Link>
+                    <ThemeToggle />
                 </div>
             </div>
         </nav>

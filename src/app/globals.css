@@ -94,3 +94,23 @@ li:hover {
 .dissolve-in {
     animation: dissolve-in 300ms ease-in forwards;
 }
+
+.dark {
+    body {
+        background: linear-gradient(to top, #48c6ef 0%, #6f86d6 100%);
+    }
+
+    .container {
+        background: rgba(50, 50, 50, 0.5);
+        color: white;
+    }
+}
+
+
+:root.dark {
+    color-scheme: dark;
+}
+
+:root.light {
+    color-scheme: light;
+}

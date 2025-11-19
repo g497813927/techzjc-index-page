@@ -31,7 +31,7 @@ export default function BlogPage() {
     return (
         <>
             <NavBar hasHero={false} />
-            <main className="page-body container column-content dissolve-in">
+            <main className="page-body container column-content dissolve-in blog">
                 <h1 className="page-title">Blog</h1>
                 <ul className="blog-post-list">
                     {posts.map((post) => (
