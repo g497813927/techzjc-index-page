@@ -1,5 +1,4 @@
 "use client";
-import { headers } from 'next/headers';
 import Giscus from '@giscus/react';
 import './CommentSection.css';
 import { useEffect, useState } from 'react';
@@ -38,33 +37,30 @@ export default function CommentSection() {
             </em>
         )
     } else {
-        return headers().then((headers) => {
-            const ua = headers.get('user-agent') || '';
-            return isBot(ua);
-        }).then((is_bot_ua) => {
-            if (is_bot_ua) {
-                return (
-                    <em className='comment-section'>
-                        Comment section is unavailable
-                    </em>
-                )
-            } else {
-                return (
-                    <Giscus
-                        id="comments"
-                        repo="techzjc/blog-discussions"
-                        repoId="R_kgDOQYYKNw"
-                        category="Announcements"
-                        categoryId="DIC_kwDOQYYKN84Cx8L7"
-                        mapping="title"
-                        reactionsEnabled="1"
-                        emitMetadata="1"
-                        inputPosition="top"
-                        theme={theme === "dark" ? "transparent_dark" : "light"}
-                        loading="lazy"
-                    />
-                );
-            }
-        });
-    }
+        const userAgent = typeof window !== "undefined" ? navigator.userAgent : "";
+        const is_bot_ua = isBot(userAgent);
+        if (is_bot_ua) {
+            return (
+                <em className='comment-section'>
+                    Comment section is unavailable
+                </em>
+            )
+        } else {
+            return (
+                <Giscus
+                    id="comments"
+                    repo="techzjc/blog-discussions"
+                    repoId="R_kgDOQYYKNw"
+                    category="Announcements"
+                    categoryId="DIC_kwDOQYYKN84Cx8L7"
+                    mapping="title"
+                    reactionsEnabled="1"
+                    emitMetadata="1"
+                    inputPosition="top"
+                    theme={theme === "dark" ? "transparent_dark" : "light"}
+                    loading="lazy"
+                />
+            );
+        }
+    };
 }
