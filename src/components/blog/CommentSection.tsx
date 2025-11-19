@@ -1,5 +1,5 @@
 "use client";
-import Giscus from '@giscus/react';
+import dynamic from 'next/dynamic';
 import './CommentSection.css';
 import { useEffect, useState } from 'react';
 
@@ -30,6 +30,7 @@ export default function CommentSection() {
             </em>
         )
     } else {
+        const Giscus = dynamic(() => import('@giscus/react').then((mod) => mod.default), { ssr: false });
         return (
             <Giscus
                 id="comments"
