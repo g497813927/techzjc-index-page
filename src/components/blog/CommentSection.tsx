@@ -1,8 +1,10 @@
 "use client";
 import Giscus from '@giscus/react';
 import './CommentSection.css';
+import { useTheme } from '../UseTheme';
 
 export default function CommentSection() {
+    const { theme } = useTheme();
     if (process.env.NODE_ENV === "development") {
             return (
                 <em className='comment-section'>
@@ -26,7 +28,7 @@ export default function CommentSection() {
             reactionsEnabled="1"
             emitMetadata="1"
             inputPosition="top"
-            theme="light"
+            theme={theme === "dark" ? "transparent_dark" : "light"}
             loading="lazy"
             />
         );
