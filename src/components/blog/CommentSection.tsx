@@ -1,7 +1,11 @@
 "use client";
-import dynamic from 'next/dynamic';
+import Giscus from '@giscus/react';
 import './CommentSection.css';
 import { useEffect, useState } from 'react';
+
+function isBot(ua: string) {
+    return /(bot|yandex|spider|slurp)/i.test(ua);
+}
 
 export default function CommentSection() {
     const [theme, setTheme] = useState<"light" | "dark">(
@@ -9,6 +13,8 @@ export default function CommentSection() {
             ? "dark"
             : "light"
     );
+
+
     useEffect(() => {
         const observer = new MutationObserver(() => {
             const currentTheme = document.documentElement.getAttribute("data-theme");
@@ -17,6 +23,7 @@ export default function CommentSection() {
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
         return () => observer.disconnect();
     }, []);
+
     if (process.env.NODE_ENV !== "production") {
         return (
             <em className='comment-section'>
@@ -30,21 +37,30 @@ export default function CommentSection() {
             </em>
         )
     } else {
-        const Giscus = dynamic(() => import('@giscus/react').then((mod) => mod.default), { ssr: false });
-        return (
-            <Giscus
-                id="comments"
-                repo="techzjc/blog-discussions"
-                repoId="R_kgDOQYYKNw"
-                category="Announcements"
-                categoryId="DIC_kwDOQYYKN84Cx8L7"
-                mapping="title"
-                reactionsEnabled="1"
-                emitMetadata="1"
-                inputPosition="top"
-                theme={theme === "dark" ? "transparent_dark" : "light"}
-                loading="lazy"
-            />
-        );
-    }
+        const userAgent = typeof window !== "undefined" ? navigator.userAgent : "";
+        const is_bot_ua = isBot(userAgent);
+        if (is_bot_ua) {
+            return (
+                <em className='comment-section'>
+                    Comment section is unavailable
+                </em>
+            )
+        } else {
+            return (
+                <Giscus
+                    id="comments"
+                    repo="techzjc/blog-discussions"
+                    repoId="R_kgDOQYYKNw"
+                    category="Announcements"
+                    categoryId="DIC_kwDOQYYKN84Cx8L7"
+                    mapping="title"
+                    reactionsEnabled="1"
+                    emitMetadata="1"
+                    inputPosition="top"
+                    theme={theme === "dark" ? "transparent_dark" : "light"}
+                    loading="lazy"
+                />
+            );
+        }
+    };
 }
