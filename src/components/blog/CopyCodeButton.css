@@ -1,0 +1,40 @@
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #24292f;
+  color: white;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s, background 0.2s;
+  z-index: 10;
+}
+
+/* Show on hover like GitHub */
+pre:hover .copy-btn {
+  opacity: 1;
+}
+
+.copy-btn .copied-icon {
+  display: none;
+}
+
+.copy-btn[data-copied="true"] .copy-icon {
+  display: none;
+}
+
+.copy-btn[data-copied="true"] .copied-icon {
+  display: inline-block;
+  color: #6cc644;
+}
+
+.copy-btn:hover {
+  background: #444c56;
+}

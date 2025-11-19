@@ -8,6 +8,7 @@ import { Metadata } from "next";
 import "./style-theme.css";
 import Link from "next/link";
 import CommentSection from "@/components/blog/CommentSection";
+import CopyCodeButton from "@/components/blog/CopyCodeButton";
 
 
 type Props = {
@@ -112,6 +113,7 @@ export default async function PostPage({ params }: Props) {
                 <hr />
                 <CommentSection />
             </article>
+            <CopyCodeButton />
             <Footer />
         </>
     );
