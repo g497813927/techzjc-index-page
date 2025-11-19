@@ -7,7 +7,7 @@ import { MDXContent } from "@/components/blog/MDXContent";
 import { Metadata } from "next";
 import "./style-theme.css";
 import Link from "next/link";
-import CommentSection from "@/components/blog/CommentSection";
+import CommentComponent from "@/components/blog/CommentComponent";
 import CopyCodeButton from "@/components/blog/CopyCodeButton";
 
 
@@ -110,8 +110,9 @@ export default async function PostPage({ params }: Props) {
                 <h1 className="article-title">{Post.title}</h1>
                 <p className="article-date">{Post.time}</p>
                 <MDXContent source={Post.content} />
-                <hr />
-                <CommentSection />
+                {process.env.NEXT_PUBLIC_ENABLE_COMMENTS === 'true' &&
+                    <CommentComponent />
+                }
             </article>
             <CopyCodeButton />
             <Footer />
