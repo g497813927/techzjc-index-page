@@ -27,7 +27,7 @@ export default function CommentSection() {
         try {
             // Get the current page title for Giscus term
             const term = document.title;
-            fetch(`https://giscus.app/api/discussions?repo=techzjc%2Fblog-discussions&term=${encodeURIComponent(term)}&category=Announcements`, {
+            fetch(`https://giscus.app/api/discussions?repo=techzjc%2Fblog-discussions&term=${encodeURIComponent(term)}&category=Announcements&strict=false&last=1`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -63,7 +63,15 @@ export default function CommentSection() {
             </em>
         )
     } else {
-        
+        if (giscusStatus === "loading") {
+            return null;
+        } else if (giscusStatus === "error") {
+            return (
+                <em className='comment-section'>
+                    Comment section is currently unavailable.
+                </em>
+            )
+        }
         return (
             <Giscus
                 id="comments"
