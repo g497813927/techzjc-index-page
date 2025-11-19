@@ -3,3 +3,9 @@ em {
     display: block;
     margin-top: 20px;
 }
+
+.dark {
+    .comment-section em {
+        color: #ccc;
+    }
+}

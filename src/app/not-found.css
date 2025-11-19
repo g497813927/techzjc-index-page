@@ -13,3 +13,17 @@
     border: 3px solid #eee;
     transition: all 0.3s ease;
 }
+
+
+.dark {
+    .back-home-link {
+        border: 3px solid #ddd;
+        color: #ddd;
+    }
+
+    .back-home-link:hover {
+        background: #444;
+        color: #ddd;
+        border: 3px solid #444;
+    }
+}

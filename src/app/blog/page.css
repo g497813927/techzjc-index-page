@@ -3,6 +3,10 @@ ul.blog-post-list {
     padding: 0;
 }
 
+.blog {
+    background: #fffa;
+}
+
 .blog-post-list li a {
     background: rgba(255, 255, 255, 0.4);
     border-radius: 8px;
@@ -32,4 +36,23 @@ ul.blog-post-list {
     text-align: center;
     color: #666;
     margin-top: 40px;
+}
+
+.dark {
+    .blog {
+        background: #0d1117;
+    }
+    
+    .blog-post-list li a {
+        color: white;
+        background: rgba(50, 50, 50, 0.4);
+    }
+
+    .blog-post-list li a:hover {
+        background: rgba(50, 50, 50, 0.6);
+    }
+
+    .end-of-page {
+        color: #ccc;
+    }
 }

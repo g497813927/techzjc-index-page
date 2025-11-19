@@ -16,3 +16,9 @@
     flex-direction: row;
     width: 100%;
 }
+
+.dark {
+    .publication-section li {
+        background: rgba(50, 50, 50, 0.4);
+    }
+}

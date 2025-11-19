@@ -22,3 +22,13 @@
     scale: 1.02;
     transition: all 0.2s ease-in-out;
 }
+
+.dark {
+    .blog-page-title a {
+        color: white;
+    }
+
+    .breadcumb-link a {
+        color: #ccc !important;
+    }
+}

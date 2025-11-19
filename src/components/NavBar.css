@@ -30,6 +30,12 @@
     align-items: center;
 }
 
+.nav-links {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+}
+
 .nav-content a {
     color: white;
     text-decoration: none;
