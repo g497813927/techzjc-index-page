@@ -10,9 +10,10 @@ export default function CopyCodeButton() {
 
   useEffect(() => {
     const found = Array.from(document.querySelectorAll("pre"));
+    // eslint-disable-next-line
     setBlocks(found);
   }, [
-    
+
   ]);
 
   const copyText = async (pre: HTMLElement, idx: number) => {

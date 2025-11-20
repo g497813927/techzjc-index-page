@@ -13,7 +13,7 @@ export default async function sitemap() {
       lastModified: new Date(),
     },
     ...getAllPosts().map((post) => ({
-      url: `${baseUrl}/blog/${post.slug}`,
+      url: `${baseUrl}/blog/${post.year}/${post.month}/${post.day}/${post.slug}`,
       lastModified: new Date(post.time),
     })),
   ];
