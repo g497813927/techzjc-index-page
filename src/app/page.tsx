@@ -3,7 +3,7 @@ import { NavBar } from '@/components/NavBar'
 import { Publications } from '@/components/Publications';
 import { Footer } from '@/components/Footer'
 import { About } from '@/components/About';
-import { PhotoWall } from '@/components/PhotoWall';
+import { copyrightNotice, fetchedPhotos1, fetchedPhotos2, PhotoWall } from '@/components/PhotoWall';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -23,6 +23,28 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: `https://techzjc.com/`,
+  },
+  openGraph: {
+    title: "Techzjc",
+    description: "Techzjc是一个持续拥有创新热情的网站，由赵佳成建立。",
+    url: "https://techzjc.com/",
+    siteName: "Techzjc",
+    images: [
+      {
+        url: "https://techzjc.com/assets/image/hero-image.webp",
+        alt: "Hero Image for Techzjc Website"
+      },
+      ...fetchedPhotos1.map(photo => ({
+        url: "https://techzjc.com" + photo.url,
+        alt: photo.alt + ' ' + copyrightNotice || photo.name
+      })),
+      ...fetchedPhotos2.map(photo => ({
+        url: "https://techzjc.com" + photo.url,
+        alt: photo.alt + ' ' + copyrightNotice || photo.name
+      }))
+    ],
+    locale: "en-US",
+    type: "website",
   },
 }
 
