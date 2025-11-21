@@ -78,17 +78,13 @@ export function PhotoWall() {
             <h1>Photos</h1>
             <div className="photos">
                 {photo_1.map((photo, index) => (
-                    index < fetchedPhotos1.length / 2 ?
-                        <ImageSkeleton key={index} url={photo.url} alt={photo.alt + ' ' + copyrightNotice || photo.name} /> :
-                        <ImageSkeleton key={index} url={photo.url} alt={`Duplicate of ${photo.name}`} />
+                    <ImageSkeleton key={index} url={photo.url} alt={photo.alt + ' ' + copyrightNotice || photo.name} />
                 ))}
             </div>
             <br />
             <div className="photos reverse">
                 {photo_2.map((url, index) => (
-                    index < fetchedPhotos2.length / 2 ?
-                        <ImageSkeleton key={index} url={url.url} alt={url.alt  + ' ' + copyrightNotice || url.name} /> :
-                        <ImageSkeleton key={index} url={url.url} alt={`Duplicate of ${url.name}`} />
+                    <ImageSkeleton key={index} url={url.url} alt={url.alt  + ' ' + copyrightNotice || url.name} />
                 ))}
             </div>
         </div>
