@@ -10,6 +10,7 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
+    margin-top: 12px;
 }
 
 .social-icons .social-icon {
@@ -36,13 +37,6 @@
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-#copyright.disable-select {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
 .icp-beian {
     margin: 0 auto;
     padding: 20px 0;
@@ -51,12 +45,10 @@
     align-content: center;
     flex-wrap: wrap;
     gap: 10px;
-
 }
 
 .icp-beian a {
     color: white;
-    text-decoration: none;
 }
 
 .beian-link {

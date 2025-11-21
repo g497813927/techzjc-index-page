@@ -8,7 +8,6 @@ import { DebugItem } from './DebugItem';
 import Link from 'next/link';
 
 export function Footer() {
-
     return (
         <footer className="footer">
             <div className="social-icons">

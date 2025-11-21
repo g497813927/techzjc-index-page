@@ -1,0 +1,31 @@
+.license-list {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.license-separator {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 1.5rem 0;
+}
+
+.package-repo a {
+    color: black;
+    text-decoration: none;
+}
+
+.package-repo a:hover {
+    text-decoration: underline;
+}
+
+[data-theme="dark"] .package-repo a {
+    color: white;
+}
+
+[data-theme="dark"] .license-separator {
+    border-top: 1px solid white;
+}
+
+.license-line {
+    font-family: monospace;
+}

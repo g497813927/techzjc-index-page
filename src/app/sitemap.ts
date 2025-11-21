@@ -9,6 +9,10 @@ export default async function sitemap() {
       lastModified: new Date(),
     },
     {
+      url: `${baseUrl}/licenses`,
+      lastModified: new Date(),
+    },
+    {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
     },

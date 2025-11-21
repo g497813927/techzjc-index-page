@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) next dev",
-    "build": "NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) next build",
+    "generate-licenses": "node ./scripts/generate-licenses.mjs",
+    "dev": "NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run generate-licenses && next dev",
+    "build": "NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run generate-licenses && next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -13,7 +14,6 @@
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.0",
-    "@giscus/react": "^3.1.0",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/mdx": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
@@ -33,6 +33,9 @@
     "remark-gfm": "^4.0.1",
     "vconsole": "^3.15.1"
   },
+  "optionalDependencies": {
+    "@giscus/react": "^3.1.0"
+  },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.0.3",
     "@tailwindcss/postcss": "^4",
@@ -47,6 +50,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
+    "license-checker": "^25.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
