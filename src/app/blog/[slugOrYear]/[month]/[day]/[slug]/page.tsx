@@ -76,6 +76,15 @@ export async function generateMetadata(
         alternates: {
             canonical: `https://techzjc.com/blog/${year}/${month}/${day}/${slug}`,
         },
+        openGraph: {
+            title: `${Post.title} - Techzjc`,
+            description: Post.description || `Read the blog post titled "${Post.title}" on Techzjc.`,
+            url: `https://techzjc.com/blog/${year}/${month}/${day}/${slug}`,
+            siteName: "Techzjc",
+            images: [],
+            locale: "en-US",
+            type: "article",
+        }
     };
 }
 

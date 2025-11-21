@@ -1,3 +1,4 @@
+import { copyrightNotice, fetchedPhotos1, fetchedPhotos2 } from "@/components/PhotoWall";
 import { getAllPosts } from "@/lib/blog";
 
 export default async function sitemap() {
@@ -7,6 +8,14 @@ export default async function sitemap() {
     {
       url: baseUrl,
       lastModified: new Date(),
+      images: [
+        ...fetchedPhotos1.map(photo => 
+          `https://techzjc.com${photo.url}`,
+        ),
+        ...fetchedPhotos2.map(photo => 
+          `https://techzjc.com${photo.url}`,
+        ),
+      ]
     },
     {
       url: `${baseUrl}/licenses`,
