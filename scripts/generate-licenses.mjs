@@ -23,9 +23,9 @@ licenseChecker.init(
 
       return {
         id,
-        name: info.name || info.id.startsWith("@")
-          ? "@" + info.id.split("@")[1]
-          : info.id.split("@")[0],
+        name: info.name || id.startsWith("@")
+          ? "@" + id.split("@")[1]
+          : id.split("@")[0],
         version: info.version,
         licenses: info.licenses,
         licenseFile: info.licenseFile,
