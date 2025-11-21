@@ -29,3 +29,7 @@
 .license-line {
     font-family: monospace;
 }
+
+.license-line pre {
+    white-space: pre-wrap;
+}
