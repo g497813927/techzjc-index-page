@@ -7,6 +7,14 @@
     gap: 5px;
 }
 
+.copyright-container a {
+    color: white;
+}
+
+.copyright-container a:visited {
+    color: white;
+}
+
 #copyright.disable-select {
     -webkit-user-select: none;
     -moz-user-select: none;
