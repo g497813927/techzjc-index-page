@@ -114,3 +114,15 @@ li:hover {
 :root.light {
     color-scheme: light;
 }
+
+a {
+    text-decoration: none;
+}
+
+a:visited {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: underline;
+}

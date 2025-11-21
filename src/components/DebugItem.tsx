@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import "./DebugItem.css";
 
 export function DebugItem() {
     const [clickCount, setClickCount] = useState(0);
@@ -33,16 +35,21 @@ export function DebugItem() {
         }
     }, [clickCount, selectable]);
     return (
-    <p
-        id="copyright" 
-        onClick={() => {
-            if (localStorage.getItem('start-debug-listener') === 'true') {
-                setClickCount(prevCount => prevCount + 1);
-                setTimeout(() => {
-                    setClickCount(0);
-                }, 1000);
-            }
-        }}
-    >© 2016-{new Date().getFullYear()} Techzjc 版权所有</p>
+        <div className="copyright-container">
+            <div
+                id="copyright"
+                onClick={() => {
+                    if (localStorage.getItem('start-debug-listener') === 'true') {
+                        setClickCount(prevCount => prevCount + 1);
+                        setTimeout(() => {
+                            setClickCount(0);
+                        }, 1000);
+                    }
+                }}
+            >© 2016-{new Date().getFullYear()} Techzjc 版权所有</div>&nbsp;&#8729;&nbsp;
+            <Link href="/licenses" target="_blank" rel="noopener noreferrer">
+                开源组件许可
+            </Link>
+        </div>
     );
 }

@@ -27,7 +27,6 @@ export const metadata: Metadata = {
 }
 
 function App() {
-
   return (
     <>
       <NavBar hasHero={true} />

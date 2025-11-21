@@ -3,6 +3,10 @@
     padding: 0;
 }
 
+.publication-section a {
+    color: black;
+}
+
 .publication-section li {
     background: rgba(255, 255, 255, 0.4);
     border-radius: 8px;
@@ -20,5 +24,9 @@
 .dark {
     .publication-section li {
         background: rgba(50, 50, 50, 0.4);
+    }
+
+    .publication-section a {
+        color: white;
     }
 }
