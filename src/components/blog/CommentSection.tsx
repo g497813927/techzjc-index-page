@@ -5,9 +5,7 @@ export default function CommentSection() {
     return null;
   }
   
-  const CommentComponent = dynamic(() => import('./CommentComponent'), {
-    ssr: false
-  });
+  const CommentComponent = dynamic(() => import('./CommentComponent'));
   
   return <CommentComponent />;
 }
