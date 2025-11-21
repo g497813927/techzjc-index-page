@@ -7,9 +7,9 @@ import { MDXContent } from "@/components/blog/MDXContent";
 import { Metadata } from "next";
 import "./style-theme.css";
 import Link from "next/link";
-import CommentComponent from "@/components/blog/CommentComponent";
 import CopyCodeButton from "@/components/blog/CopyCodeButton";
 import resolveParams from "@/lib/resolveParams";
+import CommentSection from "@/components/blog/CommentSection";
 
 
 type RouteParams = {
@@ -115,7 +115,7 @@ export default async function PostPage({ params }: Props) {
                 <p className="article-date">{Post.time}</p>
                 <MDXContent source={Post.content} />
                 {process.env.NEXT_PUBLIC_ENABLE_COMMENTS === 'true' &&
-                    <CommentComponent />
+                    <CommentSection />
                 }
             </article>
             <CopyCodeButton />
