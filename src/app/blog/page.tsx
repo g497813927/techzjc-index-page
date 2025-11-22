@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `https://techzjc.com/blog`,
   },
+  other: {
+    'baidu-site-verification': 'codeva-M9OxrFq2pz'
+  }
 }
 
 export default function BlogPage() {
