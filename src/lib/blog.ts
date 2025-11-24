@@ -15,6 +15,7 @@ export type PostMeta = {
   description?: string;
   tags?: string[];
   content?: string;
+  ogImage?: string;
 };
 
 export type Post = PostMeta & {
