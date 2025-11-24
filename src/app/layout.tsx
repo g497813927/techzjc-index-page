@@ -4,6 +4,7 @@ import { DebugBootstrap } from "@/components/DebugBootstrap";
 import { MoveToTop } from "@/components/MoveToTop";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const themeScript = `!function(){try{var e=window.localStorage.getItem("theme"),t=window.matchMedia("(prefers-color-scheme:dark)").matches;"dark"===e||!e&&t?(document.documentElement.classList.add("dark"),document.documentElement.setAttribute("data-theme","dark")):(document.documentElement.classList.remove("dark"),document.documentElement.setAttribute("data-theme","light"))}catch(e){}}();`;
@@ -13,11 +14,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
+        {
+          process.env.VERCEL_ENV === 'true' && <>
+            <GoogleAnalytics gaId="G-1ZLSY6R45Z" />
+            <SpeedInsights />
+            <Analytics />
+          </>
+        }
       </head>
       <body>
         {process.env.VERCEL_ENV === 'true' && <>
-          <SpeedInsights />
-          <Analytics />
+          
         </>}
         <DebugBootstrap />
         <MoveToTop />
