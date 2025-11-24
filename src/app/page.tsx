@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: "Techzjc",
     images: [
       {
-        url: "https://techzjc.com/assets/image/hero-image.webp",
+        url: "https://techzjc.com/assets/image/hero-image-og.jpg",
         alt: "Hero Image for Techzjc Website"
       },
       ...fetchedPhotos1.map(photo => ({
