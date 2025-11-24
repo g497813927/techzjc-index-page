@@ -85,8 +85,42 @@ export function PhotoWall() {
     const photo_1 = [...fetchedPhotos1, ...fetchedPhotos1];
     const photo_2 = [...fetchedPhotos2, ...fetchedPhotos2];
 
+    const photo_schema = [
+        ...fetchedPhotos1.map(photo => ({
+            "@context": "https://schema.org",
+            "@type": "ImageObject",
+            "name": photo.name,
+            "contentUrl": `https://techzjc.com${photo.url}`,
+            "url": `https://techzjc.com${photo.url}`,
+            "description": photo.alt || "",
+            "locationCreated": photo.geoLocation || "",
+            "creator": {
+                "@type": "Person",
+                "name": "Jiacheng Zhao",
+                "alternateName": "Techzjc",
+                "url": "https://techzjc.com/"
+            },
+        })),
+        ...fetchedPhotos2.map(photo => ({
+            "@context": "https://schema.org",
+            "@type": "ImageObject",
+            "name": photo.name,
+            "contentUrl": `https://techzjc.com${photo.url}`,
+            "url": `https://techzjc.com${photo.url}`,
+            "description": photo.alt || "",
+            "locationCreated": photo.geoLocation || "",
+            "creator": {
+                "@type": "Person",
+                "name": "Jiacheng Zhao",
+                "alternateName": "Techzjc",
+                "url": "https://techzjc.com/"
+            },
+        }))
+    ]
+
     return (
         <div className="container photo-wall">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(photo_schema) }} />
             <h1>Photos</h1>
             <div className="photos">
                 {photo_1.map((photo, index) => (
