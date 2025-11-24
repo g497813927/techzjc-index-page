@@ -94,6 +94,7 @@ export function PhotoWall() {
             "url": `https://techzjc.com${photo.url}`,
             "description": photo.alt || "",
             "locationCreated": photo.geoLocation || "",
+            "creditText": copyrightNotice,
             "creator": {
                 "@type": "Person",
                 "name": "Jiacheng Zhao",
@@ -109,6 +110,7 @@ export function PhotoWall() {
             "url": `https://techzjc.com${photo.url}`,
             "description": photo.alt || "",
             "locationCreated": photo.geoLocation || "",
+            "creditText": copyrightNotice,
             "creator": {
                 "@type": "Person",
                 "name": "Jiacheng Zhao",
