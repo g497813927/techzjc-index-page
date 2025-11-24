@@ -37,7 +37,8 @@ export async function GET(req: Request) {
                       position: "absolute",
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover"
+                      objectFit: "cover",
+                      filter: "brightness(0.4)",
                     }}
                 />
                 <div
@@ -49,10 +50,26 @@ export async function GET(req: Request) {
                     textAlign: "center",
                     padding: "0 100px",
                   }}
-                  className="ogimage-text"
-                  >
-                    <h1 className="ogimage-title">{title}</h1>
-                    {subtitle && <h2 className="ogimage-subtitle">{subtitle}</h2>}
+                >
+                    <h1
+                      style={{
+                        fontSize: 64
+                      }}
+                    >
+                      {title}
+                    </h1>
+                    {
+                      subtitle && 
+                      <h2
+                        style={{
+                          fontSize: 36,
+                          marginTop: 20,
+                          fontWeight: "normal"
+                        }}
+                      >
+                        {subtitle}
+                      </h2>
+                    }
                 </div>
               </div>
             ),
