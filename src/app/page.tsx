@@ -46,6 +46,9 @@ export const metadata: Metadata = {
     locale: "en-US",
     type: "website",
   },
+  verification: {
+    google: 'zYWiqqOStJLM35MbqWJdyRL6Ch4XEuf8lncXB-rPFZ0'
+  },
   other: {
     'baidu-site-verification': 'codeva-M9OxrFq2pz'
   }
