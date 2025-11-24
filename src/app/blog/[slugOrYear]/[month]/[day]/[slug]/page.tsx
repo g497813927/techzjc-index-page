@@ -7,6 +7,7 @@ import { MDXContent } from "@/components/blog/MDXContent";
 import { Metadata } from "next";
 import "./style-theme.css";
 import Link from "next/link";
+import Image from "next/image";
 import CopyCodeButton from "@/components/blog/CopyCodeButton";
 import resolveParams from "@/lib/resolveParams";
 import CommentSection from "@/components/blog/CommentSection";
@@ -132,6 +133,7 @@ export default async function PostPage({ params }: Props) {
     };
     return (
         <>
+            <Image alt="WeChat Share Image" src={`/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}&width=800&height=800`} width={800} height={800} className="hidden" />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }} />
             <NavBar hasHero={false} />
             <article className="page-body article-content column-content container markdown-body dissolve-in" role="main">

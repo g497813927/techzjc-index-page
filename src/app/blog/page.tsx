@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getAllPosts } from '@/lib/blog';
 import { NavBar } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
+import Image from 'next/image';
 import { Metadata } from 'next';
 import './page.css';
 
@@ -44,6 +45,7 @@ export default function BlogPage() {
 
     return (
         <>
+            <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&subtitle=Blog&width=800&height=800" width={800} height={800} className="hidden" />
             <NavBar hasHero={false} />
             <main className="page-body container column-content dissolve-in blog">
                 <h1 className="page-title">Blog</h1>

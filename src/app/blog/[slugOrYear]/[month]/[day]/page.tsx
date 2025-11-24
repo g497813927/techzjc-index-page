@@ -2,6 +2,7 @@ import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import { getPostByYearMonthAndDay } from "@/lib/blog";
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import "@/app/blog/page.css";
 import resolveParams from "@/lib/resolveParams";
@@ -66,6 +67,7 @@ export default async function PostPage({ params }: Props) {
     const posts = getPostByYearMonthAndDay(year, month, day);
     return (
         <>
+            <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}-${day}`)}&width=800&height=800`} width={800} height={800} className="hidden" />
             <NavBar hasHero={false} />
             <main className="page-body container column-content dissolve-in">
                 <h1 className="page-title">Blog Posts in {year}-{month}-{day}</h1>
