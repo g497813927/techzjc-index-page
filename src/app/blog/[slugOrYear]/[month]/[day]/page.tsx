@@ -33,6 +33,20 @@ export async function generateMetadata(
                 ],
                 shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
             },
+            openGraph: {
+                title: `${year}-${month}-${day} - Techzjc`,
+                description: `Blog posts in ${year}-${month}-${day} on Techzjc.`,
+                url: `https://techzjc.com/blog/${year}/${month}/${day}`,
+                siteName: "Techzjc Blog",
+                images: [
+                    {
+                        url: `/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}-${day}`)}`,
+                        alt: `Hero Image for Techzjc Blog Posts in ${year}-${month}-${day}`
+                    }
+                ],
+                locale: "en-US",
+                type: "website",
+            },
             alternates: {
                 canonical: `https://techzjc.com/blog/${year}/${month}/${day}`,
             },
