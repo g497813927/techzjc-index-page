@@ -4,6 +4,7 @@ import { Publications } from '@/components/Publications';
 import { Footer } from '@/components/Footer'
 import { About } from '@/components/About';
 import { copyrightNotice, fetchedPhotos1, fetchedPhotos2, PhotoWall } from '@/components/PhotoWall';
+import Image from 'next/image';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -57,6 +58,7 @@ export const metadata: Metadata = {
 function App() {
   return (
     <>
+      <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&width=800&height=800" width={800} height={800} className="hidden" />
       <NavBar hasHero={true} />
       <HeroSection />
       <About />

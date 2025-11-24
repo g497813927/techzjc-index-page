@@ -4,6 +4,7 @@ import "./page.css";
 import { notFound, permanentRedirect } from 'next/navigation';
 import { getPostBySlug, getPostByYear, PostMeta } from "@/lib/blog";
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import "../page.css";
 import resolveParams from "@/lib/resolveParams";
@@ -105,6 +106,7 @@ export default async function PostPage({ params }: Props) {
         const posts = getPostByYear(slugOrYear);
         return (
             <>
+                <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${slugOrYear}`)}&width=800&height=800`} width={800} height={800} className="hidden" />
                 <NavBar hasHero={false} />
                 <main className="page-body container column-content dissolve-in">
                     <h1 className="page-title">Blog Posts in {slugOrYear}</h1>
