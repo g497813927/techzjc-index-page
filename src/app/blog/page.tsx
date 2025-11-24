@@ -20,6 +20,20 @@ export const metadata: Metadata = {
     ],
     shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
   },
+  openGraph: {
+    title: "Techzjc - Blog",
+    description: "Techzjc的博客 - 文章列表页。此处汇集了所有Techzjc的博客文章",
+    url: "https://techzjc.com/blog",
+    siteName: "Techzjc Blog",
+    images: [
+      {
+        url: "https://techzjc.com/assets/image/hero-image.webp",
+        alt: "Hero Image for Techzjc Blog Page"
+      }
+    ],
+    locale: "en-US",
+    type: "website",
+  },
   alternates: {
     canonical: `https://techzjc.com/blog`,
   }
