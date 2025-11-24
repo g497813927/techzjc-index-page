@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
         {
-          process.env.VERCEL_ENV === 'true' && <>
+          process.env.NEXT_PUBLIC_VERCEL_ENV === 'true' && <>
             <GoogleAnalytics gaId="G-1ZLSY6R45Z" />
             <SpeedInsights />
             <Analytics />
@@ -23,9 +23,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         }
       </head>
       <body>
-        {process.env.VERCEL_ENV === 'true' && <>
-          
-        </>}
         <DebugBootstrap />
         <MoveToTop />
         {children}
