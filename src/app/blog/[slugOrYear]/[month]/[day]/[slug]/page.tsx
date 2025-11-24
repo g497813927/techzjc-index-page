@@ -81,7 +81,12 @@ export async function generateMetadata(
             description: Post.description || `Read the blog post titled "${Post.title}" on Techzjc.`,
             url: `https://techzjc.com/blog/${year}/${month}/${day}/${slug}`,
             siteName: "Techzjc",
-            images: [],
+            images: [
+                {
+                    url: `/opengraph-image?title=${encodeURIComponent(Post.title.length > 20 ? Post.title.slice(0, 17) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}`,
+                    alt: `Open Graph Image for ${Post.title}`
+                }
+            ],
             locale: "en-US",
             type: "article",
         }
