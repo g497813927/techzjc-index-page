@@ -109,8 +109,25 @@ export default async function PostPage({ params }: Props) {
         console.error("Error fetching post:", error);
         return notFound();
     }
+    // Add Article Structured Data for SEO
+    const articleStructuredData = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: Post.title,
+        datePublished: Post.time,
+        author: [
+            {
+                "@type": "Person",
+                name: "Jiacheng Zhao",
+                alternateName: "Techzjc",
+                email: "mailto:admin@techzjc.com",
+                url: "https://techzjc.com/",
+            }
+        ]
+    };
     return (
         <>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }} />
             <NavBar hasHero={false} />
             <article className="page-body article-content column-content container markdown-body dissolve-in" role="main">
                 <div className="breadcumb-link">
