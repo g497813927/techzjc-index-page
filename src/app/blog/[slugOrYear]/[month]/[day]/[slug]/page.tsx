@@ -83,7 +83,7 @@ export async function generateMetadata(
             siteName: "Techzjc",
             images: [
                 {
-                    url: `/opengraph-image?title=${encodeURIComponent(Post.title.length > 20 ? Post.title.slice(0, 17) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}`,
+                    url: `/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}`,
                     alt: `Open Graph Image for ${Post.title}`
                 }
             ],

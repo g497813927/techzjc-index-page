@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
-
-export const runtime = "edge";
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 export const size = {
     width: 1200,
@@ -13,6 +13,13 @@ export async function GET(req: Request) {
     const background_image = searchParams.get("background_image") ?? "https://techzjc.com/assets/image/hero-image-og.jpg";
     const subtitle = searchParams.get("subtitle") ?? "";
     try {
+    const font = await readFile(
+      join(process.cwd(), 'public', 'assets', 'fonts', 'NotoSansSC-Regular.ttf')
+    );
+    const loadedFontSettings = [{
+        name: 'NotoSansSC',
+        data: font
+      }];
         return new ImageResponse(
             (
               <div
@@ -22,6 +29,7 @@ export async function GET(req: Request) {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
+                  fontFamily: "NotoSansSC, sans-serif",
                   width: size.width,
                   height: size.height,
                   position: "relative",
@@ -64,7 +72,6 @@ export async function GET(req: Request) {
                         style={{
                           fontSize: 36,
                           marginTop: 20,
-                          fontWeight: "normal"
                         }}
                       >
                         {subtitle}
@@ -74,13 +81,15 @@ export async function GET(req: Request) {
               </div>
             ),
             {
-                width: size.width,
-                height: size.height,
+                ...size,
+                fonts: loadedFontSettings
             }
         );
+        
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         console.log(`${e.message}`);
+        // console.log(font);
         return new Response(`Failed to generate the image`, {
             status: 500,
         });
