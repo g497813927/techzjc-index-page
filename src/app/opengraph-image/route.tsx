@@ -10,7 +10,13 @@ export const size = {
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const title = searchParams.get("title") ?? "Techzjc";
-    const background_image = searchParams.get("background_image") ?? "https://techzjc.com/assets/image/hero-image-og.jpg";
+    let background_image = searchParams.get("background_image") ?? "https://techzjc.com/assets/image/hero-image-og.jpg";
+    // Check if background image is jpg or png, else convert to jpg
+    if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
+      console.log("Converting background image to jpg for OG image generation.");
+      console.log(`${new URL('/convert', req.url)}?imageUrl=${encodeURIComponent(background_image)}`);
+        background_image = `${new URL('/convert', req.url)}?imageUrl=${encodeURIComponent(background_image)}`;
+    }
     const subtitle = searchParams.get("subtitle") ?? "";
     try {
     const font = await readFile(
