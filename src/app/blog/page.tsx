@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "Techzjc Blog",
     images: [
       {
-        url: "https://techzjc.com/assets/image/hero-image-og.jpg",
+        url: "https://techzjc.com/assets/image/hero-image-og.png",
         alt: "Hero Image for Techzjc Blog Page"
       }
     ],

@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: "Techzjc",
     images: [
       {
-        url: "https://techzjc.com/assets/image/hero-image-og.jpg",
+        url: "https://techzjc.com/assets/image/hero-image-og.png",
         alt: "Hero Image for Techzjc Website"
       },
       ...fetchedPhotos1.map(photo => ({
