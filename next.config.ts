@@ -17,6 +17,17 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+    localPatterns: [
+      {
+        pathname: '/assets/**',
+      },
+      {
+        pathname: '/opengraph-image',
+      },
+      {
+        pathname: '/convert'
+      }
+    ]
   }
 };
 
