@@ -45,7 +45,7 @@ export default function BlogPage() {
 
     return (
         <>
-            <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&subtitle=Blog&width=800&height=800" width={800} height={800} className="hidden" />
+            <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&subtitle=Blog&width=800&height=800" width={800} height={800} className="hidden-wechat" />
             <NavBar hasHero={false} />
             <main className="page-body container column-content dissolve-in blog">
                 <h1 className="page-title">Blog</h1>

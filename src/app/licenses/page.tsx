@@ -63,7 +63,7 @@ export default async function LicensesPage() {
     }
     return (
         <>
-            <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&subtitle=Open%20Source%20Licenses&width=800&height=800" width={800} height={800} className="hidden" />
+            <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&subtitle=Open%20Source%20Licenses&width=800&height=800" width={800} height={800} className="hidden-wechat" />
             <NavBar hasHero={false} />
             <section className="page-body container center-content column-content">
                 <h1 className="page-title">Open Source Projects used within this Site:</h1>

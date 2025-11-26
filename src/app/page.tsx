@@ -58,7 +58,7 @@ export const metadata: Metadata = {
 function App() {
   return (
     <>
-      <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&width=800&height=800" width={800} height={800} className="hidden" />
+      <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&width=800&height=800" width={800} height={800} className="hidden-wechat" />
       <NavBar hasHero={true} />
       <HeroSection />
       <About />

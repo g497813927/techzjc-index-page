@@ -67,7 +67,7 @@ export default async function PostPage({ params }: Props) {
     const posts = getPostByYearAndMonth(year, month);
     return (
         <>
-            <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}`)}&width=800&height=800`} width={800} height={800} className="hidden" />
+            <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
             <NavBar hasHero={false} />
             <main className="page-body container column-content dissolve-in">
                 <h1 className="page-title">Blog Posts in {year}-{month}</h1>
