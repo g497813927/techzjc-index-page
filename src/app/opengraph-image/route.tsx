@@ -45,7 +45,7 @@ export async function GET(req: Request) {
                 }}
               >
                 <img
-                    src={background_image}
+                    src={encodeURIComponent(background_image)}
                     alt="Open Graph Image Background"
                     width={size.width}
                     height={size.height}
