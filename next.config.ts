@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
         pathname: '/assets/**',
       },
       {
+        pathname: '/photos/**',
+      },
+      {
         pathname: '/opengraph-image',
       },
       {
