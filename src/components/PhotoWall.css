@@ -11,6 +11,16 @@
     margin-bottom: 2rem;
 }
 
+.photo-wall:hover .photos {
+    animation-play-state: paused;
+}
+
+.photo-wall .photos .photo-card:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
 .photos.reverse {
     animation-direction: reverse;
 }
