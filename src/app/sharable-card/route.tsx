@@ -12,8 +12,8 @@ export async function GET(req: Request) {
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
     console.log("Converting background image to jpg for OG image generation.");
-    console.log(`${new URL('/convert', req.url)}?imageUrl=${encodeURIComponent(background_image)}`);
-    background_image = `${new URL('/convert', req.url)}?imageUrl=${encodeURIComponent(background_image)}`;
+    console.log(`${new URL('/convert', req.url)}?imageUrl=${encodeURI(background_image)}`);
+    background_image = `${new URL('/convert', req.url)}?imageUrl=${encodeURI(background_image)}`;
   }
   const title = searchParams.get("title") ?? "";
   const time = searchParams.get("time") ?? "";

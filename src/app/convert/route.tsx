@@ -20,7 +20,7 @@ export async function GET(req: Request, res: any) {
     console.log("Converting image from URL:", imageUrl);
 
     // Fetch the WebP image
-    const response = await fetch(encodeURIComponent(imageUrl));
+    const response = await fetch(encodeURI(imageUrl));
     if (!response.ok) {
       return res.status(500).send('Failed to fetch image');
     }
