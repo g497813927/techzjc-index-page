@@ -23,8 +23,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up QEMU (for arm64)
-        uses: docker/setup-qemu-action@v3
+      # - name: Set up QEMU (for arm64)
+      #   uses: docker/setup-qemu-action@v3
 
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
 
           # tags depend on the branch
@@ -50,8 +50,8 @@ jobs:
             ${{ env.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' }}
       - name: Obtain aliyun CLI
         env:
-            ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
-            ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+            ALIYUN_ACCESS_KEY_ID: ${{ env.ALIYUN_ACCESS_KEY_ID }}
+            ALIYUN_ACCESS_KEY_SECRET: ${{ env.ALIYUN_ACCESS_KEY_SECRET }}
             REGION: ${{ env.REGION }}
         run: |
           curl https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz -o aliyun-cli-linux-latest.tgz && \
