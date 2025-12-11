@@ -1,0 +1,87 @@
+name: Multi-arch Docker Build & Push (main + preview)
+
+on:
+  push:
+    branches:
+      - main
+      - next-preview
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/techzjc-index-page
+      FC_NAME: techzjc-index-page-container
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (for arm64)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push multi-arch images
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+          # tags depend on the branch
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:${{ github.ref_name }}
+            ${{ env.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' }}
+      - name: Obtain aliyun CLI
+        env:
+            ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+            ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+            REGION: ${{ env.REGION }}
+        run: |
+          curl https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz -o aliyun-cli-linux-latest.tgz && \
+          tar -xvf aliyun-cli-linux-latest.tgz && \
+          ./aliyun configure set --profile default --access-key-id $ALIYUN_ACCESS_KEY_ID --access-key-secret $ALIYUN_ACCESS_KEY_SECRET --region $REGION
+      - name: Deploy to Alibaba Cloud Function Compute
+        env:
+          IMAGE: ${{ env.IMAGE }}
+        run: |
+          ./aliyun fc UpdateFunction \
+          --functionName techzjc-index-page-container \
+          --body "{
+            \"customContainerConfig\": {
+              \"image\": \"${IMAGE}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' || github.sha }}\"
+            }
+          }"
+      - name: Publish new version to Alibaba Cloud Function Compute
+        run: |
+          ./aliyun fc PublishFunctionVersion \
+          --functionName techzjc-index-page-container \
+          --body "{
+            \"description\": \"techzjc-index-page-container on ${{ github.sha }}\"
+          }"
+      - name: Update alias to latest version
+        run: |
+          LATEST_VERSION=$(./aliyun fc ListFunctionVersions --functionName techzjc-index-page-container --output json | jq -r '.FunctionVersionList | sort_by(.Version) | last(.[]).Version')
+          ./aliyun fc UpdateAlias \
+          --functionName techzjc-index-page-container \
+          --aliasName prod \
+          --body "{
+            \"versionId\": \"${LATEST_VERSION}\"
+          }"
+          
