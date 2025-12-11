@@ -15,6 +15,8 @@ RUN npm install @tailwindcss/oxide --no-save
 FROM base AS builder
 WORKDIR /app
 
+RUN apk add --no-cache git
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
