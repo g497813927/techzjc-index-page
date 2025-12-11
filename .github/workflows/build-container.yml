@@ -73,7 +73,8 @@ jobs:
           }"
       - name: Update alias to latest version
         run: |
-          LATEST_VERSION=$(./aliyun fc ListFunctionVersions --functionName techzjc-index-page-container --output json | jq -r '.FunctionVersionList | sort_by(.Version) | last(.[]).Version')
+          ./aliyun fc ListFunctionVersions --functionName techzjc-index-page-container > versions.json && \
+          LATEST_VERSION=$(jq -r '.versions | sort_by(.versionId | tonumber) | last(.[]).versionId' versions.json) && \
           ./aliyun fc UpdateAlias \
           --functionName techzjc-index-page-container \
           --aliasName prod \
