@@ -18,11 +18,13 @@ export async function GET(req: Request) {
   const title = searchParams.get("title") ?? "";
   const time = searchParams.get("time") ?? "";
   const charsPerLine = 60;
-  const baseHeight = 500;
+  const baseHeight = 470;
   const perLineHeight = 48;
+  const padding = 25;
   const lineCount = Math.ceil(quotation.length / charsPerLine);
-  const height = baseHeight + lineCount * perLineHeight;
-  const finalHeight = Math.max(500, height);
+  let height = baseHeight + lineCount * perLineHeight;
+  height += Math.floor(lineCount / 5) * padding;
+  const finalHeight = Math.max(height, 470);
 
   try {
     const font = await readFile(
@@ -113,7 +115,7 @@ export async function GET(req: Request) {
             fontFamily: "NotoSansSC, sans-serif",
             position: "relative",
             color: "black",
-            padding: "0 50px 20px 50px",
+            padding: "25px",
           }}
         >
           <div style={{
@@ -125,7 +127,7 @@ export async function GET(req: Request) {
             </div>
         <img id="qrcode" src={encodeURI(qrCodeDataURL)} alt="QR Code"
               style={{
-                marginTop: 40,
+                marginTop: 25,
                 width: 128,
                 height: 128,
               }}
