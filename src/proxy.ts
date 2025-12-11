@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 const SCANNER_PATTERNS = [
   /\/\.env/i,
 
-  /^\/wp-admin/i,
+  /^\/wp-admin(?:\/|$)/i,
   /^\/wp-content\//i,
   /^\/wp-includes\//i,
 
@@ -22,3 +22,7 @@ export function proxy(req: NextRequest) {
 
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: ["/:path*"],
+};
