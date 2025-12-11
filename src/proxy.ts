@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const SCANNER_PATTERNS = [
-  /^\/\.env/i,
-  /^\/config\/\.env/i,
+  /\/\.env/i,
 
   /^\/wp-admin/i,
-  /^\/wp-login\.php$/i,
-  /^\/xmlrpc\.php$/i,
   /^\/wp-content\//i,
   /^\/wp-includes\//i,
 
-  /^\/[a-z0-9_-]+\.php$/i,
-  /^\/cgi-bin\/.+\.php$/i,
-  /^\/phpinfo\.php$/i,
-  /^\/vendor\/phpunit\//i,
-  /^\/autoload_classmap\//i,
+  /\/[a-z0-9_-]+\.php$/i,
 
   /^\/\.git/i,
   /^\/\.svn/i,
