@@ -18,8 +18,6 @@ jobs:
     env:
       IMAGE: ghcr.io/${{ github.repository_owner }}/techzjc-index-page
       FC_NAME: techzjc-index-page-container
-      ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
-      ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
       REGION: cn-hangzhou
 
     steps:
@@ -50,13 +48,11 @@ jobs:
             ${{ env.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' }}
       - name: Obtain aliyun CLI
         env:
-            ALIYUN_ACCESS_KEY_ID: ${{ env.ALIYUN_ACCESS_KEY_ID }}
-            ALIYUN_ACCESS_KEY_SECRET: ${{ env.ALIYUN_ACCESS_KEY_SECRET }}
             REGION: ${{ env.REGION }}
         run: |
           curl https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz -o aliyun-cli-linux-latest.tgz && \
           tar -xvf aliyun-cli-linux-latest.tgz && \
-          ./aliyun configure set --profile default --access-key-id ${ALIYUN_ACCESS_KEY_ID} --access-key-secret ${ALIYUN_ACCESS_KEY_SECRET} --region ${REGION}
+          ./aliyun configure set --access-key-id ${{ secrets.ALIYUN_ACCESS_KEY_ID }} --access-key-secret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} --region ${{ env.REGION }}
       - name: Deploy to Alibaba Cloud Function Compute
         env:
           IMAGE: ${{ env.IMAGE }}
