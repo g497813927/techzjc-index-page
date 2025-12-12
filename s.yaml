@@ -5,7 +5,7 @@ resources:
   index-site:
     component: fc3
     props:
-      functionName: ${env:FC_NAME}
+      functionName: ${env('FC_NAME')}
       runtime: "custom-container"
-      image: ${env:IMAGE}
-      region: ${env:REGION}
+      image: ${env('IMAGE')}
+      region: ${env('REGION')}
