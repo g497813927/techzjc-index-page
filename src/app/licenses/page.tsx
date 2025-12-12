@@ -8,6 +8,7 @@ import Image from "next/image";
 import "./page.css";
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://techzjc.com/'),
     title: "Techzjc - Licenses",
     keywords: ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "Jiacheng Zhao", "John Zhao", "licenses", "open source licenses"],
     description: "Open Source Licenses for projects used within Techzjc website.",

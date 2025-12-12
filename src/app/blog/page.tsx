@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import './page.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://techzjc.com/'),
   title: "Techzjc - Blog",
   keywords: ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog"],
   description: "Techzjc的博客 - 文章列表页。此处汇集了所有Techzjc的博客文章",

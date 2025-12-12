@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://techzjc.com/'),
   title: "Techzjc",
   keywords: ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "Jiacheng Zhao", "John Zhao"],
   description: "Techzjc是一个持续拥有创新热情的网站，由赵佳成建立。",
