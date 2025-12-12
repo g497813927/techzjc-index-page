@@ -1,0 +1,12 @@
+edition: 3.0.0
+name: Alibaba Cloud FC Deployment for Index Site
+access: default_serverless_devs_key
+resources:
+  index-site:
+    component: fc3
+    props:
+      functionName: ${env('FC_NAME')}
+      runtime: "custom-container"
+      region: ${env('REGION')}
+      customContainerConfig:
+        image: ${env('IMAGE_FULL')}
