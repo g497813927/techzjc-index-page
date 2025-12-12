@@ -60,7 +60,7 @@ jobs:
           REGION: ${{ vars.REGION }}
           FC_NAME: ${{ vars.FC_NAME }}
           IMAGE: ${{ vars.IMAGE }}:${{ github.sha }}
-          default_serverless_deploy_key: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
+          default_serverless_devs_key: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
         run: |
           s deploy -t s.yaml --use-local
 

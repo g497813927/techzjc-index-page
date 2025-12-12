@@ -1,6 +1,6 @@
 edition: 3.0.0
 name: Alibaba Cloud FC Deployment for Index Site
-access: default_serverless_deploy_key
+access: default_serverless_devs_key
 resources:
   index-site:
     component: fc3
