@@ -8,7 +8,7 @@ FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
 
-RUN npm ci -omit=optional
+RUN npm ci --omit=optional
 RUN npm install lightningcss --no-save
 RUN npm install @tailwindcss/oxide --no-save
 FROM base AS builder
