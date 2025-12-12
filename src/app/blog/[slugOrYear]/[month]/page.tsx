@@ -20,6 +20,7 @@ export async function generateMetadata(
 
     try {
         return {
+            metadataBase: new URL('https://techzjc.com/'),
             title: `${year}-${month} - Techzjc`,
             description: `Blog posts in ${year}-${month} on Techzjc.`,
             keywords: ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", `${year}-${month}`],

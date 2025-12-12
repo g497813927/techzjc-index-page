@@ -46,6 +46,7 @@ export async function generateMetadata(
     }
 
     return {
+        metadataBase: new URL('https://techzjc.com/'),
         title: `${Post.title} - Techzjc`,
         description: Post.description || `Read the blog post titled "${Post.title}" on Techzjc.`,
         keywords: [
