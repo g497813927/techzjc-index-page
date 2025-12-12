@@ -62,5 +62,5 @@ jobs:
           IMAGE_FULL: "${{ vars.IMAGE }}:${{ github.sha }}"
           default_serverless_devs_key: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
         run: |
-          s deploy -t s.yaml --use-local
+          s deploy -t s.yaml --use-local -y
 
