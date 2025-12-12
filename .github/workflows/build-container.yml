@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-amd64:
+  build:
     name: Build and Push Docker Image (amd64)
     runs-on: ubuntu-latest
 
@@ -36,107 +36,11 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ vars.IMAGE }}:temp-amd64-${{ github.sha }}
-  build-arm64:
-    name: Build and Push Docker Image (arm64)
-    runs-on: macos-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push images
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/arm64
-          push: true
-          tags: |
-            ${{ vars.IMAGE }}:temp-arm64-${{ github.sha }}
-  build-combined:
-    name: Build and Push Multi-Arch Docker Image
-    needs:
-      - build-amd64
-      - build-arm64
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push multi-arch image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
             ${{ vars.IMAGE }}:${{ github.sha }}
             ${{ vars.IMAGE }}:${{ github.ref_name}}
             ${{ vars.IMAGE }}:latest
-      - name: Remove temporary images
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
-          PACKAGE: ${{ github.event.repository.name }}
-          TAG1: temp-amd64-${{ github.sha }}
-          TAG2: temp-arm64-${{ github.sha }}
-        run: |
-          set -euo pipefail
-          base=""
-          if gh api -H "Accept: application/vnd.github+json" \
-            "/orgs/${OWNER}/packages/container/${PACKAGE}/versions?per_page=100" >/dev/null 2>&1; then
-            base="/orgs/${OWNER}/packages/container/${PACKAGE}"
-          else
-            base="/users/${OWNER}/packages/container/${PACKAGE}"
-          fi
-
-          echo "Using API base: $base"
-
-          delete_tag () {
-            local tag="$1"
-            echo "Looking for package versions with tag: $tag"
-
-            # Get all version ids that have this tag
-            ids=$(gh api -H "Accept: application/vnd.github+json" \
-              "${base}/versions?per_page=100" \
-              --paginate \
-              | jq -r --arg TAG "$tag" '
-                  .[] | select(any(.metadata.container.tags[]?; . == $TAG)) | .id
-                ')
-
-            if [ -z "${ids}" ]; then
-              echo "No versions found for tag: $tag (already deleted?)"
-              return 0
-            fi
-
-            for id in $ids; do
-              echo "Deleting version id: $id (tag: $tag)"
-              gh api -X DELETE -H "Accept: application/vnd.github+json" \
-                "${base}/versions/${id}"
-            done
-          }
-
-          delete_tag "$TAG1"
-          delete_tag "$TAG2"
   deploy:
-    needs: build-combined
+    needs: build
     concurrency:
       group: deploy-${{ github.ref }}
       cancel-in-progress: true
