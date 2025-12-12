@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
     permissions:
@@ -41,36 +41,26 @@ jobs:
             ${{ vars.IMAGE }}:${{ github.sha }}
             ${{ vars.IMAGE }}:${{ github.ref_name }}
             ${{ vars.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' }}
-      - name: Obtain aliyun CLI
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Serverless Devs
+        run: npm install -g @serverless-devs/s
+      - name: Configure Serverless Devs
+        run: s config add \
+          --access-key-id "${{ secrets.ALIYUN_ACCESS_KEY_ID }}" \
+          --access-key-secret "${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}" \
+          --AccountID "${{ secrets.ALIYUN_ACCOUNT_ID }}" \
+          -a default
+      - name: Deploy to Alibaba Cloud FC
         env:
-            REGION: ${{ env.REGION }}
+          REGION: cn-hangzhou
+          FC_NAME: index-site-func
+          IMAGE: ${{ vars.IMAGE }}:${{ github.sha }}
         run: |
-          curl https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz -o aliyun-cli-linux-latest.tgz && \
-          tar -xvf aliyun-cli-linux-latest.tgz && \
-          ./aliyun configure set --access-key-id ${{ secrets.ALIYUN_ACCESS_KEY_ID }} --access-key-secret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} --region ${{ vars.REGION }}
-      - name: Deploy to Alibaba Cloud Function Compute
-        run: |
-          ./aliyun fc UpdateFunction \
-          --functionName ${{ vars.FC_NAME }} \
-          --body "{
-            \"customContainerConfig\": {
-              \"image\": \"${{ vars.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' || github.sha }}\"
-            }
-          }"
-      - name: Publish new version to Alibaba Cloud Function Compute
-        run: |
-          ./aliyun fc PublishFunctionVersion \
-          --functionName ${{ vars.FC_NAME }} \
-          --body "{
-            \"description\": \"${{ github.ref_name }} versioned by GitHub Actions\"
-          }"
-      - name: Update alias to latest version
-        run: |
-          ./aliyun fc ListFunctionVersions --functionName ${{ vars.FC_NAME }} > versions.json && \
-          LATEST_VERSION=$(jq -r '.versions | sort_by(.versionId | tonumber) | last(.[]).versionId' versions.json) && \
-          ./aliyun fc UpdateAlias \
-          --functionName ${{ vars.FC_NAME }} \
-          --aliasName prod \
-          --body "{
-            \"versionId\": \"${LATEST_VERSION}\"
-          }"
+          s deploy -t s.yaml --use-local
+
