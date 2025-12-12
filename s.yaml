@@ -7,5 +7,5 @@ resources:
     props:
       functionName: ${env('FC_NAME')}
       runtime: "custom-container"
-      image: ${env('IMAGE')}
+      image: ${env('IMAGE_FULL')}
       region: ${env('REGION')}
