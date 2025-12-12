@@ -1,4 +1,4 @@
-name: Multi-arch Docker Build & Push (main + preview)
+name: Docker Build & Push (amd64) and Deploy to Alibaba Cloud FC
 
 on:
   push:
@@ -14,11 +14,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-
-    env:
-      IMAGE: ghcr.io/${{ github.repository_owner }}/techzjc-index-page
-      FC_NAME: techzjc-index-page-container
-      REGION: cn-hangzhou
 
     steps:
       - name: Checkout code
@@ -58,7 +53,7 @@ jobs:
           IMAGE: ${{ env.IMAGE }}
         run: |
           ./aliyun fc UpdateFunction \
-          --functionName techzjc-index-page-container \
+          --functionName ${{ env.FC_NAME }} \
           --body "{
             \"customContainerConfig\": {
               \"image\": \"${IMAGE}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' || github.sha }}\"
@@ -67,16 +62,16 @@ jobs:
       - name: Publish new version to Alibaba Cloud Function Compute
         run: |
           ./aliyun fc PublishFunctionVersion \
-          --functionName techzjc-index-page-container \
+          --functionName ${{ env.FC_NAME }} \
           --body "{
-            \"description\": \"techzjc-index-page-container on ${{ github.sha }}\"
+            \"description\": \"${{ github.ref_name }} versioned by GitHub Actions\"
           }"
       - name: Update alias to latest version
         run: |
-          ./aliyun fc ListFunctionVersions --functionName techzjc-index-page-container > versions.json && \
+          ./aliyun fc ListFunctionVersions --functionName ${{ env.FC_NAME }} > versions.json && \
           LATEST_VERSION=$(jq -r '.versions | sort_by(.versionId | tonumber) | last(.[]).versionId' versions.json) && \
           ./aliyun fc UpdateAlias \
-          --functionName techzjc-index-page-container \
+          --functionName ${{ env.FC_NAME }} \
           --aliasName prod \
           --body "{
             \"versionId\": \"${LATEST_VERSION}\"
