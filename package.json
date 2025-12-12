@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "generate-licenses": "node ./scripts/generate-licenses.mjs",
-    "dev": "NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run generate-licenses && next dev",
-    "build": "NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run generate-licenses && next build",
+    "dev": "echo NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) > .env.local && echo NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) >> .env.local && npm run generate-licenses && next dev",
+    "build": "echo NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) > .env.local && echo NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) >> .env.local && npm run generate-licenses && next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -54,7 +54,6 @@
     "@types/react-helmet": "^6.1.11",
     "@types/unist": "^3.0.3",
     "babel-plugin-react-compiler": "1.0.0",
-    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
     "tailwindcss": "^4",

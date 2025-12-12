@@ -1,6 +1,5 @@
 FROM alpine AS base
-# Add node@20 for building
-RUN apk add --no-cache nodejs npm
+RUN apk add --no-cache nodejs npm git
 WORKDIR /app
 ENV NODE_ENV=production
 
@@ -14,8 +13,6 @@ RUN npm install lightningcss --no-save
 RUN npm install @tailwindcss/oxide --no-save
 FROM base AS builder
 WORKDIR /app
-
-RUN apk add --no-cache git
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
