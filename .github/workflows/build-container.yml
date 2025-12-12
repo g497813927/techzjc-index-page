@@ -4,11 +4,10 @@ on:
   push:
     branches:
       - main
-      - next-preview
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     permissions:
@@ -35,14 +34,12 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-
-          # tags depend on the branch
           tags: |
             ${{ vars.IMAGE }}:${{ github.sha }}
             ${{ vars.IMAGE }}:${{ github.ref_name }}
-            ${{ vars.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' }}
+            ${{ vars.IMAGE }}:latest
   deploy:
-    needs: build
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
