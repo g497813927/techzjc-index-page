@@ -54,7 +54,7 @@ jobs:
           --functionName ${{ vars.FC_NAME }} \
           --body "{
             \"customContainerConfig\": {
-              \"image\": \"${IMAGE}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' || github.sha }}\"
+              \"image\": \"${{ vars.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' || github.sha }}\"
             }
           }"
       - name: Publish new version to Alibaba Cloud Function Compute
