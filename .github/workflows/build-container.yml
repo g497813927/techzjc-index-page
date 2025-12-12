@@ -39,7 +39,7 @@ jobs:
             ${{ vars.IMAGE }}:temp-amd64-${{ github.sha }}
   build-arm64:
     name: Build and Push Docker Image (arm64)
-    runs-on: mac-m4-max
+    runs-on: macos-latest
     permissions:
       contents: read
       packages: write
@@ -48,17 +48,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Disable macOS keychain for Docker creds (runner-safe)
-        run: |
-          mkdir -p "$HOME/.docker"
-          cat > "$HOME/.docker/config.json" <<'JSON'
-          { "credsStore": "" }
-          JSON
-      - name: Use job-local Docker config (no keychain)
-        run: |
-          echo "DOCKER_CONFIG=$RUNNER_TEMP/docker-config" >> $GITHUB_ENV
-          mkdir -p "$RUNNER_TEMP/docker-config"
-          echo '{ "credsStore": "" }' > "$RUNNER_TEMP/docker-config/config.json"
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
