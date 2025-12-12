@@ -29,7 +29,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push multi-arch images
+      - name: Build and push images
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -60,7 +60,7 @@ jobs:
           REGION: ${{ vars.REGION }}
           FC_NAME: ${{ vars.FC_NAME }}
           IMAGE: ${{ vars.IMAGE }}:${{ github.sha }}
-          DEFAULT_SERVERLESS_DEPLOY_KEY: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
+          default_serverless_deploy_key: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
         run: |
           s deploy -t s.yaml --use-local
 
