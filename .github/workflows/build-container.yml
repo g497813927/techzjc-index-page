@@ -38,22 +38,20 @@ jobs:
 
           # tags depend on the branch
           tags: |
-            ${{ env.IMAGE }}:${{ github.sha }}
-            ${{ env.IMAGE }}:${{ github.ref_name }}
-            ${{ env.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' }}
+            ${{ vars.IMAGE }}:${{ github.sha }}
+            ${{ vars.IMAGE }}:${{ github.ref_name }}
+            ${{ vars.IMAGE }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' }}
       - name: Obtain aliyun CLI
         env:
             REGION: ${{ env.REGION }}
         run: |
           curl https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz -o aliyun-cli-linux-latest.tgz && \
           tar -xvf aliyun-cli-linux-latest.tgz && \
-          ./aliyun configure set --access-key-id ${{ secrets.ALIYUN_ACCESS_KEY_ID }} --access-key-secret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} --region ${{ env.REGION }}
+          ./aliyun configure set --access-key-id ${{ secrets.ALIYUN_ACCESS_KEY_ID }} --access-key-secret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} --region ${{ vars.REGION }}
       - name: Deploy to Alibaba Cloud Function Compute
-        env:
-          IMAGE: ${{ env.IMAGE }}
         run: |
           ./aliyun fc UpdateFunction \
-          --functionName ${{ env.FC_NAME }} \
+          --functionName ${{ vars.FC_NAME }} \
           --body "{
             \"customContainerConfig\": {
               \"image\": \"${IMAGE}:${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'next-preview' && 'preview' || github.sha }}\"
@@ -62,18 +60,17 @@ jobs:
       - name: Publish new version to Alibaba Cloud Function Compute
         run: |
           ./aliyun fc PublishFunctionVersion \
-          --functionName ${{ env.FC_NAME }} \
+          --functionName ${{ vars.FC_NAME }} \
           --body "{
             \"description\": \"${{ github.ref_name }} versioned by GitHub Actions\"
           }"
       - name: Update alias to latest version
         run: |
-          ./aliyun fc ListFunctionVersions --functionName ${{ env.FC_NAME }} > versions.json && \
+          ./aliyun fc ListFunctionVersions --functionName ${{ vars.FC_NAME }} > versions.json && \
           LATEST_VERSION=$(jq -r '.versions | sort_by(.versionId | tonumber) | last(.[]).versionId' versions.json) && \
           ./aliyun fc UpdateAlias \
-          --functionName ${{ env.FC_NAME }} \
+          --functionName ${{ vars.FC_NAME }} \
           --aliasName prod \
           --body "{
             \"versionId\": \"${LATEST_VERSION}\"
           }"
-          
