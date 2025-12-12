@@ -40,6 +40,9 @@ jobs:
             ${{ vars.IMAGE }}:latest
   deploy:
     needs: build-and-push
+    concurrency:
+      group: deploy-${{ github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
