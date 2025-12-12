@@ -50,17 +50,12 @@ jobs:
           node-version: '20'
       - name: Install Serverless Devs
         run: npm install -g @serverless-devs/s
-      - name: Configure Serverless Devs
-        run: s config add \
-          -a default \
-          -kl AccountID,AccessKeyID,AccessKeySecret \
-          -li ${{ secrets.ALIYUN_ACCOUNT_ID }},${{ secrets.ALIYUN_ACCESS_KEY_ID }},${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} \
-          -f
       - name: Deploy to Alibaba Cloud FC
         env:
           REGION: ${{ vars.REGION }}
           FC_NAME: ${{ vars.FC_NAME }}
           IMAGE: ${{ vars.IMAGE }}:${{ github.sha }}
+          DEFAULT_SERVERLESS_DEPLOY_KEY: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
         run: |
           s deploy -t s.yaml --use-local
 
