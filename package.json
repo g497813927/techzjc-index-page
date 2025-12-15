@@ -30,7 +30,7 @@
     "next": "^16.0.10",
     "next-mdx-remote": "^5.0.0",
     "qrcode": "^1.5.4",
-    "react": "19.2.1",
+    "react": "19.2.3",
     "react-dom": "^19.2.0",
     "rehype-github-alerts": "^4.1.1",
     "rehype-highlight": "^7.0.2",
