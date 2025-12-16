@@ -36,7 +36,7 @@
                 "opengraph_image_alt": "Cover image for Techzjc Blog Posts on {month}/{day}/{year} page"
             },
             "post": {
-                "title": "{title} - Techzjc Blog",
+                "title": "{title} - Techzjc",
                 "default_description": "Read the blog post titled '{title}' on Techzjc.",
                 "keywords": ["techzjc", "Techzjc", "ZJC", "g497813927", "Jiacheng Zhao", "John Zhao", "Jiacheng Zhao (John)", "blog", "techzjc blog"],
                 "opengraph_image_subtitle": "{title}",
