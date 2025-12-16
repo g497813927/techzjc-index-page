@@ -8,9 +8,14 @@ import Image from "next/image";
 import Link from "next/link";
 import "../page.css";
 import resolveParams from "@/lib/resolveParams";
+import { getDictionary, hasLocale } from "../../dictionaries";
+import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
 
 
-type RouteParams = { slugOrYear: string };
+type RouteParams = {
+    lang: string;
+    slugOrYear: string
+};
 
 type Props = {
     params?: Promise<RouteParams>;
@@ -19,7 +24,9 @@ type Props = {
 export async function generateMetadata(
     { params }: Props
 ): Promise<Metadata> {
-    const { slugOrYear } = await resolveParams(params);
+    const { lang, slugOrYear } = await resolveParams(params);
+    if (!hasLocale(lang)) notFound();
+    const dict = await getDictionary(lang);
     // Check if slugOrYear is decimal (year) or string (slug)
     let slug = null;
     let year_acutal = null;
@@ -28,16 +35,15 @@ export async function generateMetadata(
     } else {
         slug = slugOrYear;
     }
-
     let Post = null;
     try {
         if (!year_acutal && slug) {
             Post = getPostBySlug(slug);
         } else if (year_acutal) {
             return {
-                title: `${year_acutal} - Techzjc`,
-                description: `Blog posts in the year ${year_acutal} on Techzjc.`,
-                keywords: ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", year_acutal],
+                title: dict['metadata']['blog']['slug_or_year']['title'].replace('{slugOrYear}', year_acutal),
+                description: dict['metadata']['blog']['slug_or_year']['description'].replace('{slugOrYear}', year_acutal),
+                keywords: [...dict['metadata']['blog']['slug_or_year']['keywords'], year_acutal],
                 icons: {
                     icon: "https://static.techzjc.com/icon/favicon_index_page.ico",
                     apple: [
@@ -50,39 +56,37 @@ export async function generateMetadata(
                     shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
                 },
                 openGraph: {
-                    title: `${year_acutal} - Techzjc`,
-                    description: `Blog posts in the year ${year_acutal} on Techzjc.`,
-                    url: `https://techzjc.com/blog/${year_acutal}`,
-                    siteName: "Techzjc Blog",
+                    title: dict['metadata']['blog']['slug_or_year']['title'].replace('{slugOrYear}', year_acutal),
+                    description: dict['metadata']['blog']['slug_or_year']['description'].replace('{slugOrYear}', year_acutal),
+                    url: `https://techzjc.com/${lang}/blog/${year_acutal}`,
+                    siteName: dict['metadata']['blog']['index']['title'],
                     images: [
                         {
-                            url: `/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year_acutal}`)}`,
-                            alt: `Hero Image for Techzjc Blog Posts in ${year_acutal}`
+                            url: `/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['slug_or_year']['opengraph_image_subtitle'].replace('{slugOrYear}', year_acutal))}`,
+                            alt: dict['metadata']['blog']['slug_or_year']['opengraph_image_alt'].replace('{slugOrYear}', year_acutal)
                         }
                     ],
-                    locale: "en-US",
+                    locale: lang,
                     type: "website",
                 },
-                alternates: {
-                    canonical: `https://techzjc.com/blog/${year_acutal}`,
-                },
+                alternates: generateMetadataAlternatives("https://techzjc.com", lang, `/blog/${year_acutal}`),
             }
         } else {
             return notFound();
         }
+        //eslint-disable-next-line
     } catch (error) {
-        console.error("Error fetching post for metadata:", error);
         return {
-            title: "Post Not Found - Techzjc",
-            description: "The requested blog post could not be found.",
+            title: dict['metadata']['blog']['page-not-found']['title'],
+            description: dict['metadata']['blog']['page-not-found']['description'],
         };
     }
 
     return {
         metadataBase: new URL('https://techzjc.com/'),
-        title: `${Post.title} - Techzjc`,
-        description: Post.description || `Read the blog post titled "${Post.title}" on Techzjc.`,
-        keywords: ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", Post.title],
+        title: dict['metadata']['blog']['post']['title'].replace('{title}', Post.title),
+        description: Post.description || dict['metadata']['blog']['post']['default_description'].replace('{title}', Post.title),
+        keywords: [...dict['metadata']['blog']['post']['keywords'], Post.title, ...(Post.tags || [])],
         icons: {
             icon: "https://static.techzjc.com/icon/favicon_index_page.ico",
             apple: [
@@ -94,54 +98,53 @@ export async function generateMetadata(
             ],
             shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
         },
-        alternates: {
-            canonical: `https://techzjc.com/blog/${Post.year}/${Post.month}/${Post.day}/${encodeURIComponent(Post.title)}`,
-        },
+        alternates:
+            generateMetadataAlternatives("https://techzjc.com", lang, `/blog/${Post.year}/${Post.month}/${Post.day}/${encodeURIComponent(Post.slug)}`),
     };
 }
 
 export default async function PostPage({ params }: Props) {
-    const { slugOrYear } = await resolveParams(params);
+    const { lang, slugOrYear } = await resolveParams(params);
+    if (!hasLocale(lang)) notFound();
+    const dict = await getDictionary(lang);
     let Post: PostMeta | null = null;
     if (/^\d{4}$/.test(slugOrYear)) {
         const posts = getPostByYear(slugOrYear);
         return (
             <>
-                <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${slugOrYear}`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
-                <NavBar hasHero={false} />
-                <main className="page-body container column-content dissolve-in">
-                    <h1 className="page-title">Blog Posts in {slugOrYear}</h1>
+                <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['slug_or_year']['opengraph_image_subtitle'].replace('{slugOrYear}', slugOrYear))}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
+                <NavBar hasHero={false} dict={dict} />
+                <main className="page-body container column-content dissolve-in blog">
+                    <h1 className="page-title">{dict['blog']['slug_or_year']['title'].replace('{slugOrYear}', slugOrYear)}</h1>
                     <div className="breadcumb-link">
-                        <Link href="/blog" className="breadcumb">Blog</Link>/
+                        <Link href="/blog" className="breadcumb">{dict['blog']['title']}</Link>/
                         <Link href={`/blog/${slugOrYear}`} className="breadcumb">{slugOrYear}</Link>
                     </div>
 
                     {posts.length === 0 ? (
-                        <p className="end-of-page">No blog posts found for the year {slugOrYear}.</p>
+                        <p className="end-of-page">{dict['blog']['slug_or_year']['no_articles'].replace('{slugOrYear}', slugOrYear)}</p>
                     ) : (<><ul className="blog-post-list">
                         {posts.map((post) => (
                             <li key={post.slug}>
                                 <Link href={`/blog/${post.year}/${post.month}/${post.day}/${post.slug}`} className="blog-post-link">
                                     <h2>{post.title}</h2>
                                     <p className="blog-post-date">{post.time}</p>
-                                    <p>{post.description || 'No description available.'}</p>
+                                    <p>{post.description || dict['blog']['no_decription']}</p>
                                 </Link>
                             </li>
                         ))}
                     </ul>
-                    <p className='end-of-page'>You&#39;ve reached the end of the blog posts for {slugOrYear}.</p>
+                        <p className='end-of-page'>{dict['blog']['end_of_articles_page']}</p>
                     </>)}
-
-                    
                 </main>
-                <Footer />
+                <Footer dict={dict} />
             </>
         );
     }
     try {
         Post = getPostBySlug(slugOrYear);
+        //eslint-disable-next-line
     } catch (error) {
-        console.error("Error fetching post:", error);
         return notFound();
     }
     const url_to_redirect = `/blog/${Post.year}/${Post.month}/${Post.day}/${encodeURIComponent(Post.slug)}`;

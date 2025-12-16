@@ -80,8 +80,8 @@ export const fetchedPhotos2: {name: string, url: string, alt?: string; geoLocati
     }
 ];
 
-
-export function PhotoWall() {
+// eslint-disable-next-line
+export function PhotoWall(props: { dict: any }) {
     const photo_1 = [...fetchedPhotos1, ...fetchedPhotos1];
     const photo_2 = [...fetchedPhotos2, ...fetchedPhotos2];
 
@@ -123,7 +123,7 @@ export function PhotoWall() {
     return (
         <div className="container photo-wall">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(photo_schema) }} />
-            <h1>Photos</h1>
+            <h1>{props.dict['photos']['title']}</h1>
             <div className="photos">
                 {photo_1.map((photo, index) => (
                     <ImageSkeleton key={index} url={photo.url} alt={photo.alt + ' ' + copyrightNotice || photo.name} />

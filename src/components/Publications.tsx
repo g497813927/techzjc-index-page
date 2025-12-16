@@ -1,8 +1,9 @@
 import './Publications.css';
-export function Publications() {
+//eslint-disable-next-line
+export function Publications(props: {dict: any}) {
     return (
         <div className='container publication-section'>
-            <h1>Publications</h1>
+            <h1>{props.dict['publications']['title']}</h1>
             <ul>
                 <li>
                     <div>Fan, J., <b>Zhao, J.</b>, Oh, S., Bolmer, M., Lee, Y., Flammer, N., Chen, Y., & McCrickard, D. S. (2025). Structuring Collaborative Reflection: Integrating Diary Study and Focus Group Discussion. Companion Publication of the 2025 Conference on Computer-Supported Cooperative Work and Social Computing, 244–248. <a href="https://doi.org/10.1145/3715070.3749233">https://doi.org/10.1145/3715070.3749233</a></div>

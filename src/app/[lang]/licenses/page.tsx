@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Metadata } from 'next';
 import Image from "next/image";
 import "./page.css";
+import { notFound } from "next/navigation";
+import { getDictionary, hasLocale } from "../dictionaries";
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://techzjc.com/'),
@@ -42,7 +44,10 @@ export const metadata: Metadata = {
     }
 };
 
-export default async function LicensesPage() {
+export default async function LicensesPage({ params } : PageProps<'/[lang]/licenses'>) {
+    const { lang } = await params;
+    if (!hasLocale(lang)) notFound();
+    const dict = await getDictionary(lang);
     const licenseFilePath = path.join(process.cwd(), 'public/LICENSES.json');
     let rawData;
     let licenses;
@@ -53,21 +58,21 @@ export default async function LicensesPage() {
         console.error("Error reading LICENSES.json:", error);
         return (
             <>
-                <NavBar hasHero={false} />
+                <NavBar hasHero={false} dict={dict} />
                 <section className="page-body container center-content column-content">
-                    <h1 className="page-title">Open Source Projects used within this Site:</h1>
-                    <p>Unable to load license information at this time. Please try again later or contact the site owner.</p>
+                    <h1 className="page-title">{dict['licenses']['title']}</h1>
+                    <p>{dict['licenses']['error_loading_licenses']}</p>
                 </section>
-                <Footer />
+                <Footer dict={dict} />
             </>
         );
     }
     return (
         <>
             <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&subtitle=Open%20Source%20Licenses&width=800&height=800" width={800} height={800} className="hidden-wechat" />
-            <NavBar hasHero={false} />
+            <NavBar hasHero={false} dict={dict} />
             <section className="page-body container center-content column-content">
-                <h1 className="page-title">Open Source Projects used within this Site:</h1>
+                <h1 className="page-title">{dict['licenses']['title']}</h1>
                 <div className="license-list">
                     {
                         licenses.map((
@@ -76,11 +81,11 @@ export default async function LicensesPage() {
                         ) => (
                             <div key={pkg.id} className="license-item">
                                 <div className="package-header">
-                                    <div className="package-name">Package: {pkg.id.startsWith('@') ? '@' + pkg.id.split('@')[1] : pkg.id.split('@')[0]}</div>
-                                    <div className="package-version">Version: {pkg.id.includes('@') ? pkg.id.split('@')[2] || pkg.id.split('@')[1] : 'N/A'}</div>
-                                    <div className="package-licenses">License: {pkg.licenses}</div>
+                                    <div className="package-name">{dict['licenses']['license_item']['package_name']}{pkg.id.startsWith('@') ? '@' + pkg.id.split('@')[1] : pkg.id.split('@')[0]}</div>
+                                    <div className="package-version">{dict['licenses']['license_item']['version']}{pkg.id.includes('@') ? pkg.id.split('@')[2] || pkg.id.split('@')[1] : 'N/A'}</div>
+                                    <div className="package-licenses">{dict['licenses']['license_item']['license']}{pkg.licenses}</div>
                                     <div className="package-repo">
-                                        Source: {pkg.repository ? (
+                                        {dict['licenses']['license_item']['source']}{pkg.repository ? (
                                             <Link href={
                                                 pkg.repository
                                             } target="_blank" rel="noopener noreferrer" className="repo-link">
@@ -99,7 +104,7 @@ export default async function LicensesPage() {
                                                     <pre>{line.replace(/\s$/g, '\u00A0')}</pre>
                                                 </div>
                                             ))
-                                            : "No license text available."
+                                            : dict['licenses']['license_item']['no-license-info']
                                     }
                                 </div>
                                 {
@@ -111,7 +116,7 @@ export default async function LicensesPage() {
                         )}
                 </div>
             </section>
-            <Footer />
+            <Footer dict={dict} />
         </>
     );
 }
