@@ -101,7 +101,7 @@
                 }
             ],
             "education.item.full": "{institution}{field}专业{type}学位 ({start} - {end})",
-            "education.item.partial.no_field": "{institution}{type}学位 ({start} - {end})",
+            "education.item.partial.no_field": "{institution}{type}毕业 ({start} - {end})",
             "education.item.partial.no_end": "{institution}{field}专业{type}学位 ({start}至今)",
             "education.item.partial.no_field_no_end": "{institution}{type}毕业 ({start}至今)"
         }
