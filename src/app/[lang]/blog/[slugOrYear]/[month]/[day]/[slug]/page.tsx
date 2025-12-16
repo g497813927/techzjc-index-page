@@ -14,6 +14,8 @@ import CommentSection from "@/components/blog/CommentSection";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
 
+export const dynamic = 'force-static'
+
 type RouteParams = {
     //eslint-disable-next-line
     lang: any;
