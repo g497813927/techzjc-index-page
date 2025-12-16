@@ -11,9 +11,12 @@ import Image from "next/image";
 import CopyCodeButton from "@/components/blog/CopyCodeButton";
 import resolveParams from "@/lib/resolveParams";
 import CommentSection from "@/components/blog/CommentSection";
-
+import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
+import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
 
 type RouteParams = {
+    //eslint-disable-next-line
+    lang: any;
     slugOrYear: string;
     month: string;
     day: string;
@@ -29,38 +32,31 @@ export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
     const {
+        lang,
         slugOrYear: year,
         month,
         day,
         slug
     } = await resolveParams(params);
+    if (!hasLocale(lang)) notFound();
+    const dict = await getDictionary(lang);
     let Post = null;
     try {
         Post = getPostBySlug(slug, year, month, day);
+    //eslint-disable-next-line
     } catch (error) {
-        console.error("Error fetching post for metadata:", error);
         return {
-            title: "Post Not Found - Techzjc",
-            description: "The requested blog post could not be found.",
+            title: dict['metadata']['blog']['page-not-found']['title'],
+            description: dict['metadata']['blog']['page-not-found']['description'],
         };
     }
 
     return {
         metadataBase: new URL('https://techzjc.com/'),
-        title: `${Post.title} - Techzjc`,
-        description: Post.description || `Read the blog post titled "${Post.title}" on Techzjc.`,
+        title: dict['metadata']['blog']['post']['title'].replace('{title}', Post.title),
+        description: Post.description || dict['metadata']['blog']['post']['default_description'].replace('{title}', Post.title),
         keywords: [
-            "techzjc",
-            "科技ZJC网",
-            "ZJC科技网",
-            "Techzjc",
-            "ZJC",
-            "赵佳成",
-            "g497813927",
-            "Jiacheng Zhao",
-            "John Zhao",
-            "blog",
-            "techzjc blog",
+            ...dict['metadata']['blog']['post']['keywords'],
             Post.title,
             ...(Post.tags || [])
         ],
@@ -75,21 +71,19 @@ export async function generateMetadata(
             ],
             shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
         },
-        alternates: {
-            canonical: `https://techzjc.com/blog/${year}/${month}/${day}/${slug}`,
-        },
+        alternates: generateMetadataAlternatives("https://techzjc.com", lang, `/blog/${year}/${month}/${day}/${encodeURIComponent(slug)}`),
         openGraph: {
-            title: `${Post.title} - Techzjc`,
-            description: Post.description || `Read the blog post titled "${Post.title}" on Techzjc.`,
-            url: `https://techzjc.com/blog/${year}/${month}/${day}/${slug}`,
-            siteName: "Techzjc",
+            title: dict['metadata']['blog']['post']['title'].replace('{title}', Post.title),
+            description: Post.description || dict['metadata']['blog']['post']['default_description'].replace('{title}', Post.title),
+            url: `https://techzjc.com/${lang}/blog/${year}/${month}/${day}/${slug}`,
+            siteName: dict['metadata']['blog']['index']['title'],
             images: [
                 {
-                    url: `/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}`,
-                    alt: `Open Graph Image for ${Post.title}`
+                    url: `/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(dict['metadata']['blog']['index']['title'])}`,
+                    alt: dict['metadata']['blog']['post']['opengraph_image_alt'].replace('{title}', Post.title)
                 }
             ],
-            locale: "en-US",
+            locale: lang,
             type: "article",
         }
     };
@@ -104,16 +98,18 @@ export async function generateStaticParams() {
 
 export default async function PostPage({ params }: Props) {
     const {
+        lang,
         slugOrYear: year,
         month,
         day,
         slug
     } = await resolveParams(params);
+    const dict = await getDictionary(lang as typeof lang);
     let Post = null;
     try {
         Post = getPostBySlug(slug, year, month, day);
+    //eslint-disable-next-line
     } catch (error) {
-        console.error("Error fetching post:", error);
         return notFound();
     }
     // Add Article Structured Data for SEO
@@ -136,10 +132,10 @@ export default async function PostPage({ params }: Props) {
         <>
             <Image alt="WeChat Share Image" src={`/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }} />
-            <NavBar hasHero={false} />
+            <NavBar hasHero={false} dict={dict} />
             <article className="page-body article-content column-content container markdown-body dissolve-in" role="main">
                 <div className="breadcumb-link">
-                    <Link href="/blog" className="breadcumb">Blog</Link>/
+                    <Link href="/blog" className="breadcumb">{dict['blog']['title']}</Link>/
                     <Link href={`/blog/${year}`} className="breadcumb">{year}</Link>/
                     <Link href={`/blog/${year}/${month}`} className="breadcumb">{month}</Link>/
                     <Link href={`/blog/${year}/${month}/${day}`} className="breadcumb">{day}</Link>/
@@ -153,7 +149,7 @@ export default async function PostPage({ params }: Props) {
                 }
             </article>
             <CopyCodeButton />
-            <Footer />
+            <Footer dict={dict} />
         </>
     );
 

@@ -1,0 +1,155 @@
+{
+    "metadata": {
+        "index": {
+            "title": "Techzjc",
+            "description": "Techzjc是一个持续拥有创新热情的网站，由赵佳成建立。",
+            "opengraph_image_alt": "Techzjc 的封面图片",
+            "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "赵佳成", "g497813927"]
+        },
+        "blog": {
+            "index": {
+                "title": "Techzjc - 博客",
+                "description": "Techzjc的博客 - 文章列表页。此处汇集了所有Techzjc的博客文章",
+                "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "博客", "techzjc 博客"],
+                "opengraph_image_alt": "Techzjc 博客页面的封面图片",
+                "opengraph_image_subtitle": "博客"
+            },
+            "slug_or_year": {
+                "title": "Techzjc - {slugOrYear} 年的博客文章",
+                "description": "Techzjc 在 {slugOrYear} 年发布的博客文章列表页。",
+                "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "博客", "techzjc 博客"],
+                "opengraph_image_subtitle": "{slugOrYear} 年的博客文章",
+                "opengraph_image_alt": "Techzjc {slugOrYear} 年的博客文章页面的封面图片"
+            },
+            "month": {
+                "title": "Techzjc - {year} 年 {month} 月的博客文章",
+                "description": "Techzjc 在 {year} 年 {month} 月发布的博客文章列表页。",
+                "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "博客", "techzjc 博客"],
+                "opengraph_image_subtitle": "{year} 年 {month} 月的博客文章",
+                "opengraph_image_alt": "Techzjc {year} 年 {month} 月的博客文章页面的封面图片"
+            },
+            "day": {
+                "title": "Techzjc - {year} 年 {month} 月 {day} 日的博客文章",
+                "description": "Techzjc 在 {year} 年 {month} 月 {day} 日发布的博客文章列表页。",
+                "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "博客", "techzjc 博客"],
+                "opengraph_image_subtitle": "{year} 年 {month} 月 {day} 日的博客文章",
+                "opengraph_image_alt": "Techzjc {year} 年 {month} 月 {day} 日的博客文章页面的封面图片"
+            },
+            "post": {
+                "title": "{title} - Techzjc 博客",
+                "default_description": "阅读 Techzjc 上题为“{title}”的博客文章。",
+                "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "博客", "techzjc 博客"],
+                "opengraph_image_subtitle": "{title}",
+                "opengraph_image_alt": "{title} 博客文章的封面图片"
+            },
+            "page-not-found": {
+                "title": "未找到文章 - Techzjc 博客",
+                "description": "未能找到所请求的博客文章。"
+            }
+        }
+    },
+    "navbar": {
+        "blog": "博客",
+        "toggle_theme": {
+            "title": "切换主题",
+            "children": {
+                "light": "浅色模式",
+                "dark": "深色模式",
+                "system": "跟随系统"
+            }
+        }
+    },
+    "hero-section": {
+        "alt": "Techzjc 网站的主图。安吉天荒坪的星轨照片。2025年8月16日使用尼康Z8拍摄，并使用Adobe Photoshop和Adobe Lightroom进行堆栈和处理。© Techzjc（赵佳成）。版权所有。"
+    },
+    "about": {
+        "title": "关于我",
+        "hobbies": {
+            "title": "爱好",
+            "children": {
+                "programming": "编程",
+                "photography": "摄影",
+                "video_editing": "视频编辑",
+                "listen_to_music": "听音乐",
+                "playing_games": "玩游戏",
+                "help_others": "帮助他人",
+                "more": "以及更多"
+            }
+        },
+        "education": {
+            "title": "教育经历",
+            "children": [
+                {
+                    "type": "硕士",
+                    "field": "计算机科学与应用",
+                    "institution": "弗吉尼亚理工大学",
+                    "start": "2025"
+                },
+                {
+                    "type": "学士",
+                    "field": "计算机科学",
+                    "institution": "弗吉尼亚理工大学",
+                    "start": "2021",
+                    "end": "2025"
+                },
+                {
+                    "type": "高中",
+                    "field": "",
+                    "institution": "杭州高级中学",
+                    "start": "2017",
+                    "end": "2020"
+                }
+            ],
+            "education.item.full": "{institution}{field}专业{type}学位 ({start} - {end})",
+            "education.item.partial.no_field": "{institution}{type}学位 ({start} - {end})",
+            "education.item.partial.no_end": "{institution}{field}专业{type}学位 ({start}至今)",
+            "education.item.partial.no_field_no_end": "{institution}{type}学位 ({start}至今)"
+        }
+    },
+    "photos": {
+        "title": "照片"
+    },
+    "publications": {
+        "title": "发表的作品"
+    },
+    "copyright": {
+        "title": "Techzjc © 版权所有",
+        "open_source_licenses": "开源组件许可"
+    },
+    "move-to-top-btn": {
+        "aria_label": "回到顶部"
+    },
+    "blog": {
+        "title": "博客",
+        "end_of_articles_page": "你已经到达文章列表的末尾。",
+        "no_decription": "该文章暂无描述。",
+        "slug_or_year": {
+            "title": "{slugOrYear} 年的博客文章",
+            "no_articles": "未找到 {slugOrYear} 年的博客文章。"
+        },
+        "month": {
+            "title": "{year} 年 {month} 月的博客文章",
+            "no_articles": "未找到 {year} 年 {month} 月的博客文章。"
+        },
+        "day": {
+            "title": "{year} 年 {month} 月 {day} 日的博客文章",
+            "no_articles": "未找到 {year} 年 {month} 月 {day} 日的博客文章。"
+        }
+    },
+    "404_page": {
+        "page_not_found": "无法找到页面",
+        "description": "您所访问的页面不存在，请检查输入的网址是否正确。",
+        "go_back_home": "返回首页"
+    },
+    "licenses": {
+        "title": "此站点使用的开源项目：",
+        "error_loading_licenses": "当前无法加载许可证信息。请稍后再试或联系网站管理员。",
+        "license_item": {
+            "package_name": "软件名称：",
+            "version": "版本：",
+            "license": "许可证：",
+            "source": "来源：",
+            "no-license-info": "无许可证信息"
+        }
+    }
+}

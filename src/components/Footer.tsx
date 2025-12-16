@@ -7,7 +7,9 @@ import Image from 'next/image';
 import { DebugItem } from './DebugItem';
 import Link from 'next/link';
 
-export function Footer() {
+//eslint-disable-next-line
+export function Footer(props: {dict: any}) {
+    const dict = props.dict;
     return (
         <footer className="footer">
             <div className="social-icons">
@@ -39,7 +41,7 @@ export function Footer() {
                     <FontAwesomeIcon icon={faYoutube} size="2x" />
                 </a>
             </div>
-            <DebugItem />
+            <DebugItem dict={dict} />
             <div className="icp-beian">
                 <Link href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">浙ICP备2020032105号</Link>
                 <Link 

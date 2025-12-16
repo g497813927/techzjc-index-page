@@ -1,0 +1,155 @@
+{
+    "metadata": {
+        "index": {
+            "title": "Techzjc",
+            "description": "Techzjc is a website built by Jiacheng Zhao (John) with a passion for continuous innovation.",
+            "opengraph_image_alt": "Cover image for Techzjc",
+            "keywords": ["techzjc", "Techzjc", "ZJC", "Jiacheng Zhao", "John Zhao", "g497813927", "Jiacheng Zhao (John)"]
+        },
+        "blog": {
+            "index": {
+                "title": "Techzjc - Blog",
+                "description": "Article list page of Techzjc's blog. Here you can find all blog posts by Techzjc.",
+                "keywords": ["techzjc", "Techzjc", "ZJC", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", "Jiacheng Zhao (John)"],
+                "opengraph_image_alt": "Cover image for Techzjc Blog page",
+                "opengraph_image_subtitle": "Blog"
+            },
+            "slug_or_year": {
+                "title": "Techzjc - Blog Posts in {slugOrYear}",
+                "description": "Blog posts in the year {slugOrYear} on Techzjc.",
+                "keywords": ["techzjc", "Techzjc", "ZJC", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", "Jiacheng Zhao (John)"],
+                "opengraph_image_subtitle": "Blog Posts in {slugOrYear}",
+                "opengraph_image_alt": "Cover image for Techzjc Blog Posts in {slugOrYear} page"
+            },
+            "month": {
+                "title": "Techzjc - Blog Posts in {month}/{year}",
+                "description": "Blog posts in {month}/{year} on Techzjc.",
+                "keywords": ["techzjc", "Techzjc", "ZJC", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", "Jiacheng Zhao (John)"],
+                "opengraph_image_subtitle": "Blog Posts in {month}/{year}",
+                "opengraph_image_alt": "Cover image for Techzjc Blog Posts in {month}/{year} page"
+            },
+            "day": {
+                "title": "Techzjc - Blog Posts on {month}/{day}/{year}",
+                "description": "Blog posts on {month}/{day}/{year} on Techzjc.",
+                "keywords": ["techzjc", "Techzjc", "ZJC", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", "Jiacheng Zhao (John)"],
+                "opengraph_image_subtitle": "Blog Posts on {month}/{day}/{year}",
+                "opengraph_image_alt": "Cover image for Techzjc Blog Posts on {month}/{day}/{year} page"
+            },
+            "post": {
+                "title": "{title} - Techzjc Blog",
+                "default_description": "Read the blog post titled '{title}' on Techzjc.",
+                "keywords": ["techzjc", "Techzjc", "ZJC", "g497813927", "Jiacheng Zhao", "John Zhao", "Jiacheng Zhao (John)", "blog", "techzjc blog"],
+                "opengraph_image_subtitle": "{title}",
+                "opengraph_image_alt": "Cover image for {title} blog post"
+            },
+            "page-not-found": {
+                "title": "Post Not Found - Techzjc Blog",
+                "description": "The requested blog post could not be found."
+            }
+        }
+    },
+    "navbar": {
+        "blog": "Blog",
+        "toggle_theme": {
+            "title": "Toggle Theme",
+            "children": {
+                "light": "Light Mode",
+                "dark": "Dark Mode",
+                "system": "System Preference"
+            }
+        }
+    },
+    "hero-section": {
+        "alt": "Hero image for Techzjc website. Star Trail over Tian Huang Ping, Anji, Zhejiang, China. Taken with Nikon Z8 on August 16, 2025 and stacked & processed using Adobe Photoshop & Adobe Lightroom. © Techzjc (Jiacheng Zhao). All rights reserved."
+    },
+    "about": {
+        "title": "About Me",
+        "hobbies": {
+            "title": "Hobbies",
+            "children": {
+                "programming": "Programming",
+                "photography": "Photography",
+                "video_editing": "Video Editing",
+                "listen_to_music": "Listen to Music",
+                "playing_games": "Playing Games",
+                "help_others": "Help Others",
+                "more": "More"
+            }
+        },
+        "education": {
+            "title": "Education",
+            "children": [
+                {
+                    "type": "M.S.",
+                    "field": "Computer Science & Applications",
+                    "institution": "Virginia Tech",
+                    "start": "2025"
+                },
+                {
+                    "type": "B.S.",
+                    "field": "Computer Science",
+                    "institution": "Virginia Tech",
+                    "start": "2021",
+                    "end": "2025"
+                },
+                {
+                    "type": "High School Diploma",
+                    "field": "",
+                    "institution": "Hangzhou High School",
+                    "start": "2017",
+                    "end": "2020"
+                }
+            ],
+            "education.item.full": "{type} in {field}, {institution}, {start} - {end}",
+            "education.item.partial.no_field": "{type}, {institution}, {start} - {end}",
+            "education.item.partial.no_end": "{type} in {field}, {institution}, {start} - Present",
+            "education.item.partial.no_field_no_end": "{type}, {institution}, {start} - Present"
+        }
+    },
+    "photos": {
+        "title": "Photos"
+    },
+    "publications": {
+        "title": "Publications"
+    },
+    "copyright": {
+        "title": "Copyright Techzjc © All rights reserved.",
+        "open_source_licenses": "Open Source Licenses"
+    },
+    "move-to-top-btn": {
+        "aria_label": "Move to top"
+    },
+    "blog": {
+        "title": "Blog",
+        "end_of_articles_page": "You've reached the end of the blog posts.",
+        "no_decription": "No description available for this post.",
+        "slug_or_year": {
+            "title": "Blog Posts in {slugOrYear}",
+            "no_articles": "No blog posts found found for the year {slugOrYear}."
+        },
+        "month": {
+            "title": "Blog Posts in {month}/{year}",
+            "no_articles": "No blog posts found for {month}/{year}."
+        },
+        "day": {
+            "title": "Blog Posts on {month}/{day}/{year}",
+            "no_articles": "No blog posts found for {month}/{day}/{year}."
+        }
+    },
+    "404_page": {
+        "page_not_found": "Page Not Found",
+        "description": "The page you are looking for does not exist. Please check if the URL you entered is correct.",
+        "go_back_home": "Go back to Home Page"
+    },
+    "licenses": {
+        "title": "Open Source Projects used within this Site:",
+        "error_loading_licenses": "Unable to load license information at this time. Please try again later or contact the site owner.",
+        "license_item": {
+            "package_name": "Package: ",
+            "version": "Version: ",
+            "license": "License: ",
+            "source": "Source: ",
+            "no-license-info": "No license information available"
+        }
+    }
+}

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import "./DebugItem.css";
 
-export function DebugItem() {
+//eslint-disable-next-line
+export function DebugItem(props: {dict: any}) {
+    const dict = props.dict;
     const [clickCount, setClickCount] = useState(0);
     const selectable = useState(() => {
         if (typeof window === "undefined") return true;
@@ -46,9 +48,9 @@ export function DebugItem() {
                         }, 1000);
                     }
                 }}
-            >© 2016-{new Date().getFullYear()} Techzjc 版权所有</div>&nbsp;&#8729;&nbsp;
+            >2016-{new Date().getFullYear()} {dict['copyright'] ? dict['copyright']['title'] : 'Copyright Techzjc © All rights reserved.'} </div>&nbsp;&#8729;&nbsp;
             <Link href="/licenses" target="_blank" rel="noopener noreferrer">
-                开源组件许可
+                {dict['copyright'] ? dict['copyright']['open_source_licenses'] : 'Open Source Licenses'}
             </Link>
         </div>
     );

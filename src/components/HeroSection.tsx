@@ -2,14 +2,15 @@ import './HeroSection.css';
 import Image from 'next/image';
 import { ScrollDownBtn } from './ScrollDownBtn';
 
-export function HeroSection() {
+//eslint-disable-next-line
+export function HeroSection({ dict }: { dict: any }) {
     return (
         <section className="hero-section">
             <div className="background-image">
                 <Image
                     src="/assets/image/hero-image.webp"
                     alt={
-                        `Hero image for Techzjc website. Star Trail over Tian Huang Ping, Anji, Zhejiang, China. Taken with Nikon Z8 on August 16, 2025 and stacked & processed using Adobe Photoshop & Adobe Lightroom. © ${new Date().getFullYear()} Techzjc (Jiacheng Zhao). All rights reserved.`
+                        dict['hero-section']['alt']
                     }
                     fill
                     sizes="100vw"
