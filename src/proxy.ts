@@ -5,9 +5,7 @@ const locales = ['zh-CN', 'en-US'];
 
 function getLocale(request: { headers: Headers }): string {
   const headers = { 'accept-language': request.headers.get("accept-language") || '' };
-  const languages = new Negotiator({ headers }).languages()
-  console.log("Accepted languages:", languages);
-  console.log("Available locales:", locales);
+  const languages = new Negotiator({ headers }).languages();
   const locale = match(languages, locales, 'en-US');
   return locale;
 }
