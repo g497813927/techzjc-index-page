@@ -36,7 +36,7 @@
                 "opengraph_image_alt": "Techzjc {year} 年 {month} 月 {day} 日的博客文章页面的封面图片"
             },
             "post": {
-                "title": "{title} - Techzjc 博客",
+                "title": "{title} - Techzjc",
                 "default_description": "阅读 Techzjc 上题为“{title}”的博客文章。",
                 "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "博客", "techzjc 博客"],
                 "opengraph_image_subtitle": "{title}",
