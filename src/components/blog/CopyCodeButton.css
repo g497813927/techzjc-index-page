@@ -1,10 +1,14 @@
-.copy-btn {
+.codewrap {
+  position: relative;
+}
+
+.codewrap .copy-btn {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #24292f;
-  color: white;
-  padding: 6px 8px;
+  background: none;
+  color: gray;
+  padding: 10px;
   border-radius: 6px;
   font-size: 0.75rem;
   cursor: pointer;
@@ -17,8 +21,7 @@
   z-index: 10;
 }
 
-/* Show on hover like GitHub */
-pre:hover .copy-btn {
+.codewrap:hover .copy-btn {
   opacity: 1;
 }
 
@@ -32,9 +35,16 @@ pre:hover .copy-btn {
 
 .copy-btn[data-copied="true"] .copied-icon {
   display: inline-block;
-  color: #6cc644;
 }
 
 .copy-btn:hover {
-  background: #444c56;
+  background: #ddd;
+}
+
+[data-theme="dark"] .codewrap .copy-btn {
+  color: #ccc;
+}
+
+[data-theme="dark"] .codewrap .copy-btn:hover {
+  background: #555;
 }

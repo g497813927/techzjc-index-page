@@ -43,7 +43,7 @@ export async function GET(
   const feedUrl = `${baseUrl}/${lang}/atom.xml`;
   const blogUrl = `${baseUrl}/${lang}/blog`;
 
-  const posts = getAllPosts();
+  const posts = getAllPosts(lang);
 
   const feedUpdated =
     posts

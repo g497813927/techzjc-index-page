@@ -3,16 +3,16 @@ import { Footer } from "@/components/Footer";
 import "./page.css";
 import { notFound } from 'next/navigation';
 import { getAllSlugs, getPostBySlug } from "@/lib/blog";
-import { MDXContent } from "@/components/blog/MDXContent";
 import { Metadata } from "next";
 import "./style-theme.css";
 import Link from "next/link";
 import Image from "next/image";
-import CopyCodeButton from "@/components/blog/CopyCodeButton";
 import resolveParams from "@/lib/resolveParams";
 import CommentSection from "@/components/blog/CommentSection";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
+import { LanguageMismatchAlert } from "@/components/blog/LanguageMisMatchAlert";
+import { getMdxCompiled } from "@/lib/mdx";
 
 export const dynamic = 'force-static'
 
@@ -73,7 +73,7 @@ export async function generateMetadata(
             ],
             shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
         },
-        alternates: generateMetadataAlternatives("https://techzjc.com", lang, `/blog/${year}/${month}/${day}/${encodeURIComponent(slug)}`),
+        alternates: generateMetadataAlternatives("https://techzjc.com", Post.lang, `/blog/${year}/${month}/${day}/${encodeURIComponent(slug)}`, true),
         openGraph: {
             title: dict['metadata']['blog']['post']['title'].replace('{title}', Post.title),
             description: Post.description || dict['metadata']['blog']['post']['default_description'].replace('{title}', Post.title),
@@ -137,6 +137,7 @@ export default async function PostPage({ params }: Props) {
             }
         ]
     };
+    const { content } = await getMdxCompiled(Post.content);
     return (
         <>
             <Image alt="WeChat Share Image" src={`/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
@@ -152,12 +153,19 @@ export default async function PostPage({ params }: Props) {
                 </div>
                 <h1 className="article-title">{Post.title}</h1>
                 <p className="article-date">{Post.time}</p>
-                <MDXContent source={Post.content} />
+
+                {
+                    lang !== Post.lang &&
+                    <LanguageMismatchAlert
+                        alertTitle={dict['blog']['post']['lang_mismatch_warning']['title']}
+                        alertContent={dict['blog']['post']['lang_mismatch_warning']['content']}
+                    />
+                }
+                {content}
                 {process.env.NEXT_PUBLIC_ENABLE_COMMENTS === 'true' &&
                     <CommentSection />
                 }
             </article>
-            <CopyCodeButton />
             <Footer dict={dict} />
         </>
     );
