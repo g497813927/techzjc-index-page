@@ -123,8 +123,15 @@ export default async function PostPage({ params }: Props) {
         author: [
             {
                 "@type": "Person",
-                name: "Jiacheng Zhao",
-                alternateName: "Techzjc",
+                "@id": `https://techzjc.com/${lang}/#about`,
+                name: dict['metadata']['blog']['author'],
+                alternateName: [
+                    { "@value": "Jiacheng Zhao", "@language": "en-US" },
+                    { "@value": "John Zhao", "@language": "en-US" },
+                    { "@value": "Techzjc", "@language": "en-US" },
+                    { "@value": "赵佳成", "@language": "zh-CN" },
+                    { "@value": "Techzjc", "@language": "zh-CN" }
+                ],
                 email: "mailto:admin@techzjc.com",
                 url: "https://techzjc.com/",
             }

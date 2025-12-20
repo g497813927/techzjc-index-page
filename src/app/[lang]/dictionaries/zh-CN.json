@@ -7,6 +7,7 @@
             "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "赵佳成", "g497813927"]
         },
         "blog": {
+            "author": "赵佳成",
             "index": {
                 "title": "Techzjc - 博客",
                 "description": "Techzjc的博客 - 文章列表页。此处汇集了所有Techzjc的博客文章",

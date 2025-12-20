@@ -7,6 +7,7 @@
             "keywords": ["techzjc", "Techzjc", "ZJC", "Jiacheng Zhao", "John Zhao", "g497813927", "Jiacheng Zhao (John)"]
         },
         "blog": {
+            "author": "Jiacheng Zhao (John)",
             "index": {
                 "title": "Techzjc - Blog",
                 "description": "Article list page of Techzjc's blog. Here you can find all blog posts by Techzjc.",
