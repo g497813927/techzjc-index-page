@@ -18,11 +18,8 @@ function escapeXml(input: string) {
   });
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { lang: string } }
-) {
-  const { lang } = await params;
+export async function GET(_request: Request, context: { params: Promise<{ lang: string }> }) {
+  const { lang } = await context.params;
   if (!hasLocale(lang))  notFound();
   const dict = await getDictionary(lang);
 
