@@ -141,7 +141,7 @@
         "post": {
             "lang_mismatch_warning": {
                 "title": "Attention",
-                "content": "This post is only available in Simplified Chinese."
+                "content": "The language of this post does not match your language preference"
             }
         }
     },
