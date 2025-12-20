@@ -52,7 +52,7 @@ export async function GET(_request: Request, context: { params: Promise<{ lang: 
     <link>${baseUrl}/${lang}/blog</link>
     <atom:link href="${baseUrl}/${lang}/rss.xml" rel="self" type="application/rss+xml" />
     <description>${escapeXml(`${dict['metadata']['blog']['index']['description']}`)}</description>
-    <dc:author>${escapeXml(dict['metadata']['blog']['author'])}</dc:author>
+    <dc:creator>${escapeXml(dict['metadata']['blog']['author'])}</dc:creator>
     <language>${lang}</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 ${items ? "    " + items.replace(/\n/g, "\n    ") : ""}
