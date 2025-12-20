@@ -46,11 +46,13 @@ export async function GET(_request: Request, context: { params: Promise<{ lang: 
     .join("\n");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>${escapeXml(`${dict['metadata']['blog']['index']['title']}`)}</title>
     <link>${baseUrl}/${lang}/blog</link>
-    <description>${escapeXml(`Latest ${lang} posts from techzjc.`)}</description>
+    <atom:link href="${baseUrl}/${lang}/rss.xml" rel="self" type="application/rss+xml" />
+    <description>${escapeXml(`${dict['metadata']['blog']['index']['description']}`)}</description>
+    <dc:author>${escapeXml(dict['metadata']['blog']['author'])}</dc:author>
     <language>${lang}</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 ${items ? "    " + items.replace(/\n/g, "\n    ") : ""}
