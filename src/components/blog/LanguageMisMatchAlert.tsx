@@ -1,4 +1,4 @@
-export function LanguageMismatchAlert(props: { alertTitle: string; alertContent: string }) {
+export default function LanguageMismatchAlert(props: { alertTitle: string; alertContent: string }) {
   const { alertTitle, alertContent } = props;
   return (
     <div className="markdown-alert markdown-alert-warning">

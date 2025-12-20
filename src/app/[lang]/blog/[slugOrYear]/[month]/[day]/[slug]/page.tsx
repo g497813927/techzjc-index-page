@@ -11,7 +11,7 @@ import resolveParams from "@/lib/resolveParams";
 import CommentSection from "@/components/blog/CommentSection";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
-import { LanguageMismatchAlert } from "@/components/blog/LanguageMismatchAlert";
+import LanguageMismatchAlert from "@/components/blog/LanguageMismatchAlert";
 import { getMdxCompiled } from "@/lib/mdx";
 
 export const dynamic = 'force-static'
