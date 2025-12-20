@@ -13,7 +13,9 @@
                 "description": "Article list page of Techzjc's blog. Here you can find all blog posts by Techzjc.",
                 "keywords": ["techzjc", "Techzjc", "ZJC", "g497813927", "Jiacheng Zhao", "John Zhao", "blog", "techzjc blog", "Jiacheng Zhao (John)"],
                 "opengraph_image_alt": "Cover image for Techzjc Blog page",
-                "opengraph_image_subtitle": "Blog"
+                "opengraph_image_subtitle": "Blog",
+                "rss_feed_link_title": "Techzjc Blog RSS Feed",
+                "atom_feed_link_title": "Techzjc Blog Atom Feed"
             },
             "slug_or_year": {
                 "title": "Techzjc - Blog Posts in {slugOrYear}",
