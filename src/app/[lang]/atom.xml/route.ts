@@ -51,38 +51,53 @@ export async function GET(
       .sort((a, b) => b.getTime() - a.getTime())[0] ?? new Date();
 
   const entries = await Promise.all(
-    posts.map(async (post: PostMeta) => {
-      const url = `${baseUrl}/${lang}/blog/${post.year}/${post.month}/${post.day}/${post.slug}`;
-      const title = post.title ?? post.slug;
-      const summary = post.description ?? "";
-      let postDetails;
-      try {
-        postDetails = getPostBySlug(post.slug, post.year, post.month, post.day);
-      } catch {
-        return null;
-      }
-      const html = await mdxToFeedHtml(postDetails.content);
+    posts
+      .map(async (post: PostMeta) => {
+        const url = `${baseUrl}/${lang}/blog/${post.year}/${post.month}/${post.day}/${post.slug}`;
+        const title = post.title ?? post.slug;
+        const summary = post.description ?? "";
+        let postDetails;
+        try {
+          postDetails = getPostBySlug(
+            post.slug,
+            post.year,
+            post.month,
+            post.day
+          );
+        } catch {
+          return null;
+        }
+        const html = await mdxToFeedHtml(postDetails.content);
 
-      const id = url;
+        const id = url;
 
-      const updated = new Date(post.time);
+        const updated = new Date(post.time);
 
-      return `
+        return `
   <entry>
     <title>${escapeXml(String(title))}</title>
     <link rel="alternate" href="${url}" />
     <id>${escapeXml(id)}</id>
     <updated>${toRfc3339(updated)}</updated>
-    ${summary ? `<summary type="text">${escapeXml(String(summary))}</summary>` : ""}
+    ${
+      summary
+        ? `<summary type="text">${escapeXml(String(summary))}</summary>`
+        : ""
+    }
     <content type="html">${escapeXml(String(html))}</content>
   </entry>`.trim();
-    }).filter((entry) => entry !== null)
+      })
+      .filter((entry) => entry !== null)
   );
 
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="${escapeXml(lang)}">
-  <title>${escapeXml(String(dict["metadata"]["blog"]["index"]["title"]))}</title>
-  <subtitle>${escapeXml(String(dict["metadata"]["blog"]["index"]["description"]))}</subtitle>
+  <title>${escapeXml(
+    String(dict["metadata"]["blog"]["index"]["title"])
+  )}</title>
+  <subtitle>${escapeXml(
+    String(dict["metadata"]["blog"]["index"]["description"])
+  )}</subtitle>
 
   <link rel="alternate" href="${blogUrl}" />
   <link rel="self" href="${feedUrl}" type="application/atom+xml" />
@@ -93,6 +108,13 @@ export async function GET(
   <author>
     <name>${escapeXml(String(dict["metadata"]["blog"]["author"]))}</name>
   </author>
+  ${
+    lang === "zh-CN" &&
+    `<follow_challenge>
+      <feedId>225207565393201152</feedId>
+      <userId>225207186284732416</userId>
+    </follow_challenge>`
+  }
 
 ${entries.length ? "  " + entries.join("\n").replace(/\n/g, "\n  ") : ""}
 </feed>`;
