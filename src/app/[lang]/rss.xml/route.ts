@@ -1,5 +1,5 @@
 import { getAllPosts, PostMeta } from "@/lib/blog";
-import { availableLocales, getDictionary, hasLocale } from "../dictionaries";
+import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-static";
@@ -20,12 +20,8 @@ function escapeXml(input: string) {
 
 export async function GET(_request: Request, context: { params: Promise<{ lang: string }> }) {
   const { lang } = await context.params;
-  if (!hasLocale(lang))  notFound();
+  if (!hasLocale(lang)) notFound();
   const dict = await getDictionary(lang);
-
-  if (!availableLocales.includes(lang)) {
-    notFound();
-  }
 
   const baseUrl = "https://techzjc.com";
   const posts = getAllPosts();
