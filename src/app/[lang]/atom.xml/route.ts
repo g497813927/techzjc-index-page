@@ -76,7 +76,7 @@ export async function GET(
     ${summary ? `<summary type="text">${escapeXml(String(summary))}</summary>` : ""}
     <content type="html">${escapeXml(String(html))}</content>
   </entry>`.trim();
-    })
+    }).filter((entry) => entry !== null)
   );
 
   const xml = `<?xml version="1.0" encoding="utf-8"?>
