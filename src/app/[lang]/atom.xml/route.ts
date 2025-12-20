@@ -109,9 +109,13 @@ export async function GET(
     <name>${escapeXml(String(dict["metadata"]["blog"]["author"]))}</name>
   </author>
   ${
-    lang === "zh-CN" &&
+    lang === "zh-CN" ?
     `<follow_challenge>
       <feedId>225207565393201152</feedId>
+      <userId>225207186284732416</userId>
+    </follow_challenge>` :
+    `<follow_challenge>
+      <feedId>225334467223226368</feedId>
       <userId>225207186284732416</userId>
     </follow_challenge>`
   }
