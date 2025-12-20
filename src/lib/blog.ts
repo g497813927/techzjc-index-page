@@ -32,28 +32,19 @@ export function getAllPosts(lang?: string): PostMeta[] {
   const posts = fileNames
     .filter((file) => {
       if (!file.isFile()) return false;
-      if (
+      return (
         (file.name.endsWith(".mdx") || file.name.endsWith(".md")) &&
         file.name !== "README.md"
-      ) {
-        const { lang: fileLang } = matter(
-          fs.readFileSync(
-            path.join(file.parentPath ?? "", file.name),
-            "utf8"
-          )
-        ).data;
-        if (lang) {
-          return fileLang === lang;
-        }
-        return true;
-      }
-      return false;
+      )
     })
     .map((fileName) => {
       const fullPath = path.join(fileName.parentPath ?? "", fileName.name);
-      console.log("Reading post file:", fullPath);
       const fileContents = fs.readFileSync(fullPath, "utf8");
       const { data } = matter(fileContents);
+
+      if (lang && data.lang !== lang) {
+        return null;
+      }
 
       return {
         year: data.time.split(" ")[0].split("-")[0],
@@ -66,6 +57,7 @@ export function getAllPosts(lang?: string): PostMeta[] {
         description: data.description || "",
       } as PostMeta;
     })
+    .filter((post): post is PostMeta => post !== null)
     .sort((a, b) => (a.time < b.time ? 1 : -1)); // newest first
 
   return posts;
@@ -144,6 +136,9 @@ export function getPostBySlug(
     day,
     `${decodedSlug}.mdx`
   );
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Post file "${filePath}" not found.`);
+  }
   const fileContents = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(fileContents);
 

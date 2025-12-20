@@ -141,7 +141,7 @@
         "post": {
             "lang_mismatch_warning": {
                 "title": "请注意",
-                "content": "本文仅提供英语版本。"
+                "content": "本文的语言与您的语言偏好不符"
             }
         }
     },

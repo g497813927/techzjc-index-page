@@ -8,7 +8,7 @@ export function generateMetadataAlternatives(
   return {
     canonical: `${baseUrl}/${currentLang}${path}`,
 
-    languages: !onlyCanonical
+    languages: onlyCanonical
       ? undefined
       : Object.fromEntries(
           availableLocales.map((locale) => [
