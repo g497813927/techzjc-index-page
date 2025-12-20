@@ -13,7 +13,9 @@
                 "description": "Techzjc的博客 - 文章列表页。此处汇集了所有Techzjc的博客文章",
                 "keywords": ["techzjc", "科技ZJC网", "ZJC科技网", "Techzjc", "ZJC", "赵佳成", "g497813927", "博客", "techzjc 博客"],
                 "opengraph_image_alt": "Techzjc 博客页面的封面图片",
-                "opengraph_image_subtitle": "博客"
+                "opengraph_image_subtitle": "博客",
+                "rss_feed_link_title": "Techzjc 博客 RSS 订阅",
+                "atom_feed_link_title": "Techzjc 博客 Atom 订阅"
             },
             "slug_or_year": {
                 "title": "Techzjc - {slugOrYear} 年的博客文章",
