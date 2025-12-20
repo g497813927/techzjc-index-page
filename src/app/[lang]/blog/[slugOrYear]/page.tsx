@@ -99,7 +99,7 @@ export async function generateMetadata(
             shortcut: "https://static.techzjc.com/icon/favicon_index_page.ico"
         },
         alternates:
-            generateMetadataAlternatives("https://techzjc.com", lang, `/blog/${Post.year}/${Post.month}/${Post.day}/${encodeURIComponent(Post.slug)}`),
+            generateMetadataAlternatives("https://techzjc.com", Post.lang, `/blog/${Post.year}/${Post.month}/${Post.day}/${encodeURIComponent(Post.slug)}`, true),
     };
 }
 
@@ -109,7 +109,7 @@ export default async function PostPage({ params }: Props) {
     const dict = await getDictionary(lang);
     let Post: PostMeta | null = null;
     if (/^\d{4}$/.test(slugOrYear)) {
-        const posts = getPostByYear(slugOrYear);
+        const posts = getPostByYear(slugOrYear, lang);
         return (
             <>
                 <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['slug_or_year']['opengraph_image_subtitle'].replace('{slugOrYear}', slugOrYear))}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />

@@ -4,7 +4,7 @@ import { getPostByYearAndMonth } from "@/lib/blog";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import "@/app/[lang]/blog/page.css";
+import "@/app/[lang]/blog/[slugOrYear]/page.css";
 import resolveParams from "@/lib/resolveParams";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { notFound } from "next/navigation";
@@ -68,8 +68,9 @@ export async function generateMetadata(
 
 export default async function PostPage({ params }: Props) {
     const { lang, slugOrYear: year, month } = await resolveParams(params);
+    
     const dict = await getDictionary(lang);
-    const posts = getPostByYearAndMonth(year, month);
+    const posts = getPostByYearAndMonth(year, month, lang);
     return (
         <>
             <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />

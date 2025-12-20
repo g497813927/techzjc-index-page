@@ -137,6 +137,12 @@
         "day": {
             "title": "{year} 年 {month} 月 {day} 日的博客文章",
             "no_articles": "未找到 {year} 年 {month} 月 {day} 日的博客文章。"
+        },
+        "post": {
+            "lang_mismatch_warning": {
+                "title": "请注意",
+                "content": "本文仅提供英语版本。"
+            }
         }
     },
     "404_page": {

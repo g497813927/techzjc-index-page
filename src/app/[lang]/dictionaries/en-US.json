@@ -137,6 +137,12 @@
         "day": {
             "title": "Blog Posts on {month}/{day}/{year}",
             "no_articles": "No blog posts found for {month}/{day}/{year}."
+        },
+        "post": {
+            "lang_mismatch_warning": {
+                "title": "Attention",
+                "content": "This post is only available in Simplified Chinese."
+            }
         }
     },
     "404_page": {

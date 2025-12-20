@@ -13,7 +13,8 @@
   font-size: 0.9rem;
 }
 
-.breadcumb-link a {
+.breadcumb-link a,
+.breadcumb-link a:visited {
   text-decoration: none;
   color: #555 !important;
 }
@@ -38,7 +39,8 @@
   color: white;
 }
 
-[data-theme="dark"] .breadcumb-link a {
+[data-theme="dark"] .breadcumb-link a,
+[data-theme="dark"] .breadcumb-link a:visited {
   color: #ccc !important;
 }
 

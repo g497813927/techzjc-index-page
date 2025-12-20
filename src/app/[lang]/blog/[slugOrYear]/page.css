@@ -10,14 +10,16 @@
 
 .breadcumb-link {
     font-size: 0.9rem;
+    color: #555 !important;
 }
 
-.breadcumb-link a {
+.breadcumb-link .breadcumb,
+.breadcumb-link .breadcumb:visited {
     text-decoration: none;
     color: #555 !important;
 }
 
-.breadcumb-link a:hover {
+.breadcumb-link .breadcumb:hover {
     text-decoration: underline;
     scale: 1.02;
     transition: all 0.2s ease-in-out;
@@ -28,7 +30,8 @@
         color: white;
     }
 
-    .breadcumb-link a {
+    .breadcumb-link .breadcumb,
+    .breadcumb-link .breadcumb:visited{
         color: #ccc !important;
     }
 }

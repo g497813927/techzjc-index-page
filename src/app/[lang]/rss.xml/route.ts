@@ -24,7 +24,7 @@ export async function GET(_request: Request, context: { params: Promise<{ lang: 
   const dict = await getDictionary(lang);
 
   const baseUrl = "https://techzjc.com";
-  const posts = getAllPosts();
+  const posts = getAllPosts(lang);
 
   const items = posts
     .map((post: PostMeta) => {

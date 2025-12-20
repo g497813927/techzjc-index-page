@@ -48,8 +48,8 @@ export async function generateMetadata({ params }: PageProps<'/[lang]/blog'>): P
 }
 
   export default async function BlogPage({ params }: PageProps<'/[lang]/blog'>) {
-    const posts = getAllPosts();
     const { lang } = await params;
+    const posts = getAllPosts(lang);
     if (!hasLocale(lang)) notFound();
     const dict = await getDictionary(lang);
     return (
