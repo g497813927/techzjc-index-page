@@ -2,7 +2,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Footer.css';
 import { faBilibili, faFacebook, faGithub, faGitlab, faGoogleScholar, faInstagram, faLinkedin, faYoutube } from '@fortawesome/free-brands-svg-icons';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faRss } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import { DebugItem } from './DebugItem';
 import Link from 'next/link';
@@ -40,6 +40,14 @@ export function Footer(props: {dict: any}) {
                 <a href="https://www.youtube.com/@techzjc" className="social-icon" title="youtube">
                     <FontAwesomeIcon icon={faYoutube} size="2x" />
                 </a>
+                <div className="social-icon" title="RSS Feed">
+                    <FontAwesomeIcon icon={faRss} size="2x" />
+                    <div className="rss-dropdown">
+                        <a href={`/${dict['metadata']['lang']}/atom.xml`}>{dict['metadata']['blog']['subscription']['atom']}</a>
+                        <a href={`/${dict['metadata']['lang']}/rss.xml`}>{dict['metadata']['blog']['subscription']['rss']}</a>
+                    </div>
+                    <div className="rss-dropdown-triangle"></div>
+                </div>
             </div>
             <DebugItem dict={dict} />
             <div className="icp-beian">

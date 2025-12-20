@@ -6,6 +6,7 @@
 }
 
 .social-icons {
+    position: relative;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -55,3 +56,47 @@
     display: flex;
     align-items: center;
 }
+
+.social-icons .rss-dropdown {
+    position: absolute;
+    display: none;
+    background: #f9f9f9;
+    min-width: 150px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 4px;
+    padding: 2px;
+    top: -90px;
+    opacity: 0;
+}
+
+.social-icons .social-icon .rss-dropdown-triangle {
+    position: absolute;
+    display: none;
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid #f9f9f9;
+    top: -12px;
+    left: 14px;
+}
+
+.social-icon:hover .rss-dropdown,
+.social-icon:hover .rss-dropdown-triangle {
+    opacity: 1;
+    display: block;
+}
+
+.social-icons .rss-dropdown a {
+    color: black;
+    padding: 10px;
+    text-decoration: none;
+    display: block;
+    border-radius: 4px;
+}
+
+.social-icons .rss-dropdown a:hover {
+    background: #ddd;
+}
+

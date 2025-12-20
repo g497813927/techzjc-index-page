@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import './NavBar.css';
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
+import { LocaleToggle } from "./LocaleToggle";
 
 //eslint-disable-next-line
 export function NavBar({ hasHero, dict }: { hasHero?: boolean; dict: any }) {
@@ -38,6 +39,7 @@ export function NavBar({ hasHero, dict }: { hasHero?: boolean; dict: any }) {
                 <div className="nav-links">
                     <Link href={"/blog"} className="nav-link">{dict['navbar']['blog']}</Link>
                     <ThemeToggle dict={dict} />
+                    <LocaleToggle  dict={dict} />
                 </div>
             </div>
         </nav>

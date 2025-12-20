@@ -1,5 +1,7 @@
 {
     "metadata": {
+        "lang": "en-US",
+        "language_name": "English (US)",
         "index": {
             "title": "Techzjc",
             "description": "Techzjc is a website built by Jiacheng Zhao (John) with a passion for continuous innovation.",
@@ -8,6 +10,10 @@
         },
         "blog": {
             "author": "Jiacheng Zhao (John)",
+            "subscription": {
+                "atom": "Atom Feed",
+                "rss": "RSS Feed"
+            },
             "index": {
                 "title": "Techzjc - Blog",
                 "description": "Article list page of Techzjc's blog. Here you can find all blog posts by Techzjc.",
@@ -60,6 +66,9 @@
                 "dark": "Dark Mode",
                 "system": "System Preference"
             }
+        },
+        "toggle_locale": {
+            "title": "Switch Language"
         }
     },
     "hero-section": {
