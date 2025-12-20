@@ -136,6 +136,9 @@ export function getPostBySlug(
     day,
     `${decodedSlug}.mdx`
   );
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Post file "${filePath}" not found.`);
+  }
   const fileContents = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(fileContents);
 

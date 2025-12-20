@@ -55,9 +55,13 @@ export async function GET(
       const url = `${baseUrl}/${lang}/blog/${post.year}/${post.month}/${post.day}/${post.slug}`;
       const title = post.title ?? post.slug;
       const summary = post.description ?? "";
-      const postDetails = getPostBySlug(post.slug, post.year, post.month, post.day);
+      let postDetails;
+      try {
+        postDetails = getPostBySlug(post.slug, post.year, post.month, post.day);
+      } catch {
+        return null;
+      }
       const html = await mdxToFeedHtml(postDetails.content);
-      console.log(html);
 
       const id = url;
 
