@@ -1,5 +1,7 @@
 {
     "metadata": {
+        "lang": "zh-CN",
+        "language_name": "简体中文",
         "index": {
             "title": "Techzjc",
             "description": "Techzjc是一个持续拥有创新热情的网站，由赵佳成建立。",
@@ -8,6 +10,10 @@
         },
         "blog": {
             "author": "赵佳成",
+            "subscription": {
+                "atom": "Atom 订阅",
+                "rss": "RSS 订阅"
+            },
             "index": {
                 "title": "Techzjc - 博客",
                 "description": "Techzjc的博客 - 文章列表页。此处汇集了所有Techzjc的博客文章",
@@ -60,6 +66,9 @@
                 "dark": "深色模式",
                 "system": "跟随系统"
             }
+        },
+        "toggle_locale": {
+            "title": "切换语言"
         }
     },
     "hero-section": {

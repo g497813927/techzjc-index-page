@@ -1,0 +1,30 @@
+.locale-toggle {
+    position: relative;
+}
+
+.locale-toggle .locale-dropdown {
+    position: fixed;
+    top: -200px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    color: #333;
+}
+
+.locale-toggle:hover .locale-dropdown {
+    top: 35px;
+    transition: top 0.5s ease-in-out;
+}
+
+.dark .locale-toggle .locale-dropdown {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #ddd;
+}
+
+.locale-toggle .locale-dropdown li {
+    list-style: none;
+    padding: 10px;
+    cursor: pointer;
+}
