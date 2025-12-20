@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Auto generated license file
 public/LICENSES.json
+
+# Ignore content/ as it is sourced from a different repo
+/content/
