@@ -43,17 +43,7 @@ export async function generateMetadata({ params }: PageProps<'/[lang]/blog'>): P
       locale: lang,
       type: "website",
     },
-    alternates: generateMetadataAlternatives("https://techzjc.com", lang, "/blog"),
-    other: {
-      "link:alternate:application/rss+xml": {
-        title: dict['metadata']['blog']['index']['rss_feed_link_title'],
-        url: `https://techzjc.com/${lang}/rss.xml`
-      } as unknown as string,
-      "link:alternate:application/atom+xml": {
-        title: dict['metadata']['blog']['index']['atom_feed_link_title'],
-        url: `https://techzjc.com/${lang}/atom.xml`
-      } as unknown as string
-    }
+    alternates: generateMetadataAlternatives("https://techzjc.com", lang, "/blog")
   }
 }
 
