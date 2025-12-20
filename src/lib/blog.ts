@@ -51,7 +51,6 @@ export function getAllPosts(): PostMeta[] {
         time: data.time,
         tags: data.tags || [],
         description: data.description || '',
-        content: data.content || ''
       } as PostMeta;
     })
     .sort((a, b) => (a.time < b.time ? 1 : -1)); // newest first

@@ -1,9 +1,10 @@
-import { getAllPosts, PostMeta } from "@/lib/blog";
+import { getAllPosts, getPostBySlug, PostMeta } from "@/lib/blog";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { mdxToFeedHtml } from "@/utils/mdxToFeedHtml";
 
 export const dynamic = "force-static";
+export const runtime = "nodejs";
 export const revalidate = false;
 
 function escapeXml(input: string) {
@@ -54,9 +55,9 @@ export async function GET(
       const url = `${baseUrl}/${lang}/blog/${post.year}/${post.month}/${post.day}/${post.slug}`;
       const title = post.title ?? post.slug;
       const summary = post.description ?? "";
-
-      //eslint-disable-next-line
-      const html = await mdxToFeedHtml((post as any).content ?? "");
+      const postDetails = getPostBySlug(post.slug, post.year, post.month, post.day);
+      const html = await mdxToFeedHtml(postDetails.content);
+      console.log(html);
 
       const id = url;
 
