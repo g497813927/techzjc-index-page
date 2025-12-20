@@ -39,7 +39,6 @@ export function getAllPosts(lang?: string): PostMeta[] {
     })
     .map((fileName) => {
       const fullPath = path.join(fileName.parentPath ?? "", fileName.name);
-      console.log("Reading post file:", fullPath);
       const fileContents = fs.readFileSync(fullPath, "utf8");
       const { data } = matter(fileContents);
 
