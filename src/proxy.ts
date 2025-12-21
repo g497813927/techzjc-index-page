@@ -37,6 +37,14 @@ export function proxy(req: NextRequest) {
     return;
   }
 
+  // Add redirect for old index_en-US.html path so that
+  // search engines can update their links
+  if (pathname === "/index_en-US.html") {
+    const url = req.nextUrl.clone();
+    url.pathname = '/en-US';
+    return NextResponse.redirect(url, 301);
+  }
+
 
   if (SCANNER_PATTERNS.some(re => re.test(pathname))) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
