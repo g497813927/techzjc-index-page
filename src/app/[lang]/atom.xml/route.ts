@@ -67,6 +67,7 @@ export async function GET(
         } catch {
           return null;
         }
+        postDetails.content = `<div key="${post.slug}">${postDetails.content}</div>`;
         const html = await mdxToFeedHtml(postDetails.content);
 
         const id = url;
