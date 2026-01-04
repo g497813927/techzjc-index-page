@@ -10,3 +10,5 @@ resources:
       region: ${env('REGION')}
       customContainerConfig:
         image: ${env('IMAGE_FULL')}
+      environmentVariables:
+        CDN_ORIGIN_AUTH: ${env('CDN_ORIGIN_AUTH')}
