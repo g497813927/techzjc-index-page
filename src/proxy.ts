@@ -6,7 +6,7 @@ const locales = ['zh-CN', 'en-US'];
 const TRUSTED_ORIGINS = [
   'cdn.techzjc.net',
   '4b9c54ca9bc14259828c6d819e4a5c85-cn-hangzhou.alicloudapi.com',
-  "techzjcontainer-zoxmrhoyde.cn-hangzhou-vpc.fcapp.run"
+  'techzjcontainer-zoxmrhoyde.cn-hangzhou-vpc.fcapp.run'
 ];
 const ALLOWED_DOMAINS = [
   "techzjc.com",
