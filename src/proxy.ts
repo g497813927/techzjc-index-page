@@ -47,10 +47,11 @@ export function proxy(req: NextRequest) {
     } else if (!authHeader || authHeader !== expectedAuth) {
       return NextResponse.rewrite(new URL('/scanner-404', req.url));
     }
+  // Ensure that Vercel preview & local development are not blocked if not using a trusted origin.
+  // if in production mode, block it
   } else if (process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development') {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
-
 
   if (
     pathname === '/favicon.ico' ||
