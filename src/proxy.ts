@@ -4,14 +4,12 @@ import Negotiator from 'negotiator';
 const locales = ['zh-CN', 'en-US'];
 
 const TRUSTED_ORIGINS = [
-  'cdn.techzjc.net',
-  'techzjcontainer-zoxmrhoyde.cn-hangzhou-vpc.fcapp.run'
+  'cdn.techzjc.net'
 ];
 const ALLOWED_DOMAINS = [
   "techzjc.com",
   "test-cn.techzjc.com"
 ];
-const INVALID_HOSTS = ["", "0.0.0.0"];
 const HEADER_KEY = 'x-origin-auth';
 
 function getLocale(request: { headers: Headers }): string {
@@ -38,19 +36,10 @@ export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const rawHost = (req.headers.get("host") || "").toLowerCase();
-  const xfHostRaw = (req.headers.get("x-forwarded-host") || "").toLowerCase();
-  const host = (rawHost || xfHostRaw).split(",")[0].trim();
-  const hasRealHost = !INVALID_HOSTS.includes(host);
+  const xForwardedHostRaw = (req.headers.get("x-forwarded-host") || "").toLowerCase();
+  const host = (xForwardedHostRaw || rawHost).split(',')[0].trim();
 
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
-
-  // Accessing resources under /_next/ can hit actual static assets without a real host header
-  // (photos hit { host: null, xfHost: '0.0.0.0', xfProto: 'http' }), so we need to bypass the host check
-  // only when accessing /_next/, /photos/ or /assets/ in the FC environment
-  const isFCStaticResourceBypass = 
-    !hasRealHost && 
-    process.env.IN_FC === 'true' && 
-    (pathname.startsWith('/_next/') || pathname.startsWith('/photos/') || pathname.startsWith('/assets/'));
 
   if (TRUSTED_ORIGINS.includes(host)) {
     const authHeader = req.headers.get(HEADER_KEY);
@@ -71,8 +60,14 @@ export function proxy(req: NextRequest) {
     !ALLOWED_DOMAINS.includes(host) && 
     process.env.VERCEL_ENV !== 'preview' && 
     process.env.NODE_ENV !== 'development' && 
-    !isLocalhost && 
-    !isFCStaticResourceBypass
+    !isLocalhost &&
+    // As FC already has its own security mechanism to gate access (e.g.
+    // API Gateway with auth token check (checks CDN's X-Origin-Auth header already at API Gateway layer, 
+    // which happens before reaching FC, so no need to re-check at FC proxy layer here),
+    // FC only allows internal access (as they are using VPC domain, cn-hangzhou-vpc.fcapp.run, ref: /s.yaml:24,33, binding rules not shown in s.yaml)),
+    // require APP code signing checks (function auth) when API Gateway invokes FC (which is done at both API Gateway layer and FC layer,
+    // ref: /s.yaml:25-37)), skip these checks when in FC environment
+    process.env.IN_FC !== 'true'
   ) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
