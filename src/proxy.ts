@@ -5,7 +5,6 @@ const locales = ['zh-CN', 'en-US'];
 
 const TRUSTED_ORIGINS = [
   'cdn.techzjc.net',
-  '4b9c54ca9bc14259828c6d819e4a5c85-cn-hangzhou.alicloudapi.com',
   'techzjcontainer-zoxmrhoyde.cn-hangzhou-vpc.fcapp.run'
 ];
 const ALLOWED_DOMAINS = [
@@ -39,6 +38,8 @@ export function proxy(req: NextRequest) {
 
   const host = (req.headers.get("host") || "").toLowerCase();
 
+  const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
+
   if (TRUSTED_ORIGINS.includes(host)) {
     const authHeader = req.headers.get(HEADER_KEY);
     const expectedAuth = process.env.CDN_ORIGIN_AUTH;
@@ -54,7 +55,7 @@ export function proxy(req: NextRequest) {
     }
   // Ensure that Vercel preview & local development are not blocked if not using a trusted origin.
   // if in production mode, block it
-  } else if (!ALLOWED_DOMAINS.includes(host) && process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development') {
+  } else if (!ALLOWED_DOMAINS.includes(host) && process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development' && !isLocalhost) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
 
