@@ -11,6 +11,7 @@ const ALLOWED_DOMAINS = [
   "techzjc.com",
   "test-cn.techzjc.com"
 ];
+const INVALID_HOSTS = ["", "0.0.0.0"];
 const HEADER_KEY = 'x-origin-auth';
 
 function getLocale(request: { headers: Headers }): string {
@@ -39,8 +40,7 @@ export function proxy(req: NextRequest) {
   const rawHost = (req.headers.get("host") || "").toLowerCase();
   const xfHostRaw = (req.headers.get("x-forwarded-host") || "").toLowerCase();
   const host = (rawHost || xfHostRaw).split(",")[0].trim();
-  const INVALID_HOSTS = new Set(["", "0.0.0.0"]);
-  const hasRealHost = !INVALID_HOSTS.has(host);
+  const hasRealHost = !INVALID_HOSTS.includes(host);
 
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
 
