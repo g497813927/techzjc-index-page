@@ -8,8 +8,9 @@ const TRUSTED_ORIGINS = [
   '4b9c54ca9bc14259828c6d819e4a5c85-cn-hangzhou.alicloudapi.com'
 ];
 const ALLOWED_DOMAINS = [
-  "techzjc.com"
-]
+  "techzjc.com",
+  "test-cn.techzjc.com"
+];
 const HEADER_KEY = 'x-origin-auth';
 
 function getLocale(request: { headers: Headers }): string {
