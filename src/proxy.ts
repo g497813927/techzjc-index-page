@@ -44,9 +44,9 @@ export function proxy(req: NextRequest) {
 
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
 
-  // As triggering /_next/images would actually access actual static resources without host header
-  // (photos hit { host: null, xfHost: '0.0.0.0', xfProto: 'http' }), we need to bypass the host check
-  // only when accessing /_next/, /photos/ or /assets/ in FC environment
+  // Accessing resources under /_next/ can hit actual static assets without a real host header
+  // (photos hit { host: null, xfHost: '0.0.0.0', xfProto: 'http' }), so we need to bypass the host check
+  // only when accessing /_next/, /photos/ or /assets/ in the FC environment
   const isFCStaticResourceBypass = 
     !hasRealHost && 
     process.env.IN_FC === 'true' && 
