@@ -77,10 +77,10 @@ export function proxy(req: NextRequest) {
   const locale = getLocale(req as unknown as { headers: Headers });
 
   // Check if localstorage preference exists (only works on client side)
-  const preferedLocale = req.cookies.get('locale')?.value;
-  if (preferedLocale && locales.includes(preferedLocale)) {
+  const preferredLocale = req.cookies.get('locale')?.value;
+  if (preferredLocale && locales.includes(preferredLocale)) {
     const url = req.nextUrl.clone();
-    url.pathname = `/${preferedLocale}${pathname}`;
+    url.pathname = `/${preferredLocale}${pathname}`;
     return NextResponse.rewrite(url);
   }
   const url = req.nextUrl.clone();
