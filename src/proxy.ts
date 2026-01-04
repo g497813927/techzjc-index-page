@@ -40,6 +40,14 @@ export function proxy(req: NextRequest) {
 
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
 
+  if (pathname.startsWith('/photos/')) {
+    console.log('photos hit', {
+      host: req.headers.get('host'),
+      xfHost: req.headers.get('x-forwarded-host'),
+      xfProto: req.headers.get('x-forwarded-proto'),
+    });
+  }
+
   if (TRUSTED_ORIGINS.includes(host)) {
     const authHeader = req.headers.get(HEADER_KEY);
     const expectedAuth = process.env.CDN_ORIGIN_AUTH;
