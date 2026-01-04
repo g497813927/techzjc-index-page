@@ -36,17 +36,13 @@ const SCANNER_PATTERNS = [
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const host = (req.headers.get("host") || "").toLowerCase();
+  const rawHost = (req.headers.get("host") || "").toLowerCase();
+  const xfHostRaw = (req.headers.get("x-forwarded-host") || "").toLowerCase();
+  const host = (xfHostRaw || rawHost).split(",")[0].trim();
+  const INVALID_HOSTS = new Set(["", "0.0.0.0"]);
+  const hasRealHost = !INVALID_HOSTS.has(host);
 
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
-
-  if (pathname.startsWith('/photos/')) {
-    console.log('photos hit', {
-      host: req.headers.get('host'),
-      xfHost: req.headers.get('x-forwarded-host'),
-      xfProto: req.headers.get('x-forwarded-proto'),
-    });
-  }
 
   if (TRUSTED_ORIGINS.includes(host)) {
     const authHeader = req.headers.get(HEADER_KEY);
@@ -63,7 +59,13 @@ export function proxy(req: NextRequest) {
     }
   // Ensure that Vercel preview & local development are not blocked if not using a trusted origin.
   // if in production mode, block it
-  } else if (!ALLOWED_DOMAINS.includes(host) && process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development' && !isLocalhost) {
+  } else if (
+    !ALLOWED_DOMAINS.includes(host) && 
+    process.env.VERCEL_ENV !== 'preview' && 
+    process.env.NODE_ENV !== 'development' && 
+    !isLocalhost && 
+    hasRealHost
+  ) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
 
