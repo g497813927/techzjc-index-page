@@ -3,6 +3,9 @@ import { match } from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
 const locales = ['zh-CN', 'en-US'];
 
+const CDN_ORIGIN = 'cdn.techzjc.net';
+const HEADER_KEY = 'x-origin-auth';
+
 function getLocale(request: { headers: Headers }): string {
   const headers = { 'accept-language': request.headers.get("accept-language") || '' };
   const languages = new Negotiator({ headers }).languages();
@@ -26,6 +29,14 @@ const SCANNER_PATTERNS = [
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  const host = (req.headers.get("host") || "").toLowerCase();
+  if (host === CDN_ORIGIN) {
+    const authHeader = req.headers.get(HEADER_KEY);
+    if (authHeader !== process.env.CDN_ORIGIN_AUTH) {
+      return NextResponse.rewrite(new URL('/scanner-404', req.url));
+    }
+  }
+
   if (
     pathname === '/favicon.ico' ||
     pathname === '/robots.txt' ||
@@ -34,7 +45,7 @@ export function proxy(req: NextRequest) {
     pathname.startsWith('/assets/') ||
     pathname.startsWith('/photos/')
   ) {
-    return;
+    return NextResponse.next();
   }
 
   // Add redirect for old index_en-US.html path so that
@@ -50,7 +61,7 @@ export function proxy(req: NextRequest) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
 
-  const pathnameHasLocale = locales.some(locale => pathname.startsWith(`/${locale}`));
+  const pathnameHasLocale = locales.some(locale => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`));
 
   if (pathnameHasLocale) {
     // Locale is already in the pathname, we treat user preference as is and set cookie
@@ -65,17 +76,17 @@ export function proxy(req: NextRequest) {
   // Check if localstorage preference exists (only works on client side)
   const preferedLocale = req.cookies.get('locale')?.value;
   if (preferedLocale && locales.includes(preferedLocale)) {
-    req.nextUrl.pathname = `/${preferedLocale}${pathname}`;
-    return NextResponse.rewrite(req.nextUrl);
+    const url = req.nextUrl.clone();
+    url.pathname = `/${preferedLocale}${pathname}`;
+    return NextResponse.rewrite(url);
   }
-  const response = NextResponse.rewrite(req.nextUrl);
+  const url = req.nextUrl.clone();
+  url.pathname = `/${locale}${pathname}`;
+  const response = NextResponse.rewrite(url);
   response.cookies.set('locale', locale, { path: '/' });
-  req.nextUrl.pathname = `/${locale}${pathname}`;
-  return NextResponse.rewrite(req.nextUrl, response);
+  return response;
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next).*)'
-  ]
+  matcher: ["/:path*"]
 };
