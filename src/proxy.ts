@@ -62,9 +62,10 @@ export function proxy(req: NextRequest) {
     process.env.NODE_ENV !== 'development' && 
     !isLocalhost &&
     // As FC already has its own security mechanism to gate access (e.g.
-    // API Gateway with auth token check (checks CDN's X-Origin-Auth header already at API Gateway layer),
-    // FC only allows internal access (as they are using VPC domain, cn-hangzhou-vpc.fcapp.run, ref: /s.yaml:24),
-    // require APP code signing checks when API Gateway invokes FC (which is done at both API Gateway layer and FC layer,
+    // API Gateway with auth token check (checks CDN's X-Origin-Auth header already at API Gateway layer, 
+    // which happens before reaching FC, so no need to re-check at FC proxy layer here),
+    // FC only allows internal access (as they are using VPC domain, cn-hangzhou-vpc.fcapp.run, ref: /s.yaml:24,33, binding rules not shown in s.yaml)),
+    // require APP code signing checks (function auth) when API Gateway invokes FC (which is done at both API Gateway layer and FC layer,
     // ref: /s.yaml:25-37)), skip these checks when in FC environment
     process.env.IN_FC !== 'true'
   ) {
