@@ -4,7 +4,7 @@ function handle(req: Request) {
   const request_url = new URL(req.url);
   const path = request_url.pathname;
 
-  const message = locale.toLowerCase() === "zh-cn" || locale.toLowerCase() === "zh"
+  const message = locale.toLowerCase().startsWith('zh')
     ? `一个野生的扫描器出现了！野生的扫描器对 ${path} 使出了 ${req.method}…没有击中 ${path}！` :
     `A wild scanner appeared! The wild scanner used ${req.method} on ${path}… It missed ${path}!`;
 
@@ -12,7 +12,10 @@ function handle(req: Request) {
     message.trim(),
     {
         status: 404,
-        headers: { "Content-Type": "text/plain; charset=utf-8" },
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-store, max-age=0"
+        },
      },
   );
 }
