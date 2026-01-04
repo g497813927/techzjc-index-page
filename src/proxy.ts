@@ -40,7 +40,7 @@ export function proxy(req: NextRequest) {
   const rawHost = (req.headers.get("host") || "").toLowerCase();
   const xfHostRaw = (req.headers.get("x-forwarded-host") || "").toLowerCase();
   const host = (rawHost || xfHostRaw).split(",")[0].trim();
-  const hasRealHost = !INVALID_HOSTS.includes(host);
+  const hasUnrealHost = !INVALID_HOSTS.includes(host);
 
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
 
@@ -64,7 +64,7 @@ export function proxy(req: NextRequest) {
     process.env.VERCEL_ENV !== 'preview' && 
     process.env.NODE_ENV !== 'development' && 
     !isLocalhost && 
-    hasRealHost
+    !(hasUnrealHost && process.env.IN_FC === 'true')
   ) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
