@@ -11,6 +11,7 @@ const ALLOWED_DOMAINS = [
   "techzjc.com",
   "test-cn.techzjc.com"
 ];
+const INVALID_HOSTS = ["", "0.0.0.0"];
 const HEADER_KEY = 'x-origin-auth';
 
 function getLocale(request: { headers: Headers }): string {
@@ -36,17 +37,20 @@ const SCANNER_PATTERNS = [
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const host = (req.headers.get("host") || "").toLowerCase();
+  const rawHost = (req.headers.get("host") || "").toLowerCase();
+  const xfHostRaw = (req.headers.get("x-forwarded-host") || "").toLowerCase();
+  const host = (rawHost || xfHostRaw).split(",")[0].trim();
+  const hasRealHost = !INVALID_HOSTS.includes(host);
 
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
 
-  if (pathname.startsWith('/photos/')) {
-    console.log('photos hit', {
-      host: req.headers.get('host'),
-      xfHost: req.headers.get('x-forwarded-host'),
-      xfProto: req.headers.get('x-forwarded-proto'),
-    });
-  }
+  // Accessing resources under /_next/ can hit actual static assets without a real host header
+  // (photos hit { host: null, xfHost: '0.0.0.0', xfProto: 'http' }), so we need to bypass the host check
+  // only when accessing /_next/, /photos/ or /assets/ in the FC environment
+  const isFCStaticResourceBypass = 
+    !hasRealHost && 
+    process.env.IN_FC === 'true' && 
+    (pathname.startsWith('/_next/') || pathname.startsWith('/photos/') || pathname.startsWith('/assets/'));
 
   if (TRUSTED_ORIGINS.includes(host)) {
     const authHeader = req.headers.get(HEADER_KEY);
@@ -63,7 +67,13 @@ export function proxy(req: NextRequest) {
     }
   // Ensure that Vercel preview & local development are not blocked if not using a trusted origin.
   // if in production mode, block it
-  } else if (!ALLOWED_DOMAINS.includes(host) && process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development' && !isLocalhost) {
+  } else if (
+    !ALLOWED_DOMAINS.includes(host) && 
+    process.env.VERCEL_ENV !== 'preview' && 
+    process.env.NODE_ENV !== 'development' && 
+    !isLocalhost && 
+    !isFCStaticResourceBypass
+  ) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
 

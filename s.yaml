@@ -12,7 +12,8 @@ resources:
         image: ${env('IMAGE_FULL')}
       environmentVariables:
         CDN_ORIGIN_AUTH: ${env('CDN_ORIGIN_AUTH')}
-      ogConfig:
+        IN_FC: "true"
+      logConfig:
         enableRequestMetrics: true
         enableInstanceMetrics: true
         logBeginRule: DefaultRegex
