@@ -12,3 +12,10 @@ resources:
         image: ${env('IMAGE_FULL')}
       environmentVariables:
         CDN_ORIGIN_AUTH: ${env('CDN_ORIGIN_AUTH')}
+      ogConfig:
+        enableRequestMetrics: true
+        enableInstanceMetrics: true
+        logBeginRule: DefaultRegex
+        project: serverless-cn-hangzhou-a6227e44-9a74-5df6-a2d3-a391b1cc61ec
+        enableCustomExtraLog: true
+        logstore: default-logs
