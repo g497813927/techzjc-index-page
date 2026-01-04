@@ -3,7 +3,10 @@ import { match } from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
 const locales = ['zh-CN', 'en-US'];
 
-const CDN_ORIGIN = 'cdn.techzjc.net';
+const TRUSTED_ORIGINS = [
+  'cdn.techzjc.net',
+  '4b9c54ca9bc14259828c6d819e4a5c85-cn-hangzhou.alicloudapi.com'
+];
 const HEADER_KEY = 'x-origin-auth';
 
 function getLocale(request: { headers: Headers }): string {
@@ -30,16 +33,24 @@ export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const host = (req.headers.get("host") || "").toLowerCase();
-  if (host === CDN_ORIGIN) {
+
+  if (TRUSTED_ORIGINS.includes(host)) {
     const authHeader = req.headers.get(HEADER_KEY);
     const expectedAuth = process.env.CDN_ORIGIN_AUTH;
 
-    // If no expected auth is configured, allow the request but log a warning for visibility.
     if (!expectedAuth) {
-      console.warn('CDN_ORIGIN_AUTH is not configured; skipping origin auth check for CDN_ORIGIN requests.');
+      console.warn('CDN_ORIGIN_AUTH is not configured; skipping origin auth check for TRUSTED_ORIGINS requests.');
+      return new NextResponse(
+        "Internal Server Error",
+        { status: 500 }
+      );
     } else if (!authHeader || authHeader !== expectedAuth) {
       return NextResponse.rewrite(new URL('/scanner-404', req.url));
     }
+  // Ensure that Vercel preview & local development are not blocked if not using a trusted origin.
+  // if in production mode, block it
+  } else if (process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development') {
+    return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
 
   if (
