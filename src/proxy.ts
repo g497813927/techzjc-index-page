@@ -39,7 +39,7 @@ export function proxy(req: NextRequest) {
     const expectedAuth = process.env.CDN_ORIGIN_AUTH;
 
     if (!expectedAuth) {
-      console.warn('CDN_ORIGIN_AUTH is not configured; skipping origin auth check for CDN_ORIGIN requests.');
+      console.warn('CDN_ORIGIN_AUTH is not configured; skipping origin auth check for TRUSTED_ORIGINS requests.');
       return new NextResponse(
         "Internal Server Error",
         { status: 500 }
