@@ -44,6 +44,13 @@ export function proxy(req: NextRequest) {
 
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
 
+  // Check if this is a static resource access in FC environment without a real host
+  // In FC, static resources (/_next/, /photos/, /assets/) can be accessed without a host header
+  const isFCStaticResourceBypass = 
+    !hasRealHost && 
+    process.env.IN_FC === 'true' && 
+    (pathname.startsWith('/_next/') || pathname.startsWith('/photos/') || pathname.startsWith('/assets/'));
+
   if (TRUSTED_ORIGINS.includes(host)) {
     const authHeader = req.headers.get(HEADER_KEY);
     const expectedAuth = process.env.CDN_ORIGIN_AUTH;
@@ -64,14 +71,7 @@ export function proxy(req: NextRequest) {
     process.env.VERCEL_ENV !== 'preview' && 
     process.env.NODE_ENV !== 'development' && 
     !isLocalhost && 
-    // As triggering /_next/images would actually access actual static resources without host header
-    // (photos hit { host: null, xfHost: '0.0.0.0', xfProto: 'http' }), we need to bypass the host check
-    // only when accessing /_next/, /photos/ or /assets/ in FC environment
-    !(
-      !hasRealHost && 
-      process.env.IN_FC === 'true' && 
-      (pathname.startsWith('/_next/') || pathname.startsWith('/photos/') || pathname.startsWith('/assets/'))
-    )
+    !isFCStaticResourceBypass
   ) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
