@@ -21,3 +21,17 @@ resources:
         project: serverless-cn-hangzhou-a6227e44-9a74-5df6-a2d3-a391b1cc61ec
         enableCustomExtraLog: true
         logstore: default-logs
+      internetAccess: false
+      triggers:
+        - triggerConfig:
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            authType: function
+            disableURLInternet: true
+          triggerName: httpTrigger
+          description: ''
+          qualifier: LATEST
+          triggerType: http

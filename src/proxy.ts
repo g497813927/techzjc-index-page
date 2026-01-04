@@ -61,9 +61,11 @@ export function proxy(req: NextRequest) {
     process.env.VERCEL_ENV !== 'preview' && 
     process.env.NODE_ENV !== 'development' && 
     !isLocalhost &&
-    // As FC already has its own security mechanism to gate access (e.g. API Gateway with auth token check,
-    // FC only allows internal access, APP code check when API Gateway invokes FC, etc.),
-    // skip these checks when in FC environment
+    // As FC already has its own security mechanism to gate access (e.g.
+    // API Gateway with auth token check (checks CDN's X-Origin-Auth header already at API Gateway layer),
+    // FC only allows internal access (as they are using VPC domain, cn-hangzhou-vpc.fcapp.run, ref: /s.yaml:24),
+    // require APP code signing checks when API Gateway invokes FC (which is done at both API Gateway layer and FC layer,
+    // ref: /s.yaml:25-37)), skip these checks when in FC environment
     process.env.IN_FC !== 'true'
   ) {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
