@@ -10,6 +10,7 @@ resources:
       region: ${env('REGION')}
       customContainerConfig:
         image: ${env('IMAGE_FULL')}
+      timeout: 10
       environmentVariables:
         CDN_ORIGIN_AUTH: ${env('CDN_ORIGIN_AUTH')}
         IN_FC: "true"
