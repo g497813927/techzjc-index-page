@@ -38,7 +38,7 @@ export function proxy(req: NextRequest) {
 
   const rawHost = (req.headers.get("host") || "").toLowerCase();
   const xfHostRaw = (req.headers.get("x-forwarded-host") || "").toLowerCase();
-  const host = (xfHostRaw || rawHost).split(",")[0].trim();
+  const host = (rawHost || xfHostRaw).split(",")[0].trim();
   const INVALID_HOSTS = new Set(["", "0.0.0.0"]);
   const hasRealHost = !INVALID_HOSTS.has(host);
 
