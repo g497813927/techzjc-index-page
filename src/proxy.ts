@@ -32,7 +32,10 @@ export function proxy(req: NextRequest) {
   const host = (req.headers.get("host") || "").toLowerCase();
   if (host === CDN_ORIGIN) {
     const authHeader = req.headers.get(HEADER_KEY);
-    if (authHeader !== process.env.CDN_ORIGIN_AUTH) {
+    const expectedAuth = process.env.CDN_ORIGIN_AUTH;
+
+    // Fail closed: require both expected token and provided header to be present and equal
+    if (!expectedAuth || !authHeader || authHeader !== expectedAuth) {
       return NextResponse.rewrite(new URL('/scanner-404', req.url));
     }
   }
