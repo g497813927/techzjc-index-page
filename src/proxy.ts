@@ -34,8 +34,10 @@ export function proxy(req: NextRequest) {
     const authHeader = req.headers.get(HEADER_KEY);
     const expectedAuth = process.env.CDN_ORIGIN_AUTH;
 
-    // Fail closed: require both expected token and provided header to be present and equal
-    if (!expectedAuth || !authHeader || authHeader !== expectedAuth) {
+    // If no expected auth is configured, allow the request but log a warning for visibility.
+    if (!expectedAuth) {
+      console.warn('CDN_ORIGIN_AUTH is not configured; skipping origin auth check for CDN_ORIGIN requests.');
+    } else if (!authHeader || authHeader !== expectedAuth) {
       return NextResponse.rewrite(new URL('/scanner-404', req.url));
     }
   }
