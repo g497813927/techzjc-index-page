@@ -7,6 +7,9 @@ const TRUSTED_ORIGINS = [
   'cdn.techzjc.net',
   '4b9c54ca9bc14259828c6d819e4a5c85-cn-hangzhou.alicloudapi.com'
 ];
+const ALLOWED_DOMAINS = [
+  "techzjc.com"
+]
 const HEADER_KEY = 'x-origin-auth';
 
 function getLocale(request: { headers: Headers }): string {
@@ -49,7 +52,7 @@ export function proxy(req: NextRequest) {
     }
   // Ensure that Vercel preview & local development are not blocked if not using a trusted origin.
   // if in production mode, block it
-  } else if (process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development') {
+  } else if (!ALLOWED_DOMAINS.includes(host) && process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development') {
     return NextResponse.rewrite(new URL('/scanner-404', req.url));
   }
 
