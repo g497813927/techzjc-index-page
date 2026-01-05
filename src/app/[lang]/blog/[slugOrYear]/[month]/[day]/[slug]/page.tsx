@@ -109,7 +109,7 @@ export default async function PostPage({ params }: Props) {
     let Post = null;
     try {
         Post = getPostBySlug(slug, year, month, day);
-        //eslint-disable-next-line
+     //eslint-disable-next-line
     } catch (error) {
         return notFound();
     }
