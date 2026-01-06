@@ -28,7 +28,6 @@ ul.blog-post-list {
 .blog-post-list li a:hover {
     background: rgba(255, 255, 255, 0.6);
     transform: scale(1.02);
-    text-decoration: black;
     transition: transform 0.2s ease-in-out, background 0.2s ease-in-out;
 }
 

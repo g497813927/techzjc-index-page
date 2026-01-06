@@ -25,3 +25,11 @@
     padding: 10px;
     cursor: pointer;
 }
+
+.theme-toggle .theme-dropdown li:hover {
+    background-color: #f0f0f0;
+}
+
+.dark .theme-toggle .theme-dropdown li:hover {
+    background-color: #555;
+}

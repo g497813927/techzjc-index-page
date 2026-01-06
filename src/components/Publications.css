@@ -5,6 +5,15 @@
 
 .publication-section a {
     color: black;
+    background: linear-gradient(to right, black, black) no-repeat;
+    background-size: 0 1px;
+    background-position: right bottom;
+    transition: background-size 0.3s ease-in-out;
+}
+
+.publication-section a:hover {
+    background-position: left bottom;
+    background-size: 100% 1px;
 }
 
 .publication-section li {
