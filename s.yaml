@@ -21,7 +21,7 @@ resources:
         project: serverless-cn-hangzhou-a6227e44-9a74-5df6-a2d3-a391b1cc61ec
         enableCustomExtraLog: true
         logstore: default-logs
-      internetAccess: false
+      internetAccess: true
       triggers:
         - triggerConfig:
             methods:
