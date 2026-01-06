@@ -24,7 +24,7 @@
 
 .breadcumb-link .breadcumb:hover {
     transform: scale(1.02);
-    text-decoration: none !important;
+    text-decoration: none !important; /* Prevent override style from GitHub markdown CSS */
     background-position: left bottom;
     background-size: 100% 1px;
     transition: all 0.2s ease-in-out;
