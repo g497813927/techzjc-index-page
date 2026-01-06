@@ -23,7 +23,7 @@
 }
 
 .breadcumb-link .breadcumb:hover {
-    scale: 1.02;
+    transform: scale(1.02);
     text-decoration: none !important;
     background-position: left bottom;
     background-size: 100% 1px;

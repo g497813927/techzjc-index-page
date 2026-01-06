@@ -117,10 +117,10 @@ li:hover {
 
 a {
     text-decoration: none;
-    background: linear-gradient(to right, white, white) no-repeat;
+    background: linear-gradient(to right, currentColor, currentColor) no-repeat;
     background-size: 0 1px;
     background-position: right bottom;
-    transition: background-size 0.5s ease-in-out;
+    transition: background-size 0.3s ease-in-out;
 }
 
 a:visited {
