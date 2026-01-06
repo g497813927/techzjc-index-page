@@ -16,7 +16,7 @@
 .breadcumb-link .breadcumb,
 .breadcumb-link .breadcumb:visited {
     color: #555 !important;
-    background: linear-gradient(to right, #555, #555) no-repeat;
+    background: linear-gradient(to right, currentColor, currentColor) no-repeat;
     background-size: 0 1px;
     background-position: right bottom;
     transition: background-size 0.2s ease-in-out;
