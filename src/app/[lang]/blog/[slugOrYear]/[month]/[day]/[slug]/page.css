@@ -20,8 +20,8 @@
 }
 
 .breadcumb-link a:hover {
-  text-decoration: underline;
-  scale: 1.02;
+  transform: scale(1.02);
+  text-decoration: none !important; /* Prevent override style from GitHub markdown CSS */
   transition: all 0.2s ease-in-out;
 }
 

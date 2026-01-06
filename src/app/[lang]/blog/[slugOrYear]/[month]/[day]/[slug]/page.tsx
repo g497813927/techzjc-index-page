@@ -148,7 +148,7 @@ export default async function PostPage({ params }: Props) {
                     <Link href={`/blog/${year}`} className="breadcumb">{year}</Link>/
                     <Link href={`/blog/${year}/${month}`} className="breadcumb">{month}</Link>/
                     <Link href={`/blog/${year}/${month}/${day}`} className="breadcumb">{day}</Link>/
-                    <Link href={`/blog/${year}/${month}/${day}/${slug}`} className="back-to-blog-link">{Post.title}</Link>
+                    <Link href={`/blog/${year}/${month}/${day}/${slug}`} className="breadcumb">{Post.title}</Link>
                 </div>
                 <h1 className="article-title">{Post.title}</h1>
                 <p className="article-date">{Post.time}</p>

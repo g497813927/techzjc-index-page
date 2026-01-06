@@ -14,10 +14,6 @@
     text-decoration: none;
 }
 
-.package-repo a:hover {
-    text-decoration: underline;
-}
-
 [data-theme="dark"] .package-repo a {
     color: white;
 }

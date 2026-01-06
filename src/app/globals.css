@@ -123,10 +123,6 @@ a:visited {
     color: inherit;
 }
 
-a:hover {
-    text-decoration: underline;
-}
-
 .hidden-wechat {
     display: none;
 }

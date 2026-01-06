@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import "@/app/[lang]/blog/[slugOrYear]/page.css";
+import "@/app/[lang]/blog/page.css";
 import resolveParams from "@/lib/resolveParams";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { notFound } from "next/navigation";
