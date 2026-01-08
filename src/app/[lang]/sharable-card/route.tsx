@@ -1,9 +1,11 @@
+import 'server-only';
 import { ImageResponse } from "next/og";
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import QRCode from 'qrcode'
 import { hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
+import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const { searchParams } = new URL(req.url);
@@ -16,7 +18,19 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
-    background_image = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}`;
+    try {
+      background_image = await convertToJpegBase64(
+        req,
+        lang,
+        background_image
+      );
+    } catch {
+      return new Response(`Failed to convert background image`, {
+        status: 500,
+      });
+    }
+  } else {
+    background_image = encodeURI(background_image);
   }
   const title = searchParams.get("title") ?? "";
   const time = searchParams.get("time") ?? "";
@@ -65,7 +79,7 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
           }}
         >
           <img
-            src={encodeURI(background_image)}
+            src={background_image}
             alt="Open Graph Image Background"
             width={1200}
             height={finalHeight}
