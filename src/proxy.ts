@@ -43,7 +43,7 @@ export function proxy(req: NextRequest) {
 
   if (TRUSTED_ORIGINS.includes(host)) {
     // Bypass auth check for /convert route to allow CDN to fetch converted images
-    if (pathname.startsWith('/convert') || locales.some(locale => pathname === `/${locale}/convert` || pathname.startsWith(`/${locale}/convert/`))) {
+    if ((pathname === '/convert' || pathname.startsWith('/convert/')) || locales.some(locale => pathname === `/${locale}/convert` || pathname.startsWith(`/${locale}/convert/`))) {
       return NextResponse.next();
     }
 
