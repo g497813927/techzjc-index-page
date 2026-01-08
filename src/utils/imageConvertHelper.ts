@@ -13,7 +13,7 @@ export async function convertToJpegBase64(
     request.url
   )}?imageUrl=${encodeURI(background_image)}`;
   // Fetch the converted image and make it base64 to embed in og image
-  const converted_response = await fetch(`${background_image_url}`, {
+  const converted_response = await fetch(background_image_url, {
     headers: {
       "x-origin-auth": auth_token,
     },
