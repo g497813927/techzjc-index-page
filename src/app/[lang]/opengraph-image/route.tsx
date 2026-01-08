@@ -17,7 +17,7 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   if (!hasLocale(lang)) notFound();
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
-    background_image = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}`;
+    background_image = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}&auth=${process.env.CDN_ORIGIN_AUTH}`;
   }
   const subtitle = searchParams.get("subtitle") ?? "";
   try {
