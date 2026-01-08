@@ -2,18 +2,21 @@ import { ImageResponse } from "next/og";
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import QRCode from 'qrcode'
+import { hasLocale } from "../dictionaries";
+import { notFound } from "next/navigation";
 
-export async function GET(req: Request) {
+export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const { searchParams } = new URL(req.url);
   const quotation = searchParams.get("quotation") ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque a tortor massa. Nam non consectetur ligula. Quisque sit amet erat ac mauris gravida pretium. Phasellus neque lectus, suscipit et porttitor at, rhoncus eu diam. Praesent laoreet suscipit fermentum. Etiam commodo semper turpis, et auctor felis convallis et. Quisque ultricies accumsan elit, vel molestie sem. Etiam vel odio et nulla dapibus varius in vel magna.";
   let background_image = searchParams.get("background_image") ?? "https://techzjc.com/assets/image/hero-image-og.jpg";
   const link = searchParams.get("link") ?? "https://techzjc.com";
+  // Get locale from path
+  const { lang } = await context.params;
+  if (!hasLocale(lang)) notFound();
   
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
-    console.log("Converting background image to jpg for OG image generation.");
-    console.log(`${new URL('/convert', req.url)}?imageUrl=${encodeURI(background_image)}`);
-    background_image = `${new URL('/convert', req.url)}?imageUrl=${encodeURI(background_image)}`;
+    background_image = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}`;
   }
   const title = searchParams.get("title") ?? "";
   const time = searchParams.get("time") ?? "";
