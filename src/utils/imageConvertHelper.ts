@@ -1,3 +1,11 @@
+/**
+ * This helper function converts an image to JPEG format and encodes it in base64.
+ * 
+ * @param request Next.js Request object which initiated the conversion request
+ * @param lang Current language locale
+ * @param background_image URL of the image to be converted
+ * @returns A base64-encoded JPEG data URL of the converted image
+ */
 export async function convertToJpegBase64(
   request: Request,
   lang: string,
@@ -6,7 +14,7 @@ export async function convertToJpegBase64(
   const auth_token = process.env.CDN_ORIGIN_AUTH;
   if (!auth_token) {
     console.error("CDN_ORIGIN_AUTH is not set in environment variables.");
-    throw new Error("Internal Server Error");
+    throw new Error("CDN_ORIGIN_AUTH not configured");
   }
   const background_image_url = `${new URL(
     `/${lang}/convert`,
