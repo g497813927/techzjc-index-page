@@ -42,6 +42,11 @@ export function proxy(req: NextRequest) {
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
 
   if (TRUSTED_ORIGINS.includes(host)) {
+    // Bypass auth check for /convert route to allow CDN to fetch converted images
+    if (pathname.startsWith('/convert') || locales.some(locale => pathname === `/${locale}/convert` || pathname.startsWith(`/${locale}/convert/`))) {
+      return NextResponse.next();
+    }
+
     const authHeader = req.headers.get(HEADER_KEY);
     const expectedAuth = process.env.CDN_ORIGIN_AUTH;
 
