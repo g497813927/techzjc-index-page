@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
+import 'server-only';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const size = { width: 1200, height: 630 };
@@ -17,7 +18,14 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   if (!hasLocale(lang)) notFound();
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
-    background_image = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}&auth=${process.env.CDN_ORIGIN_AUTH}`;
+    const auth_token = process.env.CDN_ORIGIN_AUTH;
+    if (!auth_token) {
+      console.error("CDN_ORIGIN_AUTH is not set in environment variables.");
+      return new Response(`Internal Server Error`, {
+        status: 500,
+      });
+    }
+    background_image = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}&auth=${auth_token}`;
   }
   const subtitle = searchParams.get("subtitle") ?? "";
   try {
