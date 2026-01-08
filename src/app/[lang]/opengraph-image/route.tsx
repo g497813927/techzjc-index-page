@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
+import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
 import 'server-only';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
@@ -18,34 +19,19 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   if (!hasLocale(lang)) notFound();
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
-    const auth_token = process.env.CDN_ORIGIN_AUTH;
-    if (!auth_token) {
-      console.error("CDN_ORIGIN_AUTH is not set in environment variables.");
-      return new Response(`Internal Server Error`, {
-        status: 500,
-      });
-    }
-    const background_image_url = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}`;
-    // Fetch the converted image and make it base64 to embed in og image
-    const converted_response = await fetch(
-      `${background_image_url}`,
-      {
-        headers: {
-          'x-origin-auth': auth_token
-        }
-      }
-    );
-    if (!converted_response.ok) {
+    try {
+      background_image = await convertToJpegBase64(
+        req,
+        lang,
+        background_image
+      );
+    // eslint-disable-next-line
+    } catch (error) {
       console.error("Failed to convert background image for OG image generation.");
       return new Response(`Failed to convert background image`, {
         status: 500,
       });
     }
-    const converted_blob = await converted_response.blob();
-    const arrayBuffer = await converted_blob.arrayBuffer();
-    const base64Image = Buffer.from(arrayBuffer).toString('base64');
-    const contentType = converted_response.headers.get('Content-Type') || 'image/jpeg';
-    background_image = `data:${contentType};base64,${base64Image}`;
   }
   const subtitle = searchParams.get("subtitle") ?? "";
   try {
