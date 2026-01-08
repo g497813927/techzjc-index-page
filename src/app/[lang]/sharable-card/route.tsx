@@ -24,7 +24,27 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
         status: 500,
       });
     }
-    background_image = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}&auth=${auth_token}`;
+    const background_image_url = `${new URL(`/${lang}/convert`, req.url)}?imageUrl=${encodeURI(background_image)}`;
+    // Fetch the converted image and make it base64 to embed in og image
+    const converted_response = await fetch(
+      `${background_image_url}`,
+      {
+        headers: {
+          'x-origin-auth': auth_token
+        }
+      }
+    );
+    if (!converted_response.ok) {
+      console.error("Failed to convert background image for OG image generation.");
+      return new Response(`Failed to convert background image`, {
+        status: 500,
+      });
+    }
+    const converted_blob = await converted_response.blob();
+    const arrayBuffer = await converted_blob.arrayBuffer();
+    const base64Image = Buffer.from(arrayBuffer).toString('base64');
+    const contentType = converted_response.headers.get('Content-Type') || 'image/jpeg';
+    background_image = `data:${contentType};base64,${base64Image}`;
   }
   const title = searchParams.get("title") ?? "";
   const time = searchParams.get("time") ?? "";
