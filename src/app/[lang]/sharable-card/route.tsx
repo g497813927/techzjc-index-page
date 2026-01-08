@@ -24,13 +24,13 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
         lang,
         background_image
       );
-    } catch (error) {
-      return new Response(`Failed to convert background image ${error}`, {
+    } catch {
+      return new Response(`Failed to convert background image`, {
         status: 500,
       });
     }
   } else {
-    background_image = encodeURI(background_image);
+    background_image = encodeURIComponent(background_image);
   }
   const title = searchParams.get("title") ?? "";
   const time = searchParams.get("time") ?? "";

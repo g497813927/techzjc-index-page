@@ -35,7 +35,12 @@ export async function convertToJpegBase64(
   );
   if (!convertedResponse.ok) {
     console.error(
-      "Failed to convert background image for OG image generation."
+      "Failed to convert background image for OG image generation.",
+      {
+        backgroundImageUrl,
+        status: convertedResponse.status,
+        statusText: convertedResponse.statusText,
+      }
     );
     throw new Error(
       "Failed to convert background image: " + convertedResponse.statusText
