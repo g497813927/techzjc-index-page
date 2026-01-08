@@ -31,7 +31,7 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
       });
     }
   } else {
-    background_image = encodeURIComponent(background_image);
+    background_image = encodeURI(background_image);
   }
   const subtitle = searchParams.get("subtitle") ?? "";
   try {
