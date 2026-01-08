@@ -3,40 +3,40 @@
  * 
  * @param request Next.js Request object which initiated the conversion request
  * @param lang Current language locale
- * @param background_image URL of the image to be converted
+ * @param backgroundImage URL of the image to be converted
  * @returns A base64-encoded JPEG data URL of the converted image
  */
 export async function convertToJpegBase64(
   request: Request,
   lang: string,
-  background_image: string
+  backgroundImage: string
 ) {
   const authToken = process.env.CDN_ORIGIN_AUTH;
   if (!authToken) {
     console.error("CDN_ORIGIN_AUTH is not set in environment variables.");
     throw new Error("CDN_ORIGIN_AUTH not configured");
   }
-  const background_image_url = `${new URL(
+  const backgroundImageUrl = `${new URL(
     `/${lang}/convert`,
     request.url
-  )}?imageUrl=${encodeURIComponent(background_image)}`;
+  )}?imageUrl=${encodeURIComponent(backgroundImage)}`;
   // Fetch the converted image and make it base64 to embed in og image
-  const converted_response = await fetch(background_image_url, {
+  const convertedResponse = await fetch(backgroundImageUrl, {
     // Add authentication header so that the middleware proxy.ts allows the request
     headers: {
       "x-origin-auth": authToken,
     },
   });
-  if (!converted_response.ok) {
+  if (!convertedResponse.ok) {
     console.error(
       "Failed to convert background image for OG image generation."
     );
     throw new Error("Failed to convert background image");
   }
-  const converted_blob = await converted_response.blob();
+  const converted_blob = await convertedResponse.blob();
   const arrayBuffer = await converted_blob.arrayBuffer();
   const base64Image = Buffer.from(arrayBuffer).toString("base64");
   const contentType =
-    converted_response.headers.get("Content-Type") || "image/jpeg";
+    convertedResponse.headers.get("Content-Type") || "image/jpeg";
   return `data:${contentType};base64,${base64Image}`;
 }
