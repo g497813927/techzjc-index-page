@@ -30,6 +30,8 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
         status: 500,
       });
     }
+  } else {
+    background_image = encodeURI(background_image);
   }
   const title = searchParams.get("title") ?? "";
   const time = searchParams.get("time") ?? "";
@@ -78,7 +80,7 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
           }}
         >
           <img
-            src={encodeURI(background_image)}
+            src={background_image}
             alt="Open Graph Image Background"
             width={1200}
             height={finalHeight}

@@ -31,6 +31,8 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
         status: 500,
       });
     }
+  } else {
+    background_image = encodeURI(background_image);
   }
   const subtitle = searchParams.get("subtitle") ?? "";
   try {
@@ -58,7 +60,7 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
           }}
         >
           <img
-            src={encodeURI(background_image)}
+            src={background_image}
             alt="Open Graph Image Background"
             width={size.width}
             height={size.height}
