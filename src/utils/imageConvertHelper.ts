@@ -11,8 +11,8 @@ export async function convertToJpegBase64(
   lang: string,
   background_image: string
 ) {
-  const auth_token = process.env.CDN_ORIGIN_AUTH;
-  if (!auth_token) {
+  const authToken = process.env.CDN_ORIGIN_AUTH;
+  if (!authToken) {
     console.error("CDN_ORIGIN_AUTH is not set in environment variables.");
     throw new Error("CDN_ORIGIN_AUTH not configured");
   }
@@ -24,7 +24,7 @@ export async function convertToJpegBase64(
   const converted_response = await fetch(background_image_url, {
     // Add authentication header so that the middleware proxy.ts allows the request
     headers: {
-      "x-origin-auth": auth_token,
+      "x-origin-auth": authToken,
     },
   });
   if (!converted_response.ok) {
