@@ -1,3 +1,5 @@
+import fetchWithTimeout from "./fetchWithTimeout";
+
 /**
  * This helper function converts an image to JPEG format and encodes it in base64.
  * 
@@ -21,12 +23,19 @@ export async function convertToJpegBase64(
     request.url
   )}?imageUrl=${encodeURIComponent(backgroundImage)}`;
   // Fetch the converted image and make it base64 to embed in og image
-  const convertedResponse = await fetch(backgroundImageUrl, {
+  const convertedResponse = await fetchWithTimeout(backgroundImageUrl, {
     // Add authentication header so that the middleware proxy.ts allows the request
     headers: {
       "x-origin-auth": authToken,
-    },
+    }
   });
+  if (convertedResponse instanceof Error) {
+    console.error(
+      "Error occurred while converting background image:",
+      convertedResponse
+    );
+    throw convertedResponse;
+  }
   if (!convertedResponse.ok) {
     console.error(
       "Failed to convert background image for OG image generation."
