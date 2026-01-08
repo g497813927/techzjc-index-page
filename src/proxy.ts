@@ -42,8 +42,7 @@ export function proxy(req: NextRequest) {
   const isLocalhost = host.split(':')[0] === 'localhost' || host.split(':')[0] === '127.0.0.1';
 
   if (TRUSTED_ORIGINS.includes(host)) {
-    // Check if param contains correct auth token from either header or query param
-    const authHeader = req.nextUrl.searchParams.get('auth') || req.headers.get(HEADER_KEY);
+    const authHeader = req.headers.get(HEADER_KEY);
     const expectedAuth = process.env.CDN_ORIGIN_AUTH;
 
     if (!expectedAuth) {
