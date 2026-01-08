@@ -24,9 +24,8 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
         lang,
         background_image
       );
-    // eslint-disable-next-line
-    } catch (_error) {
-      return new Response(`Failed to convert background image`, {
+    } catch (error) {
+      return new Response(`Failed to convert background image ${error}`, {
         status: 500,
       });
     }
