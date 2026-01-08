@@ -1,10 +1,10 @@
+import 'server-only';
 import { ImageResponse } from "next/og";
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
-import 'server-only';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const size = { width: 1200, height: 630 };
@@ -26,8 +26,7 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
         background_image
       );
     // eslint-disable-next-line
-    } catch (error) {
-      console.error("Failed to convert background image for OG image generation.");
+    } catch (_error) {
       return new Response(`Failed to convert background image`, {
         status: 500,
       });
