@@ -41,10 +41,6 @@
     text-decoration: none;
 }
 
-.nav-content .nav-links a:hover {
-    text-decoration: underline;
-}
-
 .scrolled {
     opacity: 1;
     top: 0;

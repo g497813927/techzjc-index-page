@@ -1,8 +1,12 @@
+import 'server-only';
 import { ImageResponse } from "next/og";
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { hasLocale } from "../dictionaries";
+import { notFound } from "next/navigation";
+import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
 
-export async function GET(req: Request) {
+export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const size = { width: 1200, height: 630 };
   const { searchParams } = new URL(req.url);
   const title = searchParams.get("title") ?? "Techzjc";
@@ -11,11 +15,23 @@ export async function GET(req: Request) {
   size.width = parseInt(width);
   const height = searchParams.get("height") ?? size.height.toString();
   size.height = parseInt(height);
+  const { lang } = await context.params;
+  if (!hasLocale(lang)) notFound();
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
-    console.log("Converting background image to jpg for OG image generation.");
-    console.log(`${new URL('/convert', req.url)}?imageUrl=${encodeURI(background_image)}`);
-    background_image = `${new URL('/convert', req.url)}?imageUrl=${encodeURI(background_image)}`;
+    try {
+      background_image = await convertToJpegBase64(
+        req,
+        lang,
+        background_image
+      );
+    } catch {
+      return new Response(`Failed to convert background image`, {
+        status: 500,
+      });
+    }
+  } else {
+    background_image = encodeURI(background_image);
   }
   const subtitle = searchParams.get("subtitle") ?? "";
   try {
@@ -43,7 +59,7 @@ export async function GET(req: Request) {
           }}
         >
           <img
-            src={encodeURI(background_image)}
+            src={background_image}
             alt="Open Graph Image Background"
             width={size.width}
             height={size.height}

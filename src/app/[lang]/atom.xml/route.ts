@@ -67,8 +67,7 @@ export async function GET(
         } catch {
           return null;
         }
-        const html = await mdxToFeedHtml(postDetails.content);
-
+        const html = `<div key="${post.slug}">${await mdxToFeedHtml(postDetails.content)}</div>`;
         const id = url;
 
         const updated = new Date(post.time);

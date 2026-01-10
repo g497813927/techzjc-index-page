@@ -15,13 +15,18 @@
 
 .breadcumb-link .breadcumb,
 .breadcumb-link .breadcumb:visited {
-    text-decoration: none;
     color: #555 !important;
+    background: linear-gradient(to right, currentColor, currentColor) no-repeat;
+    background-size: 0 1px;
+    background-position: right bottom;
+    transition: background-size 0.2s ease-in-out;
 }
 
 .breadcumb-link .breadcumb:hover {
-    text-decoration: underline;
-    scale: 1.02;
+    transform: scale(1.02);
+    text-decoration: none;
+    background-position: left bottom;
+    background-size: 100% 1px;
     transition: all 0.2s ease-in-out;
 }
 

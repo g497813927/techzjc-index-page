@@ -117,6 +117,10 @@ li:hover {
 
 a {
     text-decoration: none;
+    background: linear-gradient(to right, currentColor, currentColor) no-repeat;
+    background-size: 0 1px;
+    background-position: right bottom;
+    transition: background-size 0.3s ease-in-out;
 }
 
 a:visited {
@@ -124,9 +128,14 @@ a:visited {
 }
 
 a:hover {
-    text-decoration: underline;
+    background-position: left bottom;
+    background-size: 100% 1px;
 }
 
 .hidden-wechat {
     display: none;
+}
+
+.home-link {
+    background: none;
 }

@@ -10,6 +10,8 @@ jobs:
   build:
     name: Build and Push Docker Image (amd64)
     runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.docker_build.outputs.digest }}
 
     permissions:
       contents: read
@@ -23,7 +25,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       
       - name: Prepare Blog Content to content/blog
-        run: mkdir content
+        run: mkdir -p content
       
       - name: Sync Blog Content
         uses: actions/checkout@v4
@@ -42,13 +44,14 @@ jobs:
 
       - name: Build and push images
         uses: docker/build-push-action@v6
+        id: docker_build
         with:
           context: .
           platforms: linux/amd64
           push: true
           tags: |
             ${{ vars.IMAGE }}:${{ github.sha }}
-            ${{ vars.IMAGE }}:${{ github.ref_name}}
+            ${{ vars.IMAGE }}:${{ github.ref_name }}
             ${{ vars.IMAGE }}:latest
   deploy:
     needs: build
@@ -71,7 +74,8 @@ jobs:
         env:
           REGION: ${{ vars.REGION }}
           FC_NAME: ${{ vars.FC_NAME }}
-          IMAGE_FULL: "${{ vars.IMAGE }}:${{ github.sha }}"
+          IMAGE_FULL: "${{ vars.IMAGE }}@${{ needs.build.outputs.digest }}"
+          CDN_ORIGIN_AUTH: ${{ secrets.CDN_ORIGIN_AUTH }}
           default_serverless_devs_key: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
         run: |
           s deploy -t s.yaml --use-local -y
