@@ -6,6 +6,9 @@ export function Publications(props: {dict: any}) {
             <h1>{props.dict['publications']['title']}</h1>
             <ul>
                 <li>
+                    <div>Oh, S., <b>Zhao, J.</b>, Russo, C., Bolmer, M., Jeong, J., Fan, J., Cao, Y., Wang, W. L., Andrus, N., & McCrickard, S. (2025). Optimizing Diary Studies Learning Outcomes with Fine-Tuned Large Language Models on the Diaryquest Platform. 2025 IEEE Frontiers in Education Conference (FIE), 1–9. <a href="https://doi.org/10.1109/FIE63693.2025.11328660">https://doi.org/10.1109/FIE63693.2025.11328660</a></div>
+                </li>
+                <li>
                     <div>Fan, J., <b>Zhao, J.</b>, Oh, S., Bolmer, M., Lee, Y., Flammer, N., Chen, Y., & McCrickard, D. S. (2025). Structuring Collaborative Reflection: Integrating Diary Study and Focus Group Discussion. Companion Publication of the 2025 Conference on Computer-Supported Cooperative Work and Social Computing, 244–248. <a href="https://doi.org/10.1145/3715070.3749233">https://doi.org/10.1145/3715070.3749233</a></div>
                 </li>
                 <li>
