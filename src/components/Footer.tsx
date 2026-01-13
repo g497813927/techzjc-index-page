@@ -1,7 +1,7 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Footer.css';
-import { faBilibili, faFacebook, faGithub, faGitlab, faGoogleScholar, faInstagram, faLinkedin, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faBilibili, faFacebook, faGithub, faGitlab, faGoogleScholar, faInstagram, faLinkedin, faOrcid, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faRss } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import { DebugItem } from './DebugItem';
@@ -36,6 +36,9 @@ export function Footer(props: {dict: any}) {
                 </a>
                 <a href="https://www.linkedin.com/in/techzjc/" className="social-icon" title="linkedin">
                     <FontAwesomeIcon icon={faLinkedin} size="2x" />
+                </a>
+                <a href="https://orcid.org/0009-0003-5719-909X" className="social-icon" title="orcid">
+                    <FontAwesomeIcon icon={faOrcid} size="2x" />
                 </a>
                 <a href="https://www.youtube.com/@techzjc" className="social-icon" title="youtube">
                     <FontAwesomeIcon icon={faYoutube} size="2x" />
