@@ -1,0 +1,20 @@
+.scroll-indicator {
+    top: var(--nav-height, 0px);
+    transition: top 0.5s ease;
+}
+
+.article-content-wrapper :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: calc(var(--nav-height, 0px) + 12px);
+}
+
+.end-marker {
+    height: 1px;
+}
+
+[data-theme="dark"] .scroll-indicator {
+    background-color: #f83600;
+}
+
+[data-theme="light"] .scroll-indicator {
+    background-color: #f2b644;
+}

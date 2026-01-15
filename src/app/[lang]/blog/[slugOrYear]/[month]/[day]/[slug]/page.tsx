@@ -12,6 +12,8 @@ import CommentSection from "@/components/blog/CommentSection";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
 import { getMdxCompiled } from "@/lib/mdx";
+import ArticleProgress from "@/components/blog/ArticleProgress";
+import { UseNavHeightVar } from "@/components/UseNavBarVar";
 
 export const dynamic = 'force-static'
 
@@ -109,7 +111,7 @@ export default async function PostPage({ params }: Props) {
     let Post = null;
     try {
         Post = getPostBySlug(slug, year, month, day);
-     //eslint-disable-next-line
+        //eslint-disable-next-line
     } catch (error) {
         return notFound();
     }
@@ -141,30 +143,35 @@ export default async function PostPage({ params }: Props) {
         <>
             <Image alt="WeChat Share Image" src={`/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }} />
+            <UseNavHeightVar />
             <NavBar hasHero={false} dict={dict} />
             <article className="page-body article-content column-content container markdown-body dissolve-in" role="main">
-                <div className="breadcumb-link">
-                    <Link href="/blog" className="breadcumb">{dict['blog']['title']}</Link>/
-                    <Link href={`/blog/${year}`} className="breadcumb">{year}</Link>/
-                    <Link href={`/blog/${year}/${month}`} className="breadcumb">{month}</Link>/
-                    <Link href={`/blog/${year}/${month}/${day}`} className="breadcumb">{day}</Link>/
-                    <Link href={`/blog/${year}/${month}/${day}/${slug}`} className="breadcumb">{Post.title}</Link>
-                </div>
-                <h1 className="article-title">{Post.title}</h1>
-                <p className="article-date">{Post.time}</p>
-
+                <ArticleProgress content={
+                    <>
+                        <div className="breadcumb-link">
+                            <Link href="/blog" className="breadcumb">{dict['blog']['title']}</Link>/
+                            <Link href={`/blog/${year}`} className="breadcumb">{year}</Link>/
+                            <Link href={`/blog/${year}/${month}`} className="breadcumb">{month}</Link>/
+                            <Link href={`/blog/${year}/${month}/${day}`} className="breadcumb">{day}</Link>/
+                            <Link href={`/blog/${year}/${month}/${day}/${slug}`} className="breadcumb">{Post.title}</Link>
+                        </div>
+                        <h1 className="article-title">{Post.title}</h1>
+                        <p className="article-date">{Post.time}</p>
+                        {
+                            lang !== Post.lang &&
+                            <div className="markdown-alert markdown-alert-warning">
+                                <p className="markdown-alert-title">
+                                    <svg aria-label="warning icon" className="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>
+                                    {dict['blog']['post']['lang_mismatch_warning']['title']}
+                                </p>
+                                <p>{dict['blog']['post']['lang_mismatch_warning']['content']}</p>
+                            </div>
+                        }
+                        {content}
+                    </>
+                } />
                 {
-                    lang !== Post.lang &&
-                    <div className="markdown-alert markdown-alert-warning">
-                        <p className="markdown-alert-title">
-                            <svg aria-label="warning icon" className="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>
-                            {dict['blog']['post']['lang_mismatch_warning']['title']}
-                        </p>
-                        <p>{dict['blog']['post']['lang_mismatch_warning']['content']}</p>
-                    </div>
-                }
-                {content}
-                {process.env.NEXT_PUBLIC_ENABLE_COMMENTS === 'true' &&
+                    process.env.NEXT_PUBLIC_ENABLE_COMMENTS === 'true' &&
                     <CommentSection />
                 }
             </article>
