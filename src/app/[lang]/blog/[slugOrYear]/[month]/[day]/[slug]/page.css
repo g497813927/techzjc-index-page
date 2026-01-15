@@ -1,6 +1,6 @@
 .article-content {
   margin: 24px !important;
-  margin-top: calc(2rem + 1.34em + 2.5rem) !important;
+  margin-top: calc(var(--nav-height, 0px) + 24px) !important;
   transition: color 0.3s ease, background 0.3s ease;
 }
 
