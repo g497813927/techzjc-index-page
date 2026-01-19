@@ -12,18 +12,19 @@ import { joinAuthorsACMDL, venueShortToAcmQuote } from '@/utils/publicationUtils
 //eslint-disable-next-line
 export function Publications(props: { dict: any }) {
     const [selected, setSelected] = useState<PublicationProps | null>(null);
-    const [theme, setTheme] = useState<"light" | "dark">(
-        typeof window !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark"
-            ? "dark"
-            : "light"
-    );
+    const [theme, setTheme] = useState<"light" | "dark">("light");
 
 
     useEffect(() => {
-        const observer = new MutationObserver(() => {
+        const updateTheme = () => {
             const currentTheme = document.documentElement.getAttribute("data-theme");
             setTheme(currentTheme === "dark" ? "dark" : "light");
-        });
+        };
+
+        // Initialize theme on mount
+        updateTheme();
+
+        const observer = new MutationObserver(updateTheme);
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
         return () => observer.disconnect();
     }, []);
