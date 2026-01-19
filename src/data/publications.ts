@@ -1,0 +1,237 @@
+export const publications: PublicationProps[] = [
+  {
+    title:
+      "Optimizing Diary Studies Learning Outcomes with Fine-Tuned Large Language Models on the Diaryquest Platform",
+    authors: [
+      {
+        firstName: "Sunggyeol",
+        lastName: "Oh",
+        highlight: false,
+        orcid: "0009-0008-0033-8104",
+      },
+      {
+        firstName: "Jiacheng",
+        lastName: "Zhao",
+        highlight: true,
+        orcid: "0009-0003-5719-909X",
+      },
+      {
+        firstName: "Carson",
+        lastName: "Russo",
+        highlight: false,
+        orcid: "0009-0000-6208-958X",
+      },
+      {
+        firstName: "Michael",
+        lastName: "Bolmer",
+        suffix: "Jr.",
+        highlight: false,
+        orcid: "0009-0002-5681-3839",
+      },
+      {
+        firstName: "Jihoo",
+        lastName: "Jeong",
+        highlight: false,
+        orcid: "0009-0006-9789-3854",
+      },
+      {
+        firstName: "Jixiang",
+        lastName: "Fan",
+        highlight: false,
+        orcid: "0009-0008-2778-3136",
+      },
+      {
+        firstName: "Yusheng",
+        lastName: "Cao",
+        highlight: false,
+        orcid: "0000-0003-0604-0946",
+      },
+      {
+        firstName: "Wei-Lu",
+        lastName: "Wang",
+        highlight: false,
+        orcid: "0009-0004-7016-7794",
+      },
+      {
+        firstName: "Natalie",
+        lastName: "Andrus",
+        highlight: false,
+        orcid: "0009-0008-7845-4455",
+      },
+      {
+        firstName: "Scott",
+        lastName: "McCrickard",
+        highlight: false,
+        orcid: "0000-0001-9839-7146",
+      },
+    ],
+    venue_full: "2025 IEEE Frontiers in Education Conference",
+    venue_short: "FIE",
+    location: "Nashville, TN, USA",
+    publisher: "IEEE",
+    pages: "1–9",
+    publication_year: 2025,
+    doi: "10.1109/FIE63693.2025.11328660",
+    abstract: `This innovative practice full paper describes how the fine-tuned large language model (LLM) enhances student reflection and faculty efficiency in an introductory Human-Computer Interaction (HCI) course through AI-generated personalized feedback and practical data analysis. In HCI education, traditional diary studies provide a way to extract unique insights from user experiences. However, instructors, especially in large classes, often face resource limitations that impede a thorough analysis of diary entries, preventing students from receiving personalized feedback. Using a Mistral 7B model fine-tuned with more than 1,000 diary entries, the platform provides constructive feedback tailored to individual student submissions. In addition, the platform employs advanced data analytics and visualization techniques, including semantic search, thematic analysis, and semantic graphs, enabling faculty to navigate and review large volumes of student diary entries efficiently. The survey results revealed that fine-tuned LLM-generated feedback provides high-quality feedback and significantly enhances the depth of student reflections. At the same time, the AI data analytics tool improves faculty efficiency in teaching and assessment. This study highlights the potential of using LLMs to bridge the gap between a large-scale student writing dataset and human-centered learning technologies, suggesting future research on AI-based teaching environments.`,
+  },
+  {
+    title:
+      "Structuring Collaborative Reflection: Integrating Diary Study and Focus Group Discussion",
+    authors: [
+      {
+        firstName: "Jixiang",
+        lastName: "Fan",
+        highlight: false,
+        orcid: "0009-0008-2778-3136",
+      },
+      {
+        firstName: "Jiacheng",
+        lastName: "Zhao",
+        highlight: true,
+        orcid: "0009-0003-5719-909X",
+      },
+      {
+        firstName: "Sunggyeol",
+        lastName: "Oh",
+        highlight: false,
+        orcid: "0009-0008-0033-8104",
+      },
+      {
+        firstName: "Michael",
+        lastName: "Bolmer",
+        suffix: "Jr.",
+        highlight: false,
+        orcid: "0009-0002-5681-3839",
+      },
+      {
+        firstName: "Yoonje",
+        lastName: "Lee",
+        highlight: false,
+        orcid: "0009-0007-3266-1021"
+      },
+      {
+        firstName: "Nick",
+        lastName: "Flammer",
+        highlight: false,
+        orcid: "0009-0003-2900-710X"
+      },
+      {
+        firstName: "Yuhao",
+        lastName: "Chen",
+        highlight: false,
+        orcid: "0009-0005-7956-7214"
+      },
+      {
+        firstName: "D. Scott",
+        lastName: "McCrickard",
+        highlight: false,
+        orcid: "0000-0001-9839-7146"
+      },
+    ],
+    venue_full:
+      "Companion Publication of the 2025 Conference on Computer-Supported Cooperative Work and Social Computing",
+    venue_short: "CSCW '25 Companion",
+    location: "Bergen, Norway",
+    pages: "244–248",
+    abstract: `We present a structured reflection framework integrating diary study and focus group discussion to support collaborative meaning-making in HCI education. The framework follows a multi-phase design in which students progress from individual journaling to a two-stage group discussion sequence: first within shared application contexts, then across emergent experiential themes. To support this process, we extended DiaryQuest, a lightweight educational tool incorporating AI-assisted grouping, image-based prompts, and a Jigsaw-inspired workflow to scaffold participation. A preliminary classroom deployment with 11 undergraduate students suggests that the approach lowers the barrier to reflective dialogue, encourages cross-perspective engagement, and helps students surface design-relevant insights grounded in lived experience. These findings point to new opportunities for structuring reflection in sociotechnical learning environments.`,
+    publication_year: 2025,
+    doi: "10.1145/3715070.3749233",
+  },
+  {
+    title:
+      "Boosting Diary Study Outcomes with a Fine-Tuned Large Language Model",
+    authors: [
+      {
+        firstName: "Sunggyeol",
+        lastName: "Oh",
+        highlight: false,
+        orcid: "0009-0008-0033-8104",
+      },
+      {
+        firstName: "Jiacheng",
+        lastName: "Zhao",
+        highlight: true,
+        orcid: "0009-0003-5719-909X",
+      },
+      {
+        firstName: "Carson",
+        lastName: "Russo",
+        highlight: false,
+        orcid: "0009-0000-6208-958X"
+
+      },
+      {
+        firstName: "Michael",
+        lastName: "Bolmer",
+        suffix: "Jr.",
+        highlight: false,
+        orcid: "0009-0002-5681-3839",
+      },
+    ],
+    venue_full:
+      "Proceedings of the Extended Abstracts of the CHI Conference on Human Factors in Computing Systems",
+    venue_short: "CHI EA '25",
+    location: "Yokohama, Japan",
+    pages: "1–7",
+    abstract: `This study explores fine-tuned Large Language Models (LLMs) integration into diary studies within the Human-Computer Interaction (HCI) field to enhance data collection and analysis. Leveraging a Mistral 7B model fine-tuned with a curated dataset of over 1,000 diary entries, this research addresses challenges such as participant engagement and data richness. The fine-tuned model offers personalized feedback, facilitating deeper reflection and structured recording while reducing the cognitive load on participants. The DiaryQuest educational platform, enhanced with advanced visualization tools and semantic search capabilities, enables educators to efficiently analyze diary data, extract thematic insights, and provide targeted guidance. Results from user evaluations reveal that the optimized platform improves learning outcomes, teaching efficiency, and overall user experience. By bridging traditional diary methodologies with state-of-the-art LLMs, this study advances HCI education and establishes a scalable framework for applying AI in broader educational and research contexts.`,
+    publication_year: 2025,
+    doi: "10.1145/3706599.3719287",
+  },
+  {
+    title: "DiaryQuest: A Web-Based Learning System Utilizing Diary Study",
+    authors: [
+      {
+        firstName: "Jiacheng",
+        lastName: "Zhao",
+        highlight: true,
+        orcid: "0009-0003-5719-909X",
+      },
+      {
+        firstName: "Jordan",
+        lastName: "Horrall",
+        highlight: false,
+        orcid: "0009-0004-3163-4492"
+      },
+      {
+        firstName: "William",
+        lastName: "Gaudian",
+        highlight: false,
+        orcid: "0009-0007-9556-1781"
+      },
+      {
+        firstName: "Phillip",
+        lastName: "Jordan",
+        highlight: false,
+        orcid: "0009-0008-1087-2730"
+      },
+      {
+        firstName: "Pallavi",
+        lastName: "Chavan",
+        highlight: false,
+        orcid: "0009-0000-3137-8960"
+      },
+      {
+        firstName: "Aditya",
+        lastName: "Rana",
+        highlight: false,
+        orcid: "0009-0007-4106-4317"
+      },
+      {
+        firstName: "Yaw",
+        lastName: "Owusu",
+        suffix: "Sr.",
+        highlight: false,
+        orcid: "0009-0009-1141-419X"
+      },
+    ],
+    venue_full:
+      "Proceedings of the 56th ACM Technical Symposium on Computer Science Education V. 2",
+    venue_short: "SIGCSE TS '25",
+    location: "(Pittsburgh, PA, USA)",
+    pages: "1765",
+    abstract: `Diary studies are pivotal in enhancing student reflection and deepening understanding of subjects such as Human-Computer Interaction (HCI). However, traditional methods of diary entry analysis are time-consuming and labor-intensive. Based on Jixiang Fan's four-phase diary study model, we designed and implemented the new learning management system -- DiaryQuest. DiaryQuest is a web-based learning management system designed to address challenges in implementing diary studies within educational settings, especially in large classroom environments. It offers a streamlined approach by providing tools for educators to create diary assignments, track student submissions, and analyze entries using advanced methods like Latent Dirichlet Allocation (LDA) and sentiment analysis. For students, it features an intuitive interface that includes progress tracking to ensure consistent and timely diary entries. The platform also incorporates interactive visualizations, such as word clouds and dynamic analytics tables, which allow educators to delve deeper into student insights and observations. These features make DiaryQuest an effective tool for managing diary studies, increasing engagement, and fostering a personalized and reflective learning experience. By simplifying the management and analysis of diary studies, DiaryQuest promotes a more interactive and productive educational environment, enabling students and educators to understand the learning material and each other better. This innovation enhances educational outcomes and prepares students with critical skills in data analysis and reflective thinking, which are essential for the HCI field.`,
+    publication_year: 2025,
+    doi: "10.1145/3641555.3705023",
+    url: "https://vtechworks.lib.vt.edu/items/a13aaaf4-ca30-44c9-8046-335823a1c23f"
+  },
+];
