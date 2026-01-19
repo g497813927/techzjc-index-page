@@ -157,6 +157,7 @@ export function Publications(props: { dict: any }) {
                                     initial={{ opacity: 0.7, scale: 2, rotate: 0 }}
                                     whileHover={{ opacity: 1, scale: 2.5, rotate: 90 }}
                                     transition={{ type: "spring", stiffness: 300 }}
+                                    aria-label="Close publication details"
                                 >
                                     &times;
                                 </motion.button>
