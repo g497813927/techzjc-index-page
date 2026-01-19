@@ -122,7 +122,14 @@
         "title": "照片"
     },
     "publications": {
-        "title": "发表的作品"
+        "title": "发表的作品",
+        "authors": "作者",
+        "author": "作者",
+        "published_in": "发表在",
+        "abstract": "摘要",
+        "no_abstract": "暂无摘要。",
+        "view_doi": "查看 DOI",
+        "view_article": "查看文章"
     },
     "copyright": {
         "title": "Techzjc © 版权所有",

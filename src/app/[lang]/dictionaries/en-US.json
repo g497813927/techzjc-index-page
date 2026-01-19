@@ -122,7 +122,14 @@
         "title": "Photos"
     },
     "publications": {
-        "title": "Publications"
+        "title": "Publications",
+        "authors": "Authors",
+        "author": "Author",
+        "published_in": "Published In",
+        "abstract": "Abstract",
+        "no_abstract": "No abstract available.",
+        "view_doi": "View DOI",
+        "view_article": "View Article"
     },
     "copyright": {
         "title": "Copyright Techzjc © All rights reserved.",

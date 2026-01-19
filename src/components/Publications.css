@@ -1,41 +1,149 @@
 .publication-section ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 .publication-section a {
-    color: black;
-    background: linear-gradient(to right, currentColor, currentColor) no-repeat;
-    background-size: 0 1px;
-    background-position: right bottom;
-    transition: background-size 0.3s ease-in-out;
+  color: black;
+  background: linear-gradient(to right, currentColor, currentColor) no-repeat;
+  background-size: 0 1px;
+  background-position: right bottom;
+  transition: background-size 0.3s ease-in-out;
 }
 
 .publication-section a:hover {
-    background-position: left bottom;
-    background-size: 100% 1px;
+  background-position: left bottom;
+  background-size: 100% 1px;
+}
+
+.publication-section .publication-click-hint {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.publication-modal {
+  background: rgba(255, 255, 255);
+  color: black;
+  min-width: min(900px, 100%);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.publication-modal .publication-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.publication-modal .publication-modal-header h3 {
+  margin: 0;
+}
+
+.publication-modal .publication-modal-header button {
+  cursor: pointer;
+}
+
+.publication-modal .publication-modal-entries {
+    margin-top: 0.5rem;
+}
+
+.publication-modal .publication-modal-entries-abstract {
+    margin-top: 1rem;
+}
+
+.publication-modal .publication-modal-entries-abstract .no-abstract {
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.publication-modal .publication-modal-entries-links {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.dark .publication-modal {
+  background: rgba(30, 30, 30);
+  color: white;
+}
+
+.publication-modal button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  top: 1rem;
+  right: 1rem;
+  color: #777;
+}
+
+.highlight-author {
+  font-weight: bold;
+}
+
+.publication-section .publication-modal .publication-modal-link {
+  color: black;
+  text-decoration: none;
+  background: none;
+  border: 1px solid #777;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.publication-section .publication-modal .orcid-link {
+  color: #a6ce39 !important;
+  background: none;
+}
+
+.publication-modal button:hover {
+  color: #555;
 }
 
 .publication-section li {
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 8px;
-    padding: 20px 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    min-height: 60px;
-    /* Make text vertical aligned */
-    display: inline-flex;
+  position: relative;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  padding: 20px 10px 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  min-height: 60px;
+  /* Make text vertical aligned */
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+}
+
+.publication-section li:hover {
+  transform: none;
+  transition: none;
+}
+
+.publication-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
     align-items: center;
-    flex-direction: row;
-    width: 100%;
+    padding: 1rem;
+    z-index: 1000;
 }
 
 .dark {
-    .publication-section li {
-        background: rgba(50, 50, 50, 0.4);
-    }
+  .publication-section li {
+    background: rgba(50, 50, 50, 0.4);
+  }
 
-    .publication-section a {
-        color: white;
-    }
+  .publication-section a {
+    color: white;
+  }
+
+  .publication-section .publication-modal .publication-modal-link {
+    color: white;
+    text-decoration: none;
+  }
 }
