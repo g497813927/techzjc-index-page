@@ -75,7 +75,6 @@
     position: absolute;
     bottom: 20px;
     left: 50%;
-    animation: bounce 2s infinite;
     z-index: 2;
 }
 
@@ -110,22 +109,5 @@
 /* Right part of V */
 .arrow span:nth-child(2) {
   transform: rotate(-45deg) translateX(8px);
-}
-
-/* Bounce animation */
-.bounce {
-  animation: bounce 1.3s infinite;
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0) translateX(-50%);
-  }
-  40% {
-    transform: translateY(8px) translateX(-50%);
-  }
-  60% {
-    transform: translateY(4px) translateX(-50%);
-  }
 }
 
