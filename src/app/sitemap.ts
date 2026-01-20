@@ -1,4 +1,4 @@
-import { fetchedPhotos1, fetchedPhotos2 } from "@/components/PhotoWall";
+import { fetchedPhotos1, fetchedPhotos2 } from "@/data/photos";
 import { getAllPosts } from "@/lib/blog";
 import { availableLocales } from "./[lang]/dictionaries";
 
