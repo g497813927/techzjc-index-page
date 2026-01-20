@@ -1,6 +1,8 @@
+"use client";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import './About.css';
 import { faCamera, faCode, faFilm, faGamepad, faGraduationCap, faHeart, faMusic, faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { LazyMotion, domAnimation, AnimatePresence, motion } from "motion/react";
+import './About.css';
 
 function parseEducationEntry(entry: {
     type: string;
@@ -33,76 +35,141 @@ function format(template: string, entry: {
 }
 
 //eslint-disable-next-line
-export function About(props: {dict: any}) {
+export function About(props: { dict: any }) {
     return (
-        <section id="about" className="container">
-            <h1>{props.dict['about']['title']}</h1>
-            <div className="about-section">
-                <div className="card hobby-card">
-                    <div className="card-icon">
-                        <FontAwesomeIcon icon={faHeart} size="2x" />
+        <LazyMotion features={domAnimation}>
+            <AnimatePresence>
+                <motion.section
+                    id="about"
+                    className="container"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <h1>{props.dict['about']['title']}</h1>
+                    <div className="about-section">
+                        <motion.div
+                            className="card hobby-card"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                        >
+                            <motion.div
+                                className="card-icon"
+                                initial={{ scale: 1 }}
+                                whileHover={{ scale: 2 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                            >
+                                <FontAwesomeIcon icon={faHeart} size="2x" />
+                            </motion.div>
+                            <h2>{props.dict['about']['hobbies']['title']}</h2>
+                            <motion.ul>
+                                <motion.li
+                                    initial={{ scale: 1, rotate: 0 }}
+                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileTap={{ scale: 0.9, rotate: -10 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <FontAwesomeIcon icon={faCode} size="3x" style={{
+                                        color: "darkgreen"
+                                    }} /><br />
+                                    {props.dict['about']['hobbies']['children']['programming']}
+                                </motion.li>
+                                <motion.li
+                                    initial={{ scale: 1, rotate: 0 }}
+                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileTap={{ scale: 0.9, rotate: -10 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <FontAwesomeIcon icon={faCamera} size="3x" style={{
+                                        color: "grey"
+                                    }} /><br />
+                                    {props.dict['about']['hobbies']['children']['photography']}
+                                </motion.li>
+                                <motion.li
+                                    initial={{ scale: 1, rotate: 0 }}
+                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileTap={{ scale: 0.9, rotate: -10 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <FontAwesomeIcon icon={faFilm} size="3x" style={{
+                                        color: "maroon"
+                                    }} /><br />
+                                    {props.dict['about']['hobbies']['children']['video_editing']}
+                                </motion.li>
+                                <motion.li
+                                    initial={{ scale: 1, rotate: 0 }}
+                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileTap={{ scale: 0.9, rotate: -10 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <FontAwesomeIcon icon={faMusic} size="3x" style={{
+                                        color: "hotpink"
+                                    }} /><br />
+                                    {props.dict['about']['hobbies']['children']['listen_to_music']}
+                                </motion.li>
+                                <motion.li
+                                    initial={{ scale: 1, rotate: 0 }}
+                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileTap={{ scale: 0.9, rotate: -10 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <FontAwesomeIcon icon={faGamepad} size="3x" style={{
+                                        color: "darksalmon"
+                                    }} /><br />{props.dict['about']['hobbies']['children']['playing_games']}
+                                </motion.li>
+                                <motion.li
+                                    initial={{ scale: 1, rotate: 0 }}
+                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileTap={{ scale: 0.9, rotate: -10 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    {/* Use twitter emoji's \ud83d\udc4b to make an icon appears like waving hand */}
+                                    <span className="hand-wave">
+                                        👋
+                                    </span>
+                                    {props.dict['about']['hobbies']['children']['help_others']}
+                                </motion.li>
+                                <motion.li
+                                    initial={{ scale: 1, rotate: 0 }}
+                                    whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileTap={{ scale: 0.9, rotate: -10 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <FontAwesomeIcon icon={faEllipsis} size="3x" /><br />{props.dict['about']['hobbies']['children']['more']}
+                                </motion.li>
+                            </motion.ul>
+                        </motion.div>
+                        <motion.div
+                            className="card education-card"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                        >
+                            <motion.div
+                                className="card-icon"
+                                initial={{ scale: 1 }}
+                                whileHover={{ scale: 2 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                            >
+                                <FontAwesomeIcon icon={faGraduationCap} size="2x" />
+                            </motion.div>
+                            <h2>{props.dict['about']['education']['title']}</h2>
+                            <ul>
+                                {/* eslint-disable-next-line */}
+                                {props.dict['about']['education']['children'].map((entry: any, index: number) => (
+                                    <li key={index}>
+                                        {format(
+                                            props.dict['about']['education'][parseEducationEntry(entry)],
+                                            entry
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </motion.div>
                     </div>
-                    <h2>{props.dict['about']['hobbies']['title']}</h2>
-                    <ul>
-                        <li>
-                            <FontAwesomeIcon icon={faCode} size="3x" style={{
-                                color: "darkgreen"
-                            }}/><br />
-                            {props.dict['about']['hobbies']['children']['programming']}
-                        </li>
-                        <li>
-                            <FontAwesomeIcon icon={faCamera} size="3x" style={{
-                                color: "grey"
-                            }} /><br />
-                            {props.dict['about']['hobbies']['children']['photography']}
-                        </li>
-                        <li>
-                            <FontAwesomeIcon icon={faFilm} size="3x" style={{
-                                color: "maroon"
-                            }}/><br />
-                            {props.dict['about']['hobbies']['children']['video_editing']}
-                        </li>
-                        <li>
-                            <FontAwesomeIcon icon={faMusic} size="3x" style={{
-                                color: "hotpink"
-                            }}/><br />
-                            {props.dict['about']['hobbies']['children']['listen_to_music']}
-                        </li>
-                        <li>
-                            <FontAwesomeIcon icon={faGamepad} size="3x" style={{
-                                color: "darksalmon"
-                            }} /><br />{props.dict['about']['hobbies']['children']['playing_games']}
-                        </li>
-                        <li>
-                            {/* Use twitter emoji's \ud83d\udc4b to make an icon appears like waving hand */}
-                            <span className="hand-wave">
-                                👋
-                            </span>
-                            {props.dict['about']['hobbies']['children']['help_others']}
-                        </li>
-                        <li>
-                            <FontAwesomeIcon icon={faEllipsis} size="3x" /><br />{props.dict['about']['hobbies']['children']['more']}
-                        </li>
-                    </ul>
-                </div>
-                <div className="card education-card">
-                    <div className="card-icon">
-                        <FontAwesomeIcon icon={faGraduationCap} size="2x" />
-                    </div>
-                    <h2>{props.dict['about']['education']['title']}</h2>
-                    <ul>
-                        {/* eslint-disable-next-line */}
-                        {props.dict['about']['education']['children'].map((entry: any, index: number) => (
-                            <li key={index}>
-                                {format(
-                                    props.dict['about']['education'][parseEducationEntry(entry)],
-                                    entry
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-        </section>
+                </motion.section>
+            </AnimatePresence>
+        </LazyMotion>
     )
 }

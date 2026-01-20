@@ -1,7 +1,7 @@
 "use client";
 import './Publications.css';
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LazyMotion, domAnimation, AnimatePresence, motion } from "motion/react";
 import { publications } from "@/data/publications";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,22 +12,6 @@ import { joinAuthorsACMDL, venueShortToAcmQuote } from '@/utils/publicationUtils
 //eslint-disable-next-line
 export function Publications(props: { dict: any }) {
     const [selected, setSelected] = useState<PublicationProps | null>(null);
-    const [theme, setTheme] = useState<"light" | "dark">("light");
-
-
-    useEffect(() => {
-        const updateTheme = () => {
-            const currentTheme = document.documentElement.getAttribute("data-theme");
-            setTheme(currentTheme === "dark" ? "dark" : "light");
-        };
-
-        // Initialize theme on mount
-        updateTheme();
-
-        const observer = new MutationObserver(updateTheme);
-        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-        return () => observer.disconnect();
-    }, []);
 
     return (
         <LazyMotion features={domAnimation}>
@@ -60,16 +44,12 @@ export function Publications(props: { dict: any }) {
                                         scale: 0
                                     },
                                     inview: {
-                                        background: theme === "dark" ? "rgba(50, 50, 50, 0.4)" : "rgba(255, 255, 255, 0.4)",
-                                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
                                         scale: 1,
                                         transition: {
                                             duration: 0.4
                                         }
                                     },
                                     hover: {
-                                        background: theme === "dark" ? "rgba(70, 70, 70, 0.6)" : "rgba(255, 255, 255, 0.6)",
-                                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
                                         scale: 1.02
                                     }
                                 }}

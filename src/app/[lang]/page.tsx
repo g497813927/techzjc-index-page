@@ -3,7 +3,8 @@ import { NavBar } from '@/components/NavBar'
 import { Publications } from '@/components/Publications';
 import { Footer } from '@/components/Footer'
 import { About } from '@/components/About';
-import { copyrightNotice, fetchedPhotos1, fetchedPhotos2, PhotoWall } from '@/components/PhotoWall';
+import { PhotoWall } from '@/components/PhotoWall';
+import { copyrightNotice, fetchedPhotos1, fetchedPhotos2 } from '@/data/photos';
 import Image from 'next/image';
 import { Metadata } from 'next';
 import { getDictionary, hasLocale } from './dictionaries';
