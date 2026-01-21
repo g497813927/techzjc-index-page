@@ -185,8 +185,8 @@ export function About(props: { dict: any }) {
                                                 duration: 0.4
                                             }
                                         }}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileFocus={{ scale: 1.05 }}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileFocus={{ scale: 1.02 }}
                                         transition={{ type: "spring", stiffness: 500 }}
                                     >
                                         {format(
