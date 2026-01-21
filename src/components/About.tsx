@@ -1,6 +1,6 @@
 "use client";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCamera, faCode, faFilm, faGamepad, faGraduationCap, faHeart, faMusic, faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faCode, faFilm, faGamepad, faGraduationCap, faHeart, faMusic, faEllipsis, faHandshakeAngle } from '@fortawesome/free-solid-svg-icons';
 import { LazyMotion, domAnimation, AnimatePresence, motion } from "motion/react";
 import './About.css';
 
@@ -48,6 +48,12 @@ export function About(props: { dict: any }) {
                 >
                     <h1>{props.dict['about']['title']}</h1>
                     <div className="about-section">
+                        <h2>
+                            <span className="hand-wave">
+                                👋
+                            </span>{" "}
+                            {props.dict['about']['introduction']['description_title']}
+                        </h2>
                         <motion.div
                             className="card hobby-card"
                             initial={{ opacity: 0, y: 20 }}
@@ -58,7 +64,7 @@ export function About(props: { dict: any }) {
                                 className="card-icon"
                                 initial={{ scale: 1 }}
                                 whileHover={{ scale: 2 }}
-                                transition={{ type: "spring", stiffness: 300 }}
+                                transition={{ type: "spring", stiffness: 500 }}
                             >
                                 <FontAwesomeIcon icon={faHeart} size="2x" />
                             </motion.div>
@@ -68,7 +74,7 @@ export function About(props: { dict: any }) {
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
+                                    transition={{ type: "spring", stiffness: 500 }}
                                 >
                                     <FontAwesomeIcon icon={faCode} size="3x" style={{
                                         color: "darkgreen"
@@ -79,7 +85,7 @@ export function About(props: { dict: any }) {
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
+                                    transition={{ type: "spring", stiffness: 500 }}
                                 >
                                     <FontAwesomeIcon icon={faCamera} size="3x" style={{
                                         color: "grey"
@@ -90,7 +96,7 @@ export function About(props: { dict: any }) {
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
+                                    transition={{ type: "spring", stiffness: 500 }}
                                 >
                                     <FontAwesomeIcon icon={faFilm} size="3x" style={{
                                         color: "maroon"
@@ -101,7 +107,7 @@ export function About(props: { dict: any }) {
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
+                                    transition={{ type: "spring", stiffness: 500 }}
                                 >
                                     <FontAwesomeIcon icon={faMusic} size="3x" style={{
                                         color: "hotpink"
@@ -112,7 +118,7 @@ export function About(props: { dict: any }) {
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
+                                    transition={{ type: "spring", stiffness: 500 }}
                                 >
                                     <FontAwesomeIcon icon={faGamepad} size="3x" style={{
                                         color: "darksalmon"
@@ -122,19 +128,18 @@ export function About(props: { dict: any }) {
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
+                                    transition={{ type: "spring", stiffness: 500 }}
                                 >
-                                    {/* Use twitter emoji's \ud83d\udc4b to make an icon appears like waving hand */}
-                                    <span className="hand-wave">
-                                        👋
-                                    </span>
+                                    <FontAwesomeIcon icon={faHandshakeAngle} size="3x" style={{
+                                        color: "orange"
+                                    }} /><br />
                                     {props.dict['about']['hobbies']['children']['help_others']}
                                 </motion.li>
                                 <motion.li
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
+                                    transition={{ type: "spring", stiffness: 500 }}
                                 >
                                     <FontAwesomeIcon icon={faEllipsis} size="3x" /><br />{props.dict['about']['hobbies']['children']['more']}
                                 </motion.li>
