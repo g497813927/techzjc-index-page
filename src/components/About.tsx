@@ -188,6 +188,7 @@ export function About(props: { dict: any }) {
                                         whileHover={{ scale: 1.02 }}
                                         whileFocus={{ scale: 1.02 }}
                                         transition={{ type: "spring", stiffness: 300 }}
+                                        tabIndex={0}
                                     >
                                         {format(
                                             props.dict['about']['education'][parseEducationEntry(entry)],
