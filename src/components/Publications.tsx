@@ -56,7 +56,7 @@ export function Publications(props: { dict: any }) {
                                 }}
                                 transition={{ type: "spring", stiffness: 300 }}
                             >
-                                <div className="sr-only" role="text">
+                                <div className="sr-only">
                                     {props.dict['publications']['accessibility']['element_label']}
                                 </div>
                                 {/* click the citation to open modal */}
