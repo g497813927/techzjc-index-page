@@ -40,6 +40,12 @@ export function Publications(props: { dict: any }) {
                                 whileFocus="hover"
                                 whileInView="inview"
                                 tabIndex={0}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+                                        event.preventDefault();
+                                        setSelected(pub);
+                                    }
+                                }}
                                 variants={{
                                     initial: {
                                         scale: 0
