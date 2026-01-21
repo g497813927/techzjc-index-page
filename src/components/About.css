@@ -79,6 +79,12 @@
     filter: brightness(0) contrast(100%);
 }
 
+.introduction-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 
 .dark {
     .card {
