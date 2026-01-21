@@ -70,7 +70,6 @@ export function About(props: { dict: any }) {
                                 className="card-icon"
                                 initial={{ scale: 1 }}
                                 whileHover={{ scale: 2 }}
-                                whileFocus={{ scale: 2 }}
                                 transition={{ type: "spring", stiffness: 500 }}
                             >
                                 <FontAwesomeIcon icon={faHeart} size="2x" />
