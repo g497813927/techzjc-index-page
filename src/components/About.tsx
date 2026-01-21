@@ -49,9 +49,14 @@ export function About(props: { dict: any }) {
                     <h1>{props.dict['about']['title']}</h1>
                     <div className="about-section">
                         <h2>
-                            <span className="hand-wave">
+                            <motion.span
+                                className="hand-wave"
+                                initial={{ scale: 1 }}
+                                whileHover={{ scale: 2 }}
+                                transition={{ type: "spring", stiffness: 500 }}
+                            >
                                 👋
-                            </span>{" "}
+                            </motion.span>{" "}
                             {props.dict['about']['introduction']['description_title']}
                         </h2>
                         <motion.div
