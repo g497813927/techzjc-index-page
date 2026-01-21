@@ -48,12 +48,18 @@ export function About(props: { dict: any }) {
                 >
                     <h1>{props.dict['about']['title']}</h1>
                     <div className="about-section">
-                        <h2>
-                            <span className="hand-wave">
+                        <div className="introduction-header">
+                            <motion.div
+                                className="hand-wave"
+                                aria-hidden="true"
+                                initial={{ scale: 1 }}
+                                whileHover={{ scale: 1.5 }}
+                                transition={{ type: "spring", stiffness: 500 }}
+                            >
                                 👋
-                            </span>{" "}
-                            {props.dict['about']['introduction']['description_title']}
-                        </h2>
+                            </motion.div>
+                            <h2>{props.dict['about']['introduction']['description_title']}</h2>
+                        </div>
                         <motion.div
                             className="card hobby-card"
                             initial={{ opacity: 0, y: 20 }}
@@ -73,6 +79,7 @@ export function About(props: { dict: any }) {
                                 <motion.li
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileFocus={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
                                     transition={{ type: "spring", stiffness: 500 }}
                                 >
@@ -84,6 +91,7 @@ export function About(props: { dict: any }) {
                                 <motion.li
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileFocus={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
                                     transition={{ type: "spring", stiffness: 500 }}
                                 >
@@ -95,6 +103,7 @@ export function About(props: { dict: any }) {
                                 <motion.li
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileFocus={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
                                     transition={{ type: "spring", stiffness: 500 }}
                                 >
@@ -106,6 +115,7 @@ export function About(props: { dict: any }) {
                                 <motion.li
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileFocus={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
                                     transition={{ type: "spring", stiffness: 500 }}
                                 >
@@ -117,6 +127,7 @@ export function About(props: { dict: any }) {
                                 <motion.li
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileFocus={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
                                     transition={{ type: "spring", stiffness: 500 }}
                                 >
@@ -127,6 +138,7 @@ export function About(props: { dict: any }) {
                                 <motion.li
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileFocus={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
                                     transition={{ type: "spring", stiffness: 500 }}
                                 >
@@ -138,6 +150,7 @@ export function About(props: { dict: any }) {
                                 <motion.li
                                     initial={{ scale: 1, rotate: 0 }}
                                     whileHover={{ scale: 1.1, rotate: 10 }}
+                                    whileFocus={{ scale: 1.1, rotate: 10 }}
                                     whileTap={{ scale: 0.9, rotate: -10 }}
                                     transition={{ type: "spring", stiffness: 500 }}
                                 >

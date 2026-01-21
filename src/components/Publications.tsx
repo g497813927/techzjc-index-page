@@ -30,15 +30,22 @@ export function Publications(props: { dict: any }) {
                 }}
             >
                 <h1>{props.dict['publications']['title']}</h1>
-                <motion.ul>
+                <motion.ul role="list">
                     {publications.map((pub) => {
                         const key = pub.doi ?? pub.url ?? `${pub.title}-${pub.publication_year}`;
-
                         return (
-                            <motion.li key={key} onClick={() => setSelected(pub)}
+                            <motion.li key={key} role="listitem" onClick={() => setSelected(pub)}
                                 initial="initial"
                                 whileHover="hover"
+                                whileFocus="hover"
                                 whileInView="inview"
+                                tabIndex={0}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+                                        event.preventDefault();
+                                        setSelected(pub);
+                                    }
+                                }}
                                 variants={{
                                     initial: {
                                         scale: 0
@@ -55,6 +62,9 @@ export function Publications(props: { dict: any }) {
                                 }}
                                 transition={{ type: "spring", stiffness: 300 }}
                             >
+                                <div className="sr-only">
+                                    {props.dict['publications']['accessibility']['element_label']}
+                                </div>
                                 {/* click the citation to open modal */}
                                 <div>
                                     {joinAuthorsACMDL(pub.authors)}
@@ -85,6 +95,9 @@ export function Publications(props: { dict: any }) {
                                         </Link>
                                     ) : ""}
                                 </div>
+                                <span className="sr-only">
+                                    {props.dict['publications']['accessibility']['clickable_hint']}
+                                </span>
                                 <motion.div className="publication-click-hint"
                                     variants={{
                                         initial: {
@@ -138,6 +151,7 @@ export function Publications(props: { dict: any }) {
                                         onClick={() => setSelected(null)}
                                         initial={{ opacity: 0.7, scale: 2, rotate: 0 }}
                                         whileHover={{ opacity: 1, scale: 2.5, rotate: 90 }}
+                                        whileFocus={{ opacity: 1, scale: 2.5, rotate: 90 }}
                                         transition={{ type: "spring", stiffness: 300 }}
                                         aria-label="Close publication details"
                                     >
@@ -164,6 +178,7 @@ export function Publications(props: { dict: any }) {
                                                         className="orcid-link"
                                                         initial={{ opacity: 0.7, scale: 1 }}
                                                         whileHover={{ opacity: 1, scale: 2 }}
+                                                        whileFocus={{ opacity: 1, scale: 2 }}
                                                         transition={{ type: "spring", stiffness: 300 }}
                                                     >
                                                         <FontAwesomeIcon icon={faOrcid} />
@@ -218,6 +233,7 @@ export function Publications(props: { dict: any }) {
                                             className="publication-modal-link"
                                             initial={{ opacity: 0.8, scale: 1 }}
                                             whileHover={{ opacity: 1, scale: 1.1 }}
+                                            whileFocus={{ opacity: 1, scale: 1.1 }}
                                             transition={{ type: "spring", stiffness: 300 }}
                                         >
                                             {props.dict['publications']['view_doi']}
@@ -232,6 +248,7 @@ export function Publications(props: { dict: any }) {
                                             className="publication-modal-link"
                                             initial={{ opacity: 0.8, scale: 1 }}
                                             whileHover={{ opacity: 1, scale: 1.1 }}
+                                            whileFocus={{ opacity: 1, scale: 1.1 }}
                                             transition={{ type: "spring", stiffness: 300 }}
                                         >
                                             {props.dict['publications']['view_article']}
