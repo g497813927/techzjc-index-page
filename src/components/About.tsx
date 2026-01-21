@@ -173,17 +173,29 @@ export function About(props: { dict: any }) {
                                 <FontAwesomeIcon icon={faGraduationCap} size="2x" />
                             </motion.div>
                             <h2>{props.dict['about']['education']['title']}</h2>
-                            <ul>
+                            <motion.ul>
                                 {/* eslint-disable-next-line */}
                                 {props.dict['about']['education']['children'].map((entry: any, index: number) => (
-                                    <li key={index}>
+                                    <motion.li
+                                        key={index}
+                                        initial={{ scale: 0 }}
+                                        whileInView={{
+                                            scale: 1,
+                                            transition: {
+                                                duration: 0.4
+                                            }
+                                        }}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileFocus={{ scale: 1.05 }}
+                                        transition={{ type: "spring", stiffness: 500 }}
+                                    >
                                         {format(
                                             props.dict['about']['education'][parseEducationEntry(entry)],
                                             entry
                                         )}
-                                    </li>
+                                    </motion.li>
                                 ))}
-                            </ul>
+                            </motion.ul>
                         </motion.div>
                     </div>
                 </motion.section>
