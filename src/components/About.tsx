@@ -54,7 +54,6 @@ export function About(props: { dict: any }) {
                                 aria-hidden="true"
                                 initial={{ scale: 1 }}
                                 whileHover={{ scale: 1.5 }}
-                                whileFocus={{ scale: 1.5 }}
                                 transition={{ type: "spring", stiffness: 500 }}
                             >
                                 👋
