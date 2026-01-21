@@ -71,11 +71,13 @@ async function App({ params }: PageProps<'/[lang]'>) {
         <>
             <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&width=800&height=800" width={800} height={800} className="hidden-wechat" />
             <NavBar hasHero={true} dict={dict} />
-            <HeroSection dict={dict} />
-            <About dict={dict} />
-            <PhotoWall dict={dict} />
-            <Publications dict={dict} />
-            <Footer dict={dict} />
+            <main>
+                <HeroSection dict={dict} />
+                <About dict={dict} />
+                <PhotoWall dict={dict} />
+                <Publications dict={dict} />
+                <Footer dict={dict} />
+            </main>
         </>
     )
 }
