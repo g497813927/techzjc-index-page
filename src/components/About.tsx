@@ -168,7 +168,6 @@ export function About(props: { dict: any }) {
                                 className="card-icon"
                                 initial={{ scale: 1 }}
                                 whileHover={{ scale: 2 }}
-                                whileFocus={{ scale: 2 }}
                                 transition={{ type: "spring", stiffness: 300 }}
                             >
                                 <FontAwesomeIcon icon={faGraduationCap} size="2x" />
