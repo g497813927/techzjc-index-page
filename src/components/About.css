@@ -76,7 +76,7 @@
 .hand-wave {
     font-size: 2rem;
     margin-left: 0.25rem;
-    filter: brightness(0) saturate(100%) invert(70%) sepia(82%) saturate(3632%) hue-rotate(0deg) brightness(103%) contrast(106%);
+    filter: brightness(0) saturate(100%) brightness(100%) contrast(100%);
 }
 
 
@@ -84,6 +84,10 @@
     .card {
         background: rgba(50, 50, 50, 0.4);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .hand-wave {
+        filter: brightness(0) saturate(100%) invert(100%) brightness(100%) contrast(100%);
     }
 
     .education-card li {
