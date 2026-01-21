@@ -76,6 +76,9 @@
     },
     "about": {
         "title": "关于我",
+        "introduction": {
+            "description_title": "你好，我是赵佳成"
+        },
         "hobbies": {
             "title": "爱好",
             "children": {
