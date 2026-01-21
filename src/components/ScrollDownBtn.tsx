@@ -13,7 +13,6 @@ export function ScrollDownBtn() {
                     onClick={() => {
                         window.scrollBy({
                             top: window.innerHeight,
-                            left: 0,
                             behavior: 'smooth'
                         });
                     }} aria-label="Scroll down"
