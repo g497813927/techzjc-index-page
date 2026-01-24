@@ -13,6 +13,7 @@ export default function ArticleProgress({ content }: { content: React.ReactNode 
 
   const scaleX = useSpring(0, { stiffness: 200, damping: 30 });
   const opacity = useSpring(1, { stiffness: 250, damping: 35 });
+  const hidden = useSpring(0, { stiffness: 250, damping: 35 });
 
   useEffect(() => {
     const getCssPxVar = (name: string, fallback: number) => {
@@ -31,6 +32,19 @@ export default function ArticleProgress({ content }: { content: React.ReactNode 
       const progH = getCssPxVar("--progress-height", 10);
       const visibleTop = navH + progH;
 
+      const viewportUsable = window.innerHeight - visibleTop;
+
+      const epsilon = 2;
+      const isShort = rect.height <= viewportUsable + epsilon;
+
+      hidden.set(isShort ? 1 : 0);
+
+      if (isShort) {
+        scaleX.set(0);
+        opacity.set(0);
+        return;
+      }
+
       const visibleBottom = window.innerHeight;
 
       const startBottom = visibleTop + rect.height;
@@ -42,7 +56,7 @@ export default function ArticleProgress({ content }: { content: React.ReactNode 
       if (Math.abs(denom) < 1e-6) {
         fill = rect.bottom <= visibleBottom ? 1 : 0;
       } else {
-        fill = ((startBottom - rect.bottom) / denom);
+        fill = (startBottom - rect.bottom) / denom;
       }
 
       fill = clamp01(fill);
@@ -59,13 +73,19 @@ export default function ArticleProgress({ content }: { content: React.ReactNode 
     };
 
     update();
+
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
+
+    const ro = new ResizeObserver(update);
+    if (articleRef.current) ro.observe(articleRef.current);
+
     return () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      ro.disconnect();
     };
-  }, [opacity, scaleX]);
+  }, [opacity, scaleX, hidden]);
 
   return (
     <>
@@ -81,6 +101,8 @@ export default function ArticleProgress({ content }: { content: React.ReactNode 
           height: 10,
           originX: 0,
           zIndex: 10,
+          pointerEvents: "none",
+          display: hidden.get() ? "none" : "block",
         }}
       />
       <div className="article-content-wrapper" ref={articleRef}>
