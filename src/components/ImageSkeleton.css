@@ -1,41 +1,8 @@
 .skeleton {
+    background: linear-gradient(180deg, #e0e0e0 0%, #c9c9c9 100%);
     width: 100%;
     height: 100%;
     z-index: 1;
-}
-
-.skeleton .convex {
-    background: linear-gradient(0deg, #e0e0e0 0%, #c9c9c9 100%);
-    filter: blur(4px);
-    transform: translate(100%, 100%);
-    width: 100%;
-    height: 100%;
-    animation: shimmer-reverse 2s ease-in-out 2s infinite;
-}
-
-.skeleton .concave {
-    background: linear-gradient(180deg, #e0e0e0 0%, #c9c9c9 100%);
-    filter: blur(4px);
-    transform: translate(-100%, -100%);
-    width: 100%;
-    height: 100%;
-    animation: shimmer 4s infinite;
-}
-
-
-
-@keyframes shimmer {
-  100% {
-    transform: translate(100%, 100%);
-    filter: blur(10px);
-  }
-}
-
-@keyframes shimmer-reverse {
-  100% {
-    transform: translate(0%, 0%);
-    filter: blur(10px);
-  }
 }
 
 .photo-card img.hidden {

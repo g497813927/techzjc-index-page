@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { getDictionary } from "./dictionaries";
+import { CnCoreValuesMouseClickHelper } from "@/utils/cnCoreValuesMouseClickHelper";
 
 export async function generateStaticParams() {
   return [{ lang: 'en-US' }, { lang: 'zh-CN' }];
@@ -33,6 +34,10 @@ export default async function RootLayout({children, params}: LayoutProps<'/[lang
         <link rel="alternate" type="application/atom+xml" title={dict['metadata']['blog']['index']['atom_feed_link_title']} href={`https://techzjc.com/${lang}/atom.xml`} />
       </head>
       <body>
+        {
+          lang === 'zh-CN' &&
+          <CnCoreValuesMouseClickHelper />
+        }
         <DebugBootstrap />
         <MoveToTop dict={await (await import(`./dictionaries/${(await params).lang}.json`)).default} />
         {children}
