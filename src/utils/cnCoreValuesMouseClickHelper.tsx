@@ -18,6 +18,7 @@ export function CnCoreValuesMouseClickHelper() {
         el.style.pointerEvents = "none";
         el.style.zIndex = "1000";
         el.style.transition = "transform 1s ease-out, opacity 1s ease-out";
+        el.setAttribute("aria-hidden", "true");
         document.body.appendChild(el);
 
         requestAnimationFrame(() => {
