@@ -14,8 +14,6 @@ export async function generateStaticParams() {
 export default async function RootLayout({children, params}: LayoutProps<'/[lang]'>) {
 
   const themeScript = `!function(){try{var e=window.localStorage.getItem("theme"),t=window.matchMedia("(prefers-color-scheme:dark)").matches;"dark"===e||!e&&t?(document.documentElement.classList.add("dark"),document.documentElement.setAttribute("data-theme","dark")):(document.documentElement.classList.remove("dark"),document.documentElement.setAttribute("data-theme","light"))}catch(e){}}();`;
-  // Add a script to hide CN Core Values tooltip when lang is not 'zh-CN' (by removing cn-core-values-click-index from localStorage)
-  const cnCoreValuesTooltipHideScript = `!function(){localStorage.removeItem("cn-core-values-click-index");}();`;
   const { lang } = await params;
   const dict = await getDictionary(lang as 'en-US' | 'zh-CN');
   return (
@@ -24,11 +22,6 @@ export default async function RootLayout({children, params}: LayoutProps<'/[lang
         <script
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
-        { lang !== 'zh-CN' &&
-          <script
-            dangerouslySetInnerHTML={{ __html: cnCoreValuesTooltipHideScript }}
-          />
-        }
         {
           process.env.NEXT_PUBLIC_VERCEL_ENV === 'true' && <>
             <GoogleAnalytics gaId="G-1ZLSY6R45Z" />

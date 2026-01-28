@@ -34,13 +34,8 @@ export function CnCoreValuesMouseClickHelper() {
 
     useEffect(() => {
         let index = 0;
-        const storedIndex = localStorage.getItem("cn-core-values-click-index");
-        if (storedIndex !== null) {
-            index = 0;
-        }
         function handleClick(event: MouseEvent) {
             index = (index) % coreValues.length;
-            localStorage.setItem("cn-core-values-click-index", index.toString());
             const value = coreValues[index];
             createCoreValueElement(value, event.clientX, event.clientY);
             index += 1;
