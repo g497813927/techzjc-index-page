@@ -28,5 +28,5 @@ export function joinAuthorsACMDL(authors: Author[]): React.ReactNode[] {
 }
 
 export function venueShortToAcmQuote(s: string) {
-  return s.replace(/'/g, "'");
+  return s.replace(/‘/g, "'");
 }

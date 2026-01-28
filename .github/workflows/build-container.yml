@@ -59,6 +59,8 @@ jobs:
       group: deploy-${{ github.ref }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
