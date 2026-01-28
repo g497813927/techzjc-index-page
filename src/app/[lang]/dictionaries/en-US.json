@@ -76,6 +76,9 @@
     },
     "about": {
         "title": "About Me",
+        "introduction": {
+            "description_title": "Hi, I'm Jiacheng Zhao (John)"
+        },
         "hobbies": {
             "title": "Hobbies",
             "children": {
@@ -122,6 +125,10 @@
         "title": "Photos"
     },
     "publications": {
+        "accessibility": {
+            "element_label": "Publication",
+            "clickable_hint": "Click to view more details"
+        },
         "title": "Publications",
         "authors": "Authors",
         "author": "Author",

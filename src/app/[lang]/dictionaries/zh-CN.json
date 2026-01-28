@@ -76,6 +76,9 @@
     },
     "about": {
         "title": "关于我",
+        "introduction": {
+            "description_title": "你好，我是赵佳成"
+        },
         "hobbies": {
             "title": "爱好",
             "children": {
@@ -122,6 +125,10 @@
         "title": "照片"
     },
     "publications": {
+        "accessibility": {
+            "element_label": "出版物",
+            "clickable_hint": "点击查看详细信息"
+        },
         "title": "发表的作品",
         "authors": "作者",
         "author": "作者",
