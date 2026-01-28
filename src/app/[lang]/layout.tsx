@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { getDictionary } from "./dictionaries";
+import { CnCoreValuesMouseClickHelper } from "@/utils/cnCoreValuesMouseClickHelper";
 
 export async function generateStaticParams() {
   return [{ lang: 'en-US' }, { lang: 'zh-CN' }];
@@ -13,6 +14,8 @@ export async function generateStaticParams() {
 export default async function RootLayout({children, params}: LayoutProps<'/[lang]'>) {
 
   const themeScript = `!function(){try{var e=window.localStorage.getItem("theme"),t=window.matchMedia("(prefers-color-scheme:dark)").matches;"dark"===e||!e&&t?(document.documentElement.classList.add("dark"),document.documentElement.setAttribute("data-theme","dark")):(document.documentElement.classList.remove("dark"),document.documentElement.setAttribute("data-theme","light"))}catch(e){}}();`;
+  // Add a script to hide CN Core Values tooltip when lang is not 'zh-CN' (by removing cn-core-values-click-index from localStorage)
+  const cnCoreValuesTooltipHideScript = `!function(){localStorage.removeItem("cn-core-values-click-index");}();`;
   const { lang } = await params;
   const dict = await getDictionary(lang as 'en-US' | 'zh-CN');
   return (
@@ -21,6 +24,11 @@ export default async function RootLayout({children, params}: LayoutProps<'/[lang
         <script
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
+        { lang !== 'zh-CN' &&
+          <script
+            dangerouslySetInnerHTML={{ __html: cnCoreValuesTooltipHideScript }}
+          />
+        }
         {
           process.env.NEXT_PUBLIC_VERCEL_ENV === 'true' && <>
             <GoogleAnalytics gaId="G-1ZLSY6R45Z" />
@@ -33,6 +41,10 @@ export default async function RootLayout({children, params}: LayoutProps<'/[lang
         <link rel="alternate" type="application/atom+xml" title={dict['metadata']['blog']['index']['atom_feed_link_title']} href={`https://techzjc.com/${lang}/atom.xml`} />
       </head>
       <body>
+        {
+          lang === 'zh-CN' &&
+          <CnCoreValuesMouseClickHelper />
+        }
         <DebugBootstrap />
         <MoveToTop dict={await (await import(`./dictionaries/${(await params).lang}.json`)).default} />
         {children}
