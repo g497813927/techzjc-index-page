@@ -26,7 +26,9 @@ export function CnCoreValuesMouseClickHelper() {
         });
 
         setTimeout(() => {
-            document.body.removeChild(el);
+            if (el && el.parentNode === document.body) {
+                document.body.removeChild(el);
+            }
         }, 1000);
     }
 
