@@ -18,6 +18,14 @@ export type PostMeta = {
   ogImage?: string;
 };
 
+function sanitizeSlug(fileName: string): string {
+  const baseName = fileName.replace(/\.mdx?$/, "");
+  return baseName
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/gi, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export type Post = PostMeta & {
   content: string;
   lang: string;
@@ -51,7 +59,7 @@ export function getAllPosts(lang?: string): PostMeta[] {
         month: data.time.split(" ")[0].split("-")[1],
         day: data.time.split(" ")[0].split("-")[2],
         title: data.title,
-        slug: fileName.name.replace(/\.mdx?$/, ""),
+        slug: sanitizeSlug(fileName.name),
         time: data.time,
         tags: data.tags || [],
         description: data.description || "",
