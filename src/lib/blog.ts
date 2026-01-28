@@ -22,7 +22,7 @@ function sanitizeSlug(fileName: string): string {
   const baseName = fileName.replace(/\.mdx?$/, "");
   return baseName
     .toLowerCase()
-    .replace(/[^a-z0-9-]+/gi, "-")
+    .replace(/[^a-z0-9-_\(\)\u4e00-\u9fa5]/g, "-")
     .replace(/^-+|-+$/g, "");
 }
 
