@@ -22,7 +22,7 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   if (!hasLocale(lang)) notFound();
   
   // Check if background image is jpg or png, else convert to jpg
-  if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
+  if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png") && !background_image.startsWith("data:image/")) {
     try {
       background_image = await convertToJpegBase64(
         req,

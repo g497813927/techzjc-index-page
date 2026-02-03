@@ -8,8 +8,14 @@ export function isSafeImageUrl(urlString: string): boolean {
     if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
       return false;
     }
-    // Optionally restrict to your own domain, e.g.:
-    // if (!parsed.hostname.endsWith("techzjc.com")) return false;
+    if (parsed.port && parsed.port !== "80" && parsed.port !== "443") {
+      return false;
+    }
+    const hostname = parsed.hostname.replace(/\.$/, '');
+    const allowedDomains = ['techzjc.com', 'static.techzjc.com'];
+    if (!allowedDomains.includes(hostname)) {
+      return false;
+    }
     return true;
   } catch {
     return false;
