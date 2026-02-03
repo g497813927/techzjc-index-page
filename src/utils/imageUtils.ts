@@ -45,8 +45,27 @@ export function isSafeImageUrl(urlString: string): boolean {
 }
 
 export function convertToSafeImageUrl(urlString: string): string | Response {
-    if (isSafeImageUrl(urlString)) {
-        return urlString;
+    if (!isSafeImageUrl(urlString)) {
+        return new Response('Unsafe image URL', { status: 400 });
     }
-    return new Response('Unsafe image URL', { status: 400 });
+    const imageURLObj: URL = new URL(urlString);
+    const protocol = imageURLObj.protocol;
+    const rawHostname = imageURLObj.hostname;
+    const port = imageURLObj.port;
+    const path = imageURLObj.pathname || '/';
+    const normalizedHostname = rawHostname.replace(/\.$/, '');
+
+    // Reconstruct safe URL
+    let safeURL = `${protocol}//${normalizedHostname}`;
+    if (port) {
+        safeURL += `:${port}`;
+    }
+    safeURL += path;
+    if (imageURLObj.search) {
+        safeURL += imageURLObj.search;
+    }
+    if (imageURLObj.hash) {
+        safeURL += imageURLObj.hash;
+    }
+    return safeURL;
 }
