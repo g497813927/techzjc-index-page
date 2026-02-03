@@ -19,17 +19,41 @@ export async function GET(req: Request, res: any) {
     } catch {
       return new Response('Invalid URL format', { status: 400 });
     }
-    const { hostname, protocol } = imageURLObj;
+
+    // Validate URL components to mitigate SSRF
+    const protocol = imageURLObj.protocol;
+    const rawHostname = imageURLObj.hostname;
+    const port = imageURLObj.port;
+    const path = imageURLObj.pathname || '/';
+
+    // Only allow http/https
     if (protocol !== 'http:' && protocol !== 'https:') {
       return new Response('Invalid URL protocol', { status: 400 });
     }
-    if (!whitelist_domains.includes(hostname)) {
+
+    // Normalize hostname by removing any trailing dot
+    const normalizedHostname = rawHostname.replace(/\.$/, '');
+
+    // Enforce hostname allow-list
+    if (!whitelist_domains.includes(normalizedHostname)) {
       return new Response('Domain not allowed', { status: 403 });
     }
-    console.log("Converting image from URL:", imageUrl);
+
+    // Disallow non-standard or explicit ports to avoid bypassing expected services
+    if (port && port !== '80' && port !== '443') {
+      return new Response('Port not allowed', { status: 403 });
+    }
+
+    // Basic path sanity checks: must be absolute and not contain path traversal
+    if (!path.startsWith('/') || path.includes('..')) {
+      return new Response('Invalid path', { status: 400 });
+    }
+
+    const safeURL = `${protocol}//${normalizedHostname}${port ? `:${port}` : ''}${path}`;
+    console.log("Converting image from URL:", safeURL);
 
     // Fetch the WebP image
-    const response = await fetch(imageURLObj.toString());
+    const response = await fetch(safeURL);
     if (!response.ok) {
       return new Response('Failed to fetch image', { status: 502 });
     }
