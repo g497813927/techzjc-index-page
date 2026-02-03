@@ -11,27 +11,27 @@ export async function GET(req: Request, res: any) {
     const { searchParams } = new URL(req.url);
     const imageUrl = searchParams.get("imageUrl");
     if (!imageUrl) {
-      return res.status(400).send('imageUrl required');
+      return new Response('Missing imageUrl parameter', { status: 400 });
     }
     let imageURLObj: URL;
     try {
       imageURLObj = new URL(imageUrl);
     } catch {
-      return res.status(400).send('Invalid URL format');
+      return new Response('Invalid URL format', { status: 400 });
     }
     const { hostname, protocol } = imageURLObj;
     if (protocol !== 'http:' && protocol !== 'https:') {
-      return res.status(400).send('Invalid URL protocol');
+      return new Response('Invalid URL protocol', { status: 400 });
     }
     if (!whitelist_domains.includes(hostname)) {
-      return res.status(400).send('Invalid domain');
+      return new Response('Domain not allowed', { status: 403 });
     }
     console.log("Converting image from URL:", imageUrl);
 
     // Fetch the WebP image
     const response = await fetch(imageURLObj.toString());
     if (!response.ok) {
-      return res.status(500).send('Failed to fetch image');
+      return new Response('Failed to fetch image', { status: 502 });
     }
     const webpBuffer = await response.arrayBuffer();
 
@@ -50,6 +50,6 @@ export async function GET(req: Request, res: any) {
 
   } catch (error) {
     console.error('Error converting image:', error);
-    res.status(500).send('Internal Server Error');
+    return new Response('Internal Server Error', { status: 500 });
   }
 }
