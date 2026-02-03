@@ -13,7 +13,12 @@ export async function GET(req: Request, res: any) {
     if (!imageUrl) {
       return res.status(400).send('imageUrl required');
     }
-    const imageURLObj = new URL(imageUrl);
+    let imageURLObj: URL;
+    try {
+      imageURLObj = new URL(imageUrl);
+    } catch {
+      return res.status(400).send('Invalid URL format');
+    }
     const { hostname, protocol } = imageURLObj;
     if (protocol !== 'http:' && protocol !== 'https:') {
       return res.status(400).send('Invalid URL protocol');
