@@ -49,10 +49,11 @@ export async function GET(req: Request, res: any) {
       return new Response('Invalid path', { status: 400 });
     }
 
-    console.log("Converting image from URL:", imageUrl);
+    const safeURL = `${protocol}//${normalizedHostname}${port ? `:${port}` : ''}${path}`;
+    console.log("Converting image from URL:", safeURL);
 
     // Fetch the WebP image
-    const response = await fetch(imageURLObj.toString());
+    const response = await fetch(safeURL);
     if (!response.ok) {
       return new Response('Failed to fetch image', { status: 502 });
     }
