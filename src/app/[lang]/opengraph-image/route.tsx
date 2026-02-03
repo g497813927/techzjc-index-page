@@ -5,12 +5,17 @@ import { join } from 'node:path'
 import { hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
+import { isSafeImageUrl } from '@/utils/imageUtils';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const size = { width: 1200, height: 630 };
   const { searchParams } = new URL(req.url);
   const title = searchParams.get("title") ?? "Techzjc";
-  let background_image = searchParams.get("background_image") ?? "https://techzjc.com/assets/image/hero-image-og.jpg";
+  const defaultBackgroundImage = "https://techzjc.com/assets/image/hero-image-og.jpg";
+  let background_image = searchParams.get("background_image") ?? defaultBackgroundImage;
+  if (!isSafeImageUrl(background_image)) {
+    background_image = defaultBackgroundImage;
+  }
   const width = searchParams.get("width") ?? size.width.toString();
   size.width = parseInt(width);
   const height = searchParams.get("height") ?? size.height.toString();
