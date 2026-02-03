@@ -74,7 +74,7 @@ export function convertToSafeImageUrl(urlString: string): string | Response {
       return new Response("Unsupported image type", { status: 415 });
     }
     const safeBase64Data = base64Data.replace(/[^A-Za-z0-9+/=]/g, ""); // Sanitize base64 data
-    // Retrive the sanitized MIME type and hardcode it in the returned data URL to prevent any tampering
+    // Retrieve the sanitized MIME type and hardcode it in the returned data URL to prevent any tampering
     if (mimeType === "image/jpeg" || mimeType === "image/png") {
         return `data:${mimeType};base64,${safeBase64Data}`;
     } else {
