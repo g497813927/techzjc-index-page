@@ -5,8 +5,8 @@ import sharp from 'sharp';
 // eslint-disable-next-line
 export async function GET(req: Request, res: any) {
   try {
-    // Check if url matches whitelisted domains
-    const whitelist_domains = ['localhost', 'techzjc.com', 'static.techzjc.com', '127.0.0.1'];
+    // Check if url matches whitelisted domains (exclude localhost/loopback to prevent SSRF into internal services)
+    const whitelist_domains = ['techzjc.com', 'static.techzjc.com'];
     
     const { searchParams } = new URL(req.url);
     const imageUrl = searchParams.get("imageUrl");
