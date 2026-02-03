@@ -13,14 +13,18 @@ export async function GET(req: Request, res: any) {
     if (!imageUrl) {
       return res.status(400).send('imageUrl required');
     }
-    const { hostname } = new URL(imageUrl);
+    const imageURLObj = new URL(imageUrl);
+    const { hostname, protocol } = imageURLObj;
+    if (protocol !== 'http:' && protocol !== 'https:') {
+      return res.status(400).send('Invalid URL protocol');
+    }
     if (!whitelist_domains.includes(hostname)) {
       return res.status(400).send('Invalid domain');
     }
     console.log("Converting image from URL:", imageUrl);
 
     // Fetch the WebP image
-    const response = await fetch(encodeURI(imageUrl));
+    const response = await fetch(imageURLObj.toString());
     if (!response.ok) {
       return res.status(500).send('Failed to fetch image');
     }
