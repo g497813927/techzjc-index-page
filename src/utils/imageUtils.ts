@@ -3,21 +3,50 @@ export function isSafeImageUrl(urlString: string): boolean {
   if (urlString.startsWith("data:image/")) {
     return true;
   }
-  try {
-    const parsed = new URL(urlString);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    let imageURLObj: URL;
+    try {
+      imageURLObj = new URL(urlString);
+    } catch {
+      return false; // Invalid URL format
+    }
+
+    // Validate URL components to mitigate SSRF
+    const protocol = imageURLObj.protocol;
+    const rawHostname = imageURLObj.hostname;
+    const port = imageURLObj.port;
+    const path = imageURLObj.pathname || '/';
+
+    // Only allow http/https
+    if (protocol !== 'http:' && protocol !== 'https:') {
       return false;
     }
-    if (parsed.port && parsed.port !== "80" && parsed.port !== "443") {
+
+    // Normalize hostname by removing any trailing dot
+    const normalizedHostname = rawHostname.replace(/\.$/, '');
+
+    const whitelist_domains = ['techzjc.com', 'static.techzjc.com', 'test-cn.techzjc.com'];
+
+    // Enforce hostname allow-list
+    if (!whitelist_domains.includes(normalizedHostname)) {
       return false;
     }
-    const hostname = parsed.hostname.replace(/\.$/, '');
-    const allowedDomains = ['techzjc.com', 'static.techzjc.com'];
-    if (!allowedDomains.includes(hostname)) {
+
+    // Disallow non-standard or explicit ports to avoid bypassing expected services
+    if (port && port !== '80' && port !== '443') {
       return false;
     }
+
+    // Basic path sanity checks: must be absolute and not contain path traversal
+    if (!path.startsWith('/') || path.includes('..')) {
+      return false;
+    }
+
     return true;
-  } catch {
-    return false;
-  }
+}
+
+export function convertToSafeImageUrl(urlString: string): string | Response {
+    if (isSafeImageUrl(urlString)) {
+        return urlString;
+    }
+    return new Response('Unsafe image URL', { status: 400 });
 }
