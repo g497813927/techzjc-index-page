@@ -6,18 +6,23 @@ import QRCode from 'qrcode'
 import { hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
+import { isSafeImageUrl } from '@/utils/imageUtils';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const { searchParams } = new URL(req.url);
   const quotation = searchParams.get("quotation") ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque a tortor massa. Nam non consectetur ligula. Quisque sit amet erat ac mauris gravida pretium. Phasellus neque lectus, suscipit et porttitor at, rhoncus eu diam. Praesent laoreet suscipit fermentum. Etiam commodo semper turpis, et auctor felis convallis et. Quisque ultricies accumsan elit, vel molestie sem. Etiam vel odio et nulla dapibus varius in vel magna.";
-  let background_image = searchParams.get("background_image") ?? "https://techzjc.com/assets/image/hero-image-og.jpg";
+  const defaultBackgroundImage = "https://techzjc.com/assets/image/hero-image-og.jpg";
+  let background_image = searchParams.get("background_image") ?? defaultBackgroundImage;
+  if (!isSafeImageUrl(background_image)) {
+    background_image = defaultBackgroundImage;
+  }
   const link = searchParams.get("link") ?? "https://techzjc.com";
   // Get locale from path
   const { lang } = await context.params;
   if (!hasLocale(lang)) notFound();
   
   // Check if background image is jpg or png, else convert to jpg
-  if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png")) {
+  if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png") && !background_image.startsWith("data:image/")) {
     try {
       background_image = await convertToJpegBase64(
         req,
