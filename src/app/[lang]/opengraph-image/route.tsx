@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
-import { isSafeImageUrl } from '@/utils/imageUtils';
+import { convertToSafeImageUrl, isSafeImageUrl } from '@/utils/imageUtils';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const size = { width: 1200, height: 630 };
@@ -36,7 +36,16 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
       });
     }
   } else {
-    background_image = encodeURI(background_image);
+    let safeURL: string | Response;
+    if (background_image.startsWith("data:image/")) {
+      safeURL = encodeURI(background_image);
+    } else {
+      safeURL = convertToSafeImageUrl(background_image);
+    }
+    if (safeURL instanceof Response) {
+      return safeURL; // Return the error response if URL is not safe
+    }
+    background_image = encodeURI(safeURL);
   }
   const subtitle = searchParams.get("subtitle") ?? "";
   try {
