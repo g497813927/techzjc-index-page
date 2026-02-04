@@ -1,28 +1,27 @@
 import sharp from 'sharp';
+import { convertToSafeImageUrl } from '@/utils/imageUtils';
 
 
 // API route to convert WebP image to JPEG
 // eslint-disable-next-line
 export async function GET(req: Request, res: any) {
   try {
-    // Check if url matches whitelisted domains
-    const whitelist_domains = ['localhost', 'techzjc.com', 'static.techzjc.com', '127.0.0.1'];
     
     const { searchParams } = new URL(req.url);
     const imageUrl = searchParams.get("imageUrl");
     if (!imageUrl) {
-      return res.status(400).send('imageUrl required');
+      return new Response('Missing imageUrl parameter', { status: 400 });
     }
-    const { hostname } = new URL(imageUrl);
-    if (!whitelist_domains.includes(hostname)) {
-      return res.status(400).send('Invalid domain');
+    const safeURL = convertToSafeImageUrl(imageUrl);
+    if (safeURL instanceof Response) {
+      return safeURL; // Return the error response if URL is not safe
     }
-    console.log("Converting image from URL:", imageUrl);
+    console.log("Converting image from URL:", safeURL);
 
     // Fetch the WebP image
-    const response = await fetch(encodeURI(imageUrl));
+    const response = await fetch(safeURL);
     if (!response.ok) {
-      return res.status(500).send('Failed to fetch image');
+      return new Response('Failed to fetch image', { status: 502 });
     }
     const webpBuffer = await response.arrayBuffer();
 
@@ -41,6 +40,6 @@ export async function GET(req: Request, res: any) {
 
   } catch (error) {
     console.error('Error converting image:', error);
-    res.status(500).send('Internal Server Error');
+    return new Response('Internal Server Error', { status: 500 });
   }
 }
