@@ -1,0 +1,302 @@
+{
+  "repo_notes": [
+    {
+      "content": ""
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "High-level introduction to the techzjc-index-page repository, explaining its purpose as a personal portfolio/blog site with Next.js, its multi-language support, and key features",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Architecture",
+      "purpose": "Explain the overall system architecture, including the Next.js App Router structure, static site generation approach, and how major systems interact",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Technology Stack",
+      "purpose": "Detail the framework and library choices: Next.js 16, React 19, Tailwind CSS, MDX, motion/react, and third-party integrations",
+      "parent": "Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Deployment Architecture",
+      "purpose": "Explain the deployment setup on Alibaba Cloud Function Compute with CDN, including the Docker containerization strategy and Serverless Devs configuration",
+      "parent": "Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Request Processing Pipeline",
+      "purpose": "Document the flow of requests from client through proxy middleware, security checks, locale detection, and app router",
+      "parent": "Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Build and Deployment",
+      "purpose": "Overview of the build and deployment process, from local development to production",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Docker Configuration",
+      "purpose": "Explain the multi-stage Docker build process, including base, deps, builder, and runner stages, and the standalone Next.js output",
+      "parent": "Build and Deployment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "CI/CD Pipeline",
+      "purpose": "Detail the GitHub Actions workflow for building, pushing to GHCR, and deploying to Alibaba Cloud FC, including blog content synchronization",
+      "parent": "Build and Deployment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Serverless Devs and Function Compute",
+      "purpose": "Explain the s.yaml configuration, how Serverless Devs deploys to FC, and the custom container runtime setup",
+      "parent": "Build and Deployment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Core Systems",
+      "purpose": "Introduction to the core middleware and infrastructure systems that handle security, routing, and internationalization",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Proxy Middleware and Security",
+      "purpose": "Comprehensive documentation of the proxy middleware: host validation, CDN authentication, scanner pattern detection, and SSRF prevention",
+      "parent": "Core Systems",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Internationalization (i18n)",
+      "purpose": "Explain the i18n system: locale detection from headers, URL rewriting, cookie-based preferences, and dictionary management",
+      "parent": "Core Systems",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Localization Dictionaries",
+      "purpose": "Detail the structure of zh-CN.json and en-US.json, how they're loaded, and how they provide content for metadata, UI, and blog pages",
+      "parent": "Core Systems",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Content Systems",
+      "purpose": "Overview of how content is managed, processed, and served, including blogs, feeds, and sitemaps",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Blog System",
+      "purpose": "Explain the blog content management: file structure, front matter parsing, getAllPosts/getPostBySlug functions, and date-based routing",
+      "parent": "Content Systems",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "MDX Processing",
+      "purpose": "Document the MDX compilation pipeline: remark/rehype plugins, syntax highlighting, GitHub alerts, and component customization",
+      "parent": "Content Systems",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Feed Generation (RSS/Atom)",
+      "purpose": "Explain how RSS and Atom feeds are dynamically generated, including MDX to HTML conversion for feed readers",
+      "parent": "Content Systems",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Sitemap Generation",
+      "purpose": "Document the sitemap.ts file and how it creates XML sitemaps for search engines, including image URLs",
+      "parent": "Content Systems",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Image Generation System",
+      "purpose": "Overview of the dynamic image generation capabilities for social sharing, Open Graph, and custom cards",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Dynamic Image Routes",
+      "purpose": "Detail the /opengraph-image and /sharable-card routes, their parameters, ImageResponse usage, and QR code generation",
+      "parent": "Image Generation System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Image Security and Validation",
+      "purpose": "Explain the security layers: isSafeImageUrl, domain whitelisting, data URL validation, and SSRF prevention",
+      "parent": "Image Generation System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Format Conversion Pipeline",
+      "purpose": "Document the /convert endpoint, Sharp-based image conversion, and the authentication mechanism for internal API calls",
+      "parent": "Image Generation System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "UI Components",
+      "purpose": "Overview of the React component architecture, including layout, page, and utility components",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Layout Components",
+      "purpose": "Document the RootLayout, NavBar, and Footer components, including theme management and navigation",
+      "parent": "UI Components",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Page Components",
+      "purpose": "Explain major page components: About, Publications, PhotoWall, HeroSection, and their data sources",
+      "parent": "UI Components",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Blog-Specific Components",
+      "purpose": "Detail blog-related components: ArticleProgress, CommentSection, LanguageMismatchAlert, CopyCodeButton, and MDXContent",
+      "parent": "UI Components",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Utility Components",
+      "purpose": "Document utility components: ImageSkeleton, ScrollDownBtn, MoveToTop, and DebugItem",
+      "parent": "UI Components",
+      "page_notes": [
+        {
+          "content": "Refer to src/utils/debug.ts for information on how to set start-debug-listener to true",
+          "author": "techzjc"
+        }
+      ]
+    },
+    {
+      "title": "Styling System",
+      "purpose": "Explain the styling architecture: Tailwind CSS configuration, Lightning CSS optimization, component-specific CSS modules, and dark mode",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Component Styling",
+      "purpose": "Detail the CSS modules for individual components and how they implement responsive design and dark mode",
+      "parent": "Styling System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Global Styles and Animations",
+      "purpose": "Explain globals.css, motion/react usage for animations, and common utility classes",
+      "parent": "Styling System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
