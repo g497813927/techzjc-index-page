@@ -22,10 +22,10 @@ export const publications: PublicationProps[] = [
       },
     ],
     venue_full:
-      "Proceedings of the 57th ACM Technical Symposium on Computer Science Education V.2",
+      "Proceedings of the 57th ACM Technical Symposium on Computer Science Education V. 2",
     venue_short: "SIGCSE TS '26",
     location: "(St. Louis, MO, USA)",
-    pages: "1327-1328",
+    pages: "1327–1328",
     abstract: `CS education should help students acquire programming skills and technical knowledge, while also learning to collaborate, listen, and articulate their viewpoints in teams. These abilities are essential for professional development and teamwork. In human-computer interaction courses, teamwork is crucial for product design and development, and diverse user perspectives underpin the understanding and improvement of user experience. Traditional teaching often relies on spontaneous interaction in group projects, which depends heavily on whether a team includes members with strong organizational skills. To help all students engage with peers' perspectives and prepare for subsequent projects, we designed a reflective learning activity that combines structured diary study with group discussions. Students first recorded their experiences with a designated application over two weeks to deepen understanding of user needs and interaction contexts. They then shared their thoughts in group discussions, linking individual reflection with collective exchange to broaden recognition of diverse viewpoints. This study invited 10 CS undergraduates. Results showed that students gave strong positive evaluations, reporting that the activity improved their understanding of collaboration and increased confidence in expressing and listening within groups. Many also believed that if they continued to work with their group members to develop new features or software, the diary and discussion experience would give them greater confidence and smoother collaboration. This study demonstrates the potential of combining diaries and group discussions as a feasible approach for computing education to foster collaboration and support student voice.`,
     publication_year: 2026,
     doi: "10.1145/3770761.3777186",
