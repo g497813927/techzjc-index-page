@@ -1,5 +1,36 @@
 export const publications: PublicationProps[] = [
   {
+    title: "Diary Study for Fostering Collaboration and Student Voice",
+    authors: [
+      {
+        firstName: "Jixiang",
+        lastName: "Fan",
+        highlight: false,
+        orcid: "0009-0008-2778-3136",
+      },
+      {
+        firstName: "Jiacheng",
+        lastName: "Zhao",
+        highlight: true,
+        orcid: "0009-0003-5719-909X",
+      },
+      {
+        firstName: "Scott",
+        lastName: "McCrickard",
+        highlight: false,
+        orcid: "0000-0001-9839-7146",
+      },
+    ],
+    venue_full:
+      "Proceedings of the 57th ACM Technical Symposium on Computer Science Education V. 2",
+    venue_short: "SIGCSE TS '26",
+    location: "(St. Louis, MO, USA)",
+    pages: "1327–1328",
+    abstract: `CS education should help students acquire programming skills and technical knowledge, while also learning to collaborate, listen, and articulate their viewpoints in teams. These abilities are essential for professional development and teamwork. In human-computer interaction courses, teamwork is crucial for product design and development, and diverse user perspectives underpin the understanding and improvement of user experience. Traditional teaching often relies on spontaneous interaction in group projects, which depends heavily on whether a team includes members with strong organizational skills. To help all students engage with peers' perspectives and prepare for subsequent projects, we designed a reflective learning activity that combines structured diary study with group discussions. Students first recorded their experiences with a designated application over two weeks to deepen understanding of user needs and interaction contexts. They then shared their thoughts in group discussions, linking individual reflection with collective exchange to broaden recognition of diverse viewpoints. This study invited 10 CS undergraduates. Results showed that students gave strong positive evaluations, reporting that the activity improved their understanding of collaboration and increased confidence in expressing and listening within groups. Many also believed that if they continued to work with their group members to develop new features or software, the diary and discussion experience would give them greater confidence and smoother collaboration. This study demonstrates the potential of combining diaries and group discussions as a feasible approach for computing education to foster collaboration and support student voice.`,
+    publication_year: 2026,
+    doi: "10.1145/3770761.3777186",
+  },
+  {
     title:
       "Optimizing Diary Studies Learning Outcomes with Fine-Tuned Large Language Models on the Diaryquest Platform",
     authors: [
@@ -107,25 +138,25 @@ export const publications: PublicationProps[] = [
         firstName: "Yoonje",
         lastName: "Lee",
         highlight: false,
-        orcid: "0009-0007-3266-1021"
+        orcid: "0009-0007-3266-1021",
       },
       {
         firstName: "Nick",
         lastName: "Flammer",
         highlight: false,
-        orcid: "0009-0003-2900-710X"
+        orcid: "0009-0003-2900-710X",
       },
       {
         firstName: "Yuhao",
         lastName: "Chen",
         highlight: false,
-        orcid: "0009-0005-7956-7214"
+        orcid: "0009-0005-7956-7214",
       },
       {
         firstName: "D. Scott",
         lastName: "McCrickard",
         highlight: false,
-        orcid: "0000-0001-9839-7146"
+        orcid: "0000-0001-9839-7146",
       },
     ],
     venue_full:
@@ -157,8 +188,7 @@ export const publications: PublicationProps[] = [
         firstName: "Carson",
         lastName: "Russo",
         highlight: false,
-        orcid: "0009-0000-6208-958X"
-
+        orcid: "0009-0000-6208-958X",
       },
       {
         firstName: "Michael",
@@ -190,38 +220,38 @@ export const publications: PublicationProps[] = [
         firstName: "Jordan",
         lastName: "Horrall",
         highlight: false,
-        orcid: "0009-0004-3163-4492"
+        orcid: "0009-0004-3163-4492",
       },
       {
         firstName: "William",
         lastName: "Gaudian",
         highlight: false,
-        orcid: "0009-0007-9556-1781"
+        orcid: "0009-0007-9556-1781",
       },
       {
         firstName: "Phillip",
         lastName: "Jordan",
         highlight: false,
-        orcid: "0009-0008-1087-2730"
+        orcid: "0009-0008-1087-2730",
       },
       {
         firstName: "Pallavi",
         lastName: "Chavan",
         highlight: false,
-        orcid: "0009-0000-3137-8960"
+        orcid: "0009-0000-3137-8960",
       },
       {
         firstName: "Aditya",
         lastName: "Rana",
         highlight: false,
-        orcid: "0009-0007-4106-4317"
+        orcid: "0009-0007-4106-4317",
       },
       {
         firstName: "Yaw",
         lastName: "Owusu",
         suffix: "Sr.",
         highlight: false,
-        orcid: "0009-0009-1141-419X"
+        orcid: "0009-0009-1141-419X",
       },
     ],
     venue_full:
@@ -232,6 +262,6 @@ export const publications: PublicationProps[] = [
     abstract: `Diary studies are pivotal in enhancing student reflection and deepening understanding of subjects such as Human-Computer Interaction (HCI). However, traditional methods of diary entry analysis are time-consuming and labor-intensive. Based on Jixiang Fan's four-phase diary study model, we designed and implemented the new learning management system -- DiaryQuest. DiaryQuest is a web-based learning management system designed to address challenges in implementing diary studies within educational settings, especially in large classroom environments. It offers a streamlined approach by providing tools for educators to create diary assignments, track student submissions, and analyze entries using advanced methods like Latent Dirichlet Allocation (LDA) and sentiment analysis. For students, it features an intuitive interface that includes progress tracking to ensure consistent and timely diary entries. The platform also incorporates interactive visualizations, such as word clouds and dynamic analytics tables, which allow educators to delve deeper into student insights and observations. These features make DiaryQuest an effective tool for managing diary studies, increasing engagement, and fostering a personalized and reflective learning experience. By simplifying the management and analysis of diary studies, DiaryQuest promotes a more interactive and productive educational environment, enabling students and educators to understand the learning material and each other better. This innovation enhances educational outcomes and prepares students with critical skills in data analysis and reflective thinking, which are essential for the HCI field.`,
     publication_year: 2025,
     doi: "10.1145/3641555.3705023",
-    url: "https://vtechworks.lib.vt.edu/items/a13aaaf4-ca30-44c9-8046-335823a1c23f"
+    url: "https://vtechworks.lib.vt.edu/items/a13aaaf4-ca30-44c9-8046-335823a1c23f",
   },
 ];
