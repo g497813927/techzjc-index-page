@@ -5,6 +5,7 @@ import { publications } from "@/data/publications";
 import { NextRequest } from "next/server";
 import { baseUrl } from "@/data/siteInfo";
 import { yamlQ, indentBlock } from "@/utils/yamlHelper";
+import { estimateMarkdownTokens } from "@/utils/markdownTokens";
 
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ lang: string }> }): Promise<Response> {
@@ -79,10 +80,12 @@ ${pub.abstract ? `abstract: |\n${indentBlock(pub.abstract, 2)}` : ""}
 
 ${dict['metadata']['contacts']['children'].map(contact => `- [${contact.label}](${contact.url})`).join("\n")}`
 
-
+    const estTokens = estimateMarkdownTokens(markdownContent);
     return new Response(markdownContent, {
         headers: {
             "Content-Language": lang,
+            "x-markdown-tokens": estTokens.toString(),
+            "Content-Signal": "ai-train=yes, search=yes, ai-input=yes",
             "X-Robots-Tag": "noindex, follow",
             "Cache-Control": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800",
             "Link": `<${canonicalUrl}>; rel="canonical"${alternate_languages.map(lang => `, <${lang.href}>; rel="alternate"; hreflang="${lang.hrefLang}"`).join("")}, <${baseUrl}/>; rel="alternate"; hreflang="x-default"`,

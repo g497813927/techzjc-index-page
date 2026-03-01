@@ -4,6 +4,7 @@ import markdownParseJSX from "@/utils/markdownParseJSX";
 import { NextRequest } from "next/server";
 import { baseUrl } from "@/data/siteInfo";
 import { yamlQ } from "@/utils/yamlHelper";
+import { estimateMarkdownTokens } from "@/utils/markdownTokens";
 
 export async function GET(
     _request: NextRequest,
@@ -100,15 +101,17 @@ ${alternate_languages.map((a) => `  ${a.hrefLang}: ${yamlQ(a.href)}`).join("\n")
 
 ${renderedContent}
 `;
-
+    const estTokens = estimateMarkdownTokens(markdownContent);
     return new Response(markdownContent, {
         headers: {
             "Content-Language": lang,
+            "x-markdown-tokens": estTokens.toString(),
+            "Content-Signal": "ai-train=yes, search=yes, ai-input=yes",
             "X-Robots-Tag": "noindex, follow",
             "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=604800",
             "Link": `<${htmlCanonicalUrl}>; rel="canonical"${alternate_languages
-                    .map((a) => `, <${a.href}>; rel="alternate"; hreflang="${a.hrefLang}"`)
-                    .join("")
+                .map((a) => `, <${a.href}>; rel="alternate"; hreflang="${a.hrefLang}"`)
+                .join("")
                 }, <${baseUrl}/>; rel="alternate"; hreflang="x-default"`,
             "Content-Type": "text/markdown; charset=utf-8",
         },
