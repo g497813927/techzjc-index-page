@@ -1,7 +1,7 @@
 export default async function markdownParseJSX(mdx: string): Promise<string> {
   // Remove div wrapper for Image components
   const imageDivPattern = /<div[^>]*>\s*<Image\s+([^>]*)\/>\s*<\/div>/g;
-  mdx = mdx.replace(imageDivPattern, (match, attrs) => {
+  mdx = mdx.replace(imageDivPattern, (_match, attrs) => {
     // Convert Image props to img attributes
     const srcMatch = attrs.match(/src=["']([^"']*)["']/);
     const altMatch = attrs.match(/alt=["']([^"']*)["']/);
