@@ -40,7 +40,7 @@ ${Object.values(dict['about']['hobbies']['children']).map(item => `- ${item}`).j
 ${Object.values(dict['about']['education']['children']).map(item => `- ${formatEducationEntry(dict['about']['education'][parseEducationEntry(item)], item)}`).join("\n")}
 
 ## ${dict['photos']['title']}
-${[...fetchedPhotos1, ...fetchedPhotos2].map((photo) => `- ![${photo.alt + ' ' + copyrightNotice || photo.name}](https://techzjc.com${photo.url})`).join("\n")}
+${[...fetchedPhotos1, ...fetchedPhotos2].map((photo) => `- ![${[photo.alt, copyrightNotice].filter(Boolean).join(" ")}](${photo.url})`).join("\n")}
 
 ## ${dict['publications']['title']}
 

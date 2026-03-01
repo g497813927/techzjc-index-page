@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         });
     }
     const markdownContent = `---
-title: ${dict['metadata']['blog']['slug_or_year']['title'].replace('{slugOrYear}', slugOrYear)}
+title: ${dict['metadata']['blog']['month']['title'].replace('{year}', slugOrYear).replace('{month}', month)}
 description: ${dict['metadata']['blog']['slug_or_year']['description'].replace('{slugOrYear}', slugOrYear)}
 keywords: ${[...dict['metadata']['blog']['slug_or_year']['keywords'], slugOrYear].join(", ")}
 image: https://techzjc.com/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['slug_or_year']['opengraph_image_subtitle'].replace('{slugOrYear}', slugOrYear))}

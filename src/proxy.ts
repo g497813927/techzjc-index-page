@@ -110,12 +110,14 @@ export function proxy(req: NextRequest) {
     if (isMarkdownRequested) {
       const url = req.nextUrl.clone();
       // Check if pathname starts with /{locale}/markdown, if not, rewrite to /{locale}/markdown/{rest_of_path}
-      if (!pathname.startsWith(`/${locale}/markdown`)) {
-        url.pathname = `/${locale}/markdown${pathname}`;
+      if (pathname.startsWith(`/${locale}/markdown`)) {
+        url.pathname = pathname;
       } else {
-        url.pathname = `${locale}${pathname}`;
+        const localePrefix = `/${locale}`;
+        const restOfPath = pathname.slice(localePrefix.length);
+        url.pathname = `${localePrefix}/markdown${restOfPath}`;
       }
-      return NextResponse.rewrite(url);
+      return NextResponse.rewrite(url, response);
     }
     return response;
   }
