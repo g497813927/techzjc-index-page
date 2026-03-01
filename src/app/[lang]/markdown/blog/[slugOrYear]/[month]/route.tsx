@@ -12,7 +12,6 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
             },
         });
     }
-    const posts = getAllPosts(lang);
     const dict = await getDictionary(lang);
     if (!/^\d{4}$/.test(slugOrYear) || !/^\d{2}$/.test(month)) {
         return new Response("Invalid slug or year or month", {
@@ -22,11 +21,12 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
             },
         });
     }
+    const posts = getAllPosts(lang);
     const markdownContent = `---
 title: ${dict['metadata']['blog']['month']['title'].replace('{year}', slugOrYear).replace('{month}', month)}
-description: ${dict['metadata']['blog']['slug_or_year']['description'].replace('{slugOrYear}', slugOrYear)}
-keywords: ${[...dict['metadata']['blog']['slug_or_year']['keywords'], slugOrYear].join(", ")}
-image: https://techzjc.com/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['slug_or_year']['opengraph_image_subtitle'].replace('{slugOrYear}', slugOrYear))}
+description: ${dict['metadata']['blog']['month']['description'].replace('{year}', slugOrYear).replace('{month}', month)}
+keywords: ${dict['metadata']['blog']['month']['keywords'].join(", ")}
+image: https://techzjc.com/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['month']['opengraph_image_subtitle'].replace('{year}', slugOrYear).replace('{month}', month))}
 lang: ${lang}
 ---
 

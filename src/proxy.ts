@@ -117,7 +117,9 @@ export function proxy(req: NextRequest) {
         const restOfPath = pathname.slice(localePrefix.length);
         url.pathname = `${localePrefix}/markdown${restOfPath}`;
       }
-      return NextResponse.rewrite(url, response);
+      const rewriteResponse = NextResponse.rewrite(url);
+      rewriteResponse.cookies.set("locale", locale, { path: "/" });
+      return rewriteResponse;
     }
     return response;
   }

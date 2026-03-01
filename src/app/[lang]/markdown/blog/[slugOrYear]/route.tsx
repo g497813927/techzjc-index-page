@@ -12,9 +12,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
             },
         });
     }
-    const posts = getAllPosts(lang);
     const dict = await getDictionary(lang);
     if (!/^\d{4}$/.test(slugOrYear)) {
+        const posts = getAllPosts(lang);
         // Check if slugOrYear matches any post slug
         const matchingPost = posts.find(post => post.slug === slugOrYear);
         if (matchingPost) {
@@ -36,6 +36,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
             });
         }
     }
+    const posts = getAllPosts(lang);
     const markdownContent = `---
 title: ${dict['metadata']['blog']['slug_or_year']['title'].replace('{slugOrYear}', slugOrYear)}
 description: ${dict['metadata']['blog']['slug_or_year']['description'].replace('{slugOrYear}', slugOrYear)}

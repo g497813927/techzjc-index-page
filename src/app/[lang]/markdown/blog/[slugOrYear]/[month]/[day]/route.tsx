@@ -12,7 +12,6 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
             },
         });
     }
-    const posts = getAllPosts(lang);
     const dict = await getDictionary(lang);
     if (!/^\d{4}$/.test(slugOrYear) || !/^\d{2}$/.test(month) || !/^\d{2}$/.test(day)) {
         return new Response("Invalid slug or year or month or day", {
@@ -22,6 +21,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
             },
         });
     }
+    const posts = getAllPosts(lang);
     const markdownContent = `---
 title: ${dict['metadata']['blog']['day']['title'].replace('{year}', slugOrYear).replace('{month}', month).replace('{day}', day)}
 description: ${dict['metadata']['blog']['day']['description'].replace('{year}', slugOrYear).replace('{month}', month).replace('{day}', day)}

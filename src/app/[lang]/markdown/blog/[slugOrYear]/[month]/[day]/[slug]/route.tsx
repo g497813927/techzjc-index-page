@@ -24,7 +24,17 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     const dict = await getDictionary(lang);
     let Post = null;
     try {
-        Post = getPostBySlug(slug, slugOrYear, month, day);
+        // Sanitize slug to prevent directory traversal attacks
+        let sanitizedSlug = slug.replace(/(\.\.[\/\\])/g, '');
+        if (sanitizedSlug !== slug) {
+            return new Response("Invalid slug", {
+                status: 400,
+                headers: {
+                    "Content-Type": "text/plain; charset=utf-8"
+                },
+            });
+        }
+        Post = getPostBySlug(sanitizedSlug, slugOrYear, month, day);
         //eslint-disable-next-line
     } catch (error) {
         return new Response("Post not found", {
