@@ -3,6 +3,7 @@ import { getAllPosts } from "@/lib/blog";
 import { NextRequest } from "next/server";
 import { baseUrl } from "@/data/siteInfo";
 import { yamlQ } from "@/utils/yamlHelper";
+import { estimateMarkdownTokens } from "@/utils/markdownTokens";
 
 export async function GET(
     _request: NextRequest,
@@ -79,15 +80,17 @@ ${posts.length ? "" : `> ${dict.blog.month.no_articles?.replace("{year}", slugOr
             })
             .join("\n")}
 `;
-
+    const estTokens = estimateMarkdownTokens(markdownContent);
     return new Response(markdownContent, {
         headers: {
             "Content-Language": lang,
+            "x-markdown-tokens": estTokens.toString(),
+            "Content-Signal": "ai-train=yes, search=yes, ai-input=yes",
             "X-Robots-Tag": "noindex, follow",
             "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=604800",
             "Link": `<${canonicalUrl}>; rel="canonical"${alternate_languages
-                    .map((a) => `, <${a.href}>; rel="alternate"; hreflang="${a.hrefLang}"`)
-                    .join("")
+                .map((a) => `, <${a.href}>; rel="alternate"; hreflang="${a.hrefLang}"`)
+                .join("")
                 }, <${baseUrl}/>; rel="alternate"; hreflang="x-default"`,
             "Content-Type": "text/markdown; charset=utf-8",
         },
