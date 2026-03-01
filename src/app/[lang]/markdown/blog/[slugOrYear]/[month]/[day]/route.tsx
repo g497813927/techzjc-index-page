@@ -1,7 +1,7 @@
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { getAllPosts } from "@/lib/blog";
 
-export async function GET(request: Request, { params }: { params: { lang: string, slugOrYear: string, month: string, day: string } }): Promise<Response> {
+export async function GET(request: Request, { params }: { params: { lang: string; slugOrYear: string; month: string; day: string } }): Promise<Response> {
     const { lang, slugOrYear, month, day } = await params;
     const posts = getAllPosts(lang);
     if (!hasLocale(lang)) {
