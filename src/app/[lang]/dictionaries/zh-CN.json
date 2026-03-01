@@ -2,6 +2,51 @@
     "metadata": {
         "lang": "zh-CN",
         "language_name": "简体中文",
+        "contacts": {
+            "title": "联系方式",
+            "children": [
+                {
+                    "label": "哔哩哔哩",
+                    "url": "https://space.bilibili.com/30023942"
+                },
+                {
+                    "label": "电子邮件",
+                    "url": "mailto:admin@techzjc.com"
+                },
+                {
+                    "label": "Facebook",
+                    "url": "https://www.facebook.com/techzjc"
+                },
+                {
+                    "label": "GitLab",
+                    "url": "https://git.cs.vt.edu/techzjc"
+                },
+                {
+                    "label": "GitHub",
+                    "url": "https://github.com/g497813927"
+                },
+                {
+                    "label": "谷歌学术",
+                    "url": "https://scholar.google.com/citations?user=bfAU2pYAAAAJ"
+                },
+                {
+                    "label": "Instagram",
+                    "url": "https://www.instagram.com/techzjc/"
+                },
+                {
+                    "label": "领英",
+                    "url": "https://www.linkedin.com/in/techzjc/"
+                },
+                {
+                    "label": "Orcid",
+                    "url": "https://orcid.org/0009-0003-5719-909X"
+                },
+                {
+                    "label": "油管",
+                    "url": "https://www.youtube.com/@techzjc"
+                }
+            ]
+        },
         "index": {
             "title": "Techzjc",
             "description": "Techzjc是一个持续拥有创新热情的网站，由赵佳成建立。",
