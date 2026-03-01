@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 
 export async function mdxToFeedHtml(mdx: string): Promise<string> {
   // Replace Next.js Image components with standard img tags for feed generation
-  const processedMdx = mdx.replace(/<Image\s+([^>]*)\/>/g, (match, attrs) => {
+  const processedMdx = mdx.replace(/<div[^>]*>\s*<Image\s+([^>]*)\/>\s*<\/div>/g, (_match, attrs) => {
     // Convert Image props to img attributes
     const srcMatch = attrs.match(/src=["']([^"']*)["']/);
     const altMatch = attrs.match(/alt=["']([^"']*)["']/);
