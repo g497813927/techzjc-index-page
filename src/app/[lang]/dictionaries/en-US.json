@@ -2,6 +2,51 @@
     "metadata": {
         "lang": "en-US",
         "language_name": "English (US)",
+        "contacts": {
+            "title": "Contacts",
+            "children": [
+                {
+                    "label": "Bilibili",
+                    "url": "https://space.bilibili.com/30023942"
+                },
+                {
+                    "label": "Email",
+                    "url": "mailto:admin@techzjc.com"
+                },
+                {
+                    "label": "Facebook",
+                    "url": "https://www.facebook.com/techzjc"
+                },
+                {
+                    "label": "GitLab",
+                    "url": "https://git.cs.vt.edu/techzjc"
+                },
+                {
+                    "label": "GitHub",
+                    "url": "https://github.com/g497813927"
+                },
+                {
+                    "label": "Google Scholar",
+                    "url": "https://scholar.google.com/citations?user=bfAU2pYAAAAJ"
+                },
+                {
+                    "label": "Instagram",
+                    "url": "https://www.instagram.com/techzjc/"
+                },
+                {
+                    "label": "LinkedIn",
+                    "url": "https://www.linkedin.com/in/techzjc/"
+                },
+                {
+                    "label": "Orcid",
+                    "url": "https://orcid.org/0009-0003-5719-909X"
+                },
+                {
+                    "label": "YouTube",
+                    "url": "https://www.youtube.com/@techzjc"
+                }
+            ]
+        },
         "index": {
             "title": "Techzjc",
             "description": "Techzjc is a website built by Jiacheng Zhao (John) with a passion for continuous innovation.",
