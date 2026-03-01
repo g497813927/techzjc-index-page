@@ -86,7 +86,7 @@ export async function GET(
 id: ${yamlQ(htmlCanonicalUrl)}
 type: ${yamlQ("blog_post")}
 lang: ${yamlQ(postLang)}
-title: ${yamlQ(`${Post.title} - ${dict.metadata.blog.post.title}`)}
+title: ${yamlQ(dict.metadata.blog.post.title.replace("{title}", Post.title))}
 description: ${yamlQ(description)}
 canonical_url: ${yamlQ(htmlCanonicalUrl)}
 published_time: ${yamlQ(publishedTime)}
