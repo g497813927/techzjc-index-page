@@ -1,8 +1,9 @@
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { getPostBySlug } from "@/lib/blog";
 import markdownParseJSX from "@/utils/markdownParseJSX";
+import { NextRequest } from "next/server";
 
-export async function GET(request: Request, { params }: { params: { lang: string; slugOrYear: string; month: string; day: string; slug: string } }): Promise<Response> {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ lang: string; slugOrYear: string; month: string; day: string; slug: string }> }): Promise<Response> {
     const { lang, slugOrYear, month, day, slug } = await params;
     if (!hasLocale(lang)) {
         return new Response("Locale not supported", {

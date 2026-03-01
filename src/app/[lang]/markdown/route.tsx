@@ -1,10 +1,11 @@
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { parseEducationEntry, formatEducationEntry } from '@/utils/educationUtils';
-import { copyrightNotice, fetchedPhotos1, fetchedPhotos2, photo_schema } from '@/data/photos';
+import { copyrightNotice, fetchedPhotos1, fetchedPhotos2 } from '@/data/photos';
 import { publications } from "@/data/publications";
+import { NextRequest } from "next/server";
 
 
-export async function GET(request: Request, { params }: { params: { lang: string } }): Promise<Response> {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ lang: string }> }): Promise<Response> {
     const { lang } = await params;
     if (!hasLocale(lang)) {
         return new Response("Locale not supported", {

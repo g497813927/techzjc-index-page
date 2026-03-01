@@ -1,9 +1,9 @@
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { getAllPosts } from "@/lib/blog";
+import { NextRequest } from "next/server";
 
-export async function GET(request: Request, { params }: { params: { lang: string; slugOrYear: string } }): Promise<Response> {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ lang: string; slugOrYear: string }> }): Promise<Response> {
     const { lang, slugOrYear } = await params;
-    const posts = getAllPosts(lang);
     if (!hasLocale(lang)) {
         return new Response("Locale not supported", {
             status: 400,
@@ -12,6 +12,7 @@ export async function GET(request: Request, { params }: { params: { lang: string
             },
         });
     }
+    const posts = getAllPosts(lang);
     const dict = await getDictionary(lang);
     if (!/^\d{4}$/.test(slugOrYear)) {
         // Check if slugOrYear matches any post slug
