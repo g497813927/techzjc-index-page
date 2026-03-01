@@ -29,7 +29,12 @@ export async function GET(
     }
 
     // Keep your traversal prevention idea (minimal)
-    const sanitizedSlug = slug.replace(/(\.\.[\/\\])/g, "");
+    let sanitizedSlug = slug;
+    let previousSlug: string;
+    do {
+        previousSlug = sanitizedSlug;
+        sanitizedSlug = sanitizedSlug.replace(/(\.\.[\/\\])/g, "");
+    } while (sanitizedSlug !== previousSlug);
     if (sanitizedSlug !== slug) {
         return new Response("Invalid slug", {
             status: 400,
