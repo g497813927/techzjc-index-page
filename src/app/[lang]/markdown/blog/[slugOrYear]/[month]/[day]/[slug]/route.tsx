@@ -13,6 +13,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
         });
     }
+    if (!/^\d{4}$/.test(slugOrYear) || !/^\d{2}$/.test(month) || !/^\d{2}$/.test(day)) {
+        return new Response("Invalid slug or year or month or day", {
+            status: 400,
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8"
+            },
+        });
+    }
     const dict = await getDictionary(lang);
     let Post = null;
     try {
