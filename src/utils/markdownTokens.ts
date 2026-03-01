@@ -9,7 +9,7 @@ export function estimateMarkdownTokens(markdown: string): number {
   const s = markdown ?? "";
 
   const cjkChars =
-    (s.match(/[\u4E00-\u9FFF\u3400-\u4DBF]/g) ?? []).length; // Han
+    (s.match(/[\u4E00-\u9FFF\u3400-\u4DBF\u3040-\u30FF\uAC00-\uD7AF]/g) ?? []).length; // CJK & related (Han, Hiragana, Katakana, Hangul)
 
   // Rough "word-like" tokens for Latin scripts, numbers, and identifiers.
   const wordLike = (s.match(/[A-Za-z0-9_]+/g) ?? []).length;
