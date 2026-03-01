@@ -5,7 +5,7 @@
  * - This is an estimate. Exact tokenization depends on the model.
  * - We bias toward being slightly high to avoid context overflows.
  */
-export function estimateMarkdownTokens(markdown: string): number {
+export function estimateMarkdownTokens(markdown: string | null | undefined): number {
   const s = markdown ?? "";
 
   const cjkChars =
