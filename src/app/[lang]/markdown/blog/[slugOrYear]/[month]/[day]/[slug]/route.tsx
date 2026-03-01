@@ -1,66 +1,116 @@
-import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
+import { availableLocales, getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { getPostBySlug } from "@/lib/blog";
 import markdownParseJSX from "@/utils/markdownParseJSX";
 import { NextRequest } from "next/server";
+import { baseUrl } from "@/data/siteInfo";
+import { yamlQ } from "@/utils/yamlHelper";
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ lang: string; slugOrYear: string; month: string; day: string; slug: string }> }): Promise<Response> {
-    const { lang, slugOrYear, month, day, slug } = await params;
+export async function GET(
+    _request: NextRequest,
+    {
+        params,
+    }: { params: Promise<{ lang: string; slugOrYear: string; month: string; day: string; slug: string }> }
+): Promise<Response> {
+    const { lang, slugOrYear: year, month, day, slug } = await params;
+
     if (!hasLocale(lang)) {
         return new Response("Locale not supported", {
             status: 400,
-            headers: {
-                "Content-Type": "text/plain; charset=utf-8"
-            },
+            headers: { "Content-Type": "text/plain; charset=utf-8" },
         });
     }
-    if (!/^\d{4}$/.test(slugOrYear) || !/^\d{2}$/.test(month) || !/^\d{2}$/.test(day)) {
-        return new Response("Invalid slug or year or month or day", {
+
+    if (!/^\d{4}$/.test(year) || !/^\d{2}$/.test(month) || !/^\d{2}$/.test(day)) {
+        return new Response("Invalid year, month, or day", {
             status: 400,
-            headers: {
-                "Content-Type": "text/plain; charset=utf-8"
-            },
+            headers: { "Content-Type": "text/plain; charset=utf-8" },
         });
     }
+
+    // Keep your traversal prevention idea (minimal)
+    const sanitizedSlug = slug.replace(/(\.\.[\/\\])/g, "");
+    if (sanitizedSlug !== slug) {
+        return new Response("Invalid slug", {
+            status: 400,
+            headers: { "Content-Type": "text/plain; charset=utf-8" },
+        });
+    }
+
     const dict = await getDictionary(lang);
-    let Post = null;
+
+    let Post: ReturnType<typeof getPostBySlug>;
     try {
-        // Sanitize slug to prevent directory traversal attacks
-        let sanitizedSlug = slug.replace(/(\.\.[\/\\])/g, '');
-        if (sanitizedSlug !== slug) {
-            return new Response("Invalid slug", {
-                status: 400,
-                headers: {
-                    "Content-Type": "text/plain; charset=utf-8"
-                },
-            });
-        }
-        Post = getPostBySlug(sanitizedSlug, slugOrYear, month, day);
-        //eslint-disable-next-line
-    } catch (error) {
+        Post = getPostBySlug(sanitizedSlug, year, month, day);
+    } catch {
         return new Response("Post not found", {
             status: 404,
-            headers: {
-                "Content-Type": "text/plain; charset=utf-8"
-            },
+            headers: { "Content-Type": "text/plain; charset=utf-8" },
         });
     }
+
+    // If frontmatter lang mismatches the route lang, decide what you want.
+    const postLang = Post.lang || lang;
+
+    const htmlCanonicalUrl = `${baseUrl}/${lang}/blog/${year}/${month}/${day}/${sanitizedSlug}`;
+
+    const alternate_languages = availableLocales
+        .filter((locale) => locale !== lang)
+        .map((locale) => ({
+            hrefLang: locale,
+            href: `${baseUrl}/${locale}/blog/${year}/${month}/${day}/${sanitizedSlug}`,
+        }));
+
+    // Prefer frontmatter description; otherwise use your dict fallback
+    const description =
+        Post.description ||
+        dict.metadata.blog.post.default_description.replace("{title}", Post.title);
+
+    const og = new URL(`${baseUrl}/opengraph-image`);
+    og.searchParams.set("title", Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title);
+    og.searchParams.set("subtitle", dict.metadata.blog.post.opengraph_image_subtitle.replace("{title}", Post.title));
+
+    const imageUrl = og.toString();
+
+    // Render MDX to markdown-ish (your existing pipeline)
     const renderedContent = await markdownParseJSX(Post.content);
+
+    // Use Post.time (from frontmatter) as authoritative published_time.
+    // Keep it as-is (quoted) so you don't accidentally claim timezone precision you don't have.
+    const publishedTime = Post.time || `${year}-${month}-${day}`;
+
+    // Build YAML tags list consistently
+    const tags = Array.isArray(Post.tags) ? Post.tags : [];
+
+
     const markdownContent = `---
-title: ${Post.title} - ${dict['metadata']['blog']['post']['title']}
-description: ${Post.description || dict['metadata']['blog']['post']['default_description'].replace('{title}', Post.title)}
-keywords: ${Post.tags ? Post.tags.join(", ") : ''}${Post.tags ? ', ' : ''}${Post.title}, ${dict['metadata']['blog']['post']['keywords'].join(", ")}
-image: ${Post.ogImage || 'https://techzjc.com/opengraph-image?title=Techzjc&subtitle=' + encodeURIComponent(Post.title)}
-lang: ${lang}
+id: ${yamlQ(htmlCanonicalUrl)}
+type: ${yamlQ("blog_post")}
+lang: ${yamlQ(postLang)}
+title: ${yamlQ(`${Post.title} - ${dict.metadata.blog.post.title}`)}
+description: ${yamlQ(description)}
+canonical_url: ${yamlQ(htmlCanonicalUrl)}
+published_time: ${yamlQ(publishedTime)}
+tags:${tags.length ? "\n" + tags.map((t: string) => `  - ${yamlQ(t)}`).join("\n") : " []"}
+image: ${yamlQ(imageUrl)}
+alternate_languages:
+${alternate_languages.map((a) => `  ${a.hrefLang}: ${yamlQ(a.href)}`).join("\n")}
 ---
 
 # ${Post.title}
 
 ${renderedContent}
+`;
 
-`
     return new Response(markdownContent, {
         headers: {
-            "Content-Type": "text/markdown; charset=utf-8"
+            "Content-Language": lang,
+            "X-Robots-Tag": "noindex, follow",
+            "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=604800",
+            "Link": `<${htmlCanonicalUrl}>; rel="canonical"${alternate_languages
+                    .map((a) => `, <${a.href}>; rel="alternate"; hreflang="${a.hrefLang}"`)
+                    .join("")
+                }, <${baseUrl}/>; rel="alternate"; hreflang="x-default"`,
+            "Content-Type": "text/markdown; charset=utf-8",
         },
     });
 }
