@@ -2,7 +2,7 @@ import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { getAllPosts } from "@/lib/blog";
 import { NextRequest } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ lang: string; slugOrYear: string; month: string }> }): Promise<Response> {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ lang: string; slugOrYear: string; month: string }> }): Promise<Response> {
     const { lang, slugOrYear, month } = await params;
     if (!hasLocale(lang)) {
         return new Response("Locale not supported", {
