@@ -23,7 +23,7 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "figlet": "^1.10.0",
-    "github-markdown-css": "^5.8.1",
+    "github-markdown-css": "^5.9.0",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "license-checker": "^25.0.1",
