@@ -55,7 +55,7 @@ jobs:
             ${{ vars.IMAGE }}:latest
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
     name: Deploy to Alibaba Cloud FC
     concurrency:
       group: deploy-${{ github.ref }}
