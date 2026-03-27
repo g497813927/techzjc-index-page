@@ -1,14 +1,13 @@
 FROM alpine AS base
 RUN apk add --no-cache nodejs npm git
 WORKDIR /app
-ENV NODE_ENV=production
 
 RUN apk add --no-cache libc6-compat
 FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
 
-RUN npm ci --omit optional
+RUN npm ci --omit=optional
 RUN npm install lightningcss --no-save
 RUN npm install @tailwindcss/oxide --no-save
 FROM base AS builder
@@ -20,6 +19,7 @@ COPY . .
 RUN npm run build
 FROM base AS runner
 WORKDIR /app
+ENV NODE_ENV=production
 ENV PORT=9000
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
