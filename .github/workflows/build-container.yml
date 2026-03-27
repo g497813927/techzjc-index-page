@@ -42,13 +42,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push images
+      - name: Build and push images if on Main or Tag
         uses: docker/build-push-action@v6
         id: docker_build
         with:
           context: .
           platforms: linux/amd64
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
           tags: |
             ${{ vars.IMAGE }}:${{ github.sha }}
             ${{ vars.IMAGE }}:${{ github.ref_name }}
