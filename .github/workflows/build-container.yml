@@ -3,7 +3,7 @@ name: Docker Build & Push and Deploy to Alibaba Cloud FC
 on:
   push:
     branches:
-      - main
+      - '**'
   workflow_dispatch:
 
 jobs:
@@ -55,6 +55,8 @@ jobs:
             ${{ vars.IMAGE }}:latest
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/main'
+    name: Deploy to Alibaba Cloud FC
     concurrency:
       group: deploy-${{ github.ref }}
       cancel-in-progress: true
