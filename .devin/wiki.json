@@ -264,7 +264,7 @@
       "parent": "UI Components",
       "page_notes": [
         {
-          "content": "Refer to src/utils/debug.ts for information on how to set start-debug-listener to true",
+          "content": "Debug mode is a 2-step flow: first arm debug listener by typing the key sequence 'techzjc-debug' (or by shaking the device; on iOS 13+ the listener is armed automatically), then triple-click the footer copyright text within 1 second to toggle localStorage['enable-debug'] and reload. Setting localStorage['start-debug-listener']='true' manually only arms the listener and does not enable vConsole by itself. See src/utils/debug.ts, src/components/DebugItem.tsx, and src/components/DebugBootstrap.tsx.",
           "author": "techzjc"
         }
       ]
