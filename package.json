@@ -46,6 +46,7 @@
     "lightningcss-linux-x64-gnu": "^1.32.0"
   },
   "devDependencies": {
+    "typescript": "^5",
     "@next/bundle-analyzer": "^16.1.6",
     "@tailwindcss/postcss": "^4",
     "@types/estree": "^1.0.8",
@@ -58,10 +59,9 @@
     "@types/react-helmet": "^6.1.11",
     "@types/unist": "^3.0.3",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^10.0.3",
+    "eslint": "^9.8.0",
     "eslint-config-next": "^16.1.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "tailwindcss": "^4"
   },
   "overrides": {
     "ajv": ">=8.18.0",
