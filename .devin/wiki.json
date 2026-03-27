@@ -264,7 +264,7 @@
       "parent": "UI Components",
       "page_notes": [
         {
-          "content": "Refer to src/utils/debug.ts for information on how to set start-debug-listener to true",
+          "content": "Debug mode is triggered by triggerDebuggerListeners in src/utils/debug.ts: type the key sequence 'techzjc-debug' on desktop, or shake the device on supported mobile browsers. On iOS 13+ (DeviceMotionEvent.requestPermission), the app sets start-debug-listener=true automatically. Once start-debug-listener is true, DebugBootstrap loads vConsole and DebugItem can toggle enable-debug.",
           "author": "techzjc"
         }
       ]
