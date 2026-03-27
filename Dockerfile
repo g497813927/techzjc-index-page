@@ -17,6 +17,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN npm install typescript --no-save
 RUN npm run build
 FROM base AS runner
 WORKDIR /app
