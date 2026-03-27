@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "typescript": "^5",
-    "@next/bundle-analyzer": "^16.1.6",
+    "@next/bundle-analyzer": "^16.2.1",
     "@tailwindcss/postcss": "^4",
     "@types/estree": "^1.0.8",
     "@types/ms": "^2.1.0",
