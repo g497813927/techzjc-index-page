@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: 'standalone',
   reactCompiler: true,
+  allowedDevOrigins: [
+    '127.0.0.1',
+    'localhost',
+    '::1'
+  ],
   images: {
     remotePatterns: [
       {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useSpring } from "motion/react";
 import "./ArticleProgress.css";
 
@@ -10,12 +10,14 @@ function clamp01(x: number) {
 
 export default function ArticleProgress({ content }: { content: React.ReactNode }) {
   const articleRef = useRef<HTMLDivElement | null>(null);
+  const [isHidden, setIsHidden] = useState(false);
 
   const scaleX = useSpring(0, { stiffness: 200, damping: 30 });
   const opacity = useSpring(1, { stiffness: 250, damping: 35 });
-  const hidden = useSpring(0, { stiffness: 250, damping: 35 });
 
   useEffect(() => {
+    let rafId = 0;
+
     const getCssPxVar = (name: string, fallback: number) => {
       const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
       const n = parseFloat(raw);
@@ -37,7 +39,7 @@ export default function ArticleProgress({ content }: { content: React.ReactNode 
       const epsilon = 2;
       const isShort = rect.height <= viewportUsable + epsilon;
 
-      hidden.set(isShort ? 1 : 0);
+      setIsHidden((prev) => (prev === isShort ? prev : isShort));
 
       if (isShort) {
         scaleX.set(0);
@@ -72,20 +74,31 @@ export default function ArticleProgress({ content }: { content: React.ReactNode 
       opacity.set(o);
     };
 
-    update();
+    const scheduleUpdate = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0;
+        update();
+      });
+    };
 
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    scheduleUpdate();
 
-    const ro = new ResizeObserver(update);
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    const ro = new ResizeObserver(scheduleUpdate);
     if (articleRef.current) ro.observe(articleRef.current);
 
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
       ro.disconnect();
     };
-  }, [opacity, scaleX, hidden]);
+  }, [opacity, scaleX]);
 
   return (
     <>
@@ -102,7 +115,7 @@ export default function ArticleProgress({ content }: { content: React.ReactNode 
           originX: 0,
           zIndex: 10,
           pointerEvents: "none",
-          display: hidden.get() ? "none" : "block",
+          display: isHidden ? "none" : "block",
         }}
       />
       <div className="article-content-wrapper" ref={articleRef}>
