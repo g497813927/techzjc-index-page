@@ -44,7 +44,7 @@ export const publications: PublicationProps[] = [
       "Proceedings of the Extended Abstracts of the 2026 CHI Conference on Human Factors in Computing Systems",
     venue_short: "CHI EA '26",
     location: "Barcelona, Spain",
-    pages: "1-5",
+    pages: "1–5",
     abstract: `Understanding user experience and user needs is an essential goal in HCI education, yet novice students often struggle to recognize the diversity and complexity of user perspectives. This study investigates how empathy-related understanding unfolds during early HCI learning through diary reflections and peer discussions. Ten undergraduate students recorded their daily experiences using a fitness application and later shared their reflections in small-group discussions. We analyzed open-ended responses together with multi-stage Empathy in Design Scale data. Our findings center on three aspects. The four empathy dimensions, Emotional Interest, Sensitivity, Personal Experience, and Self-awareness, showed descriptive shifts rather than a single trend. Students gradually realized that their initial assumptions about user needs and design difficulty were not sufficient. They also moved from a function-oriented view toward a more holistic understanding of product experience. These findings offer early insight into how reflective writing and peer dialogue influence the development of empathy.`,
     publication_year: 2026,
     doi: "10.1145/3772363.3798329",
