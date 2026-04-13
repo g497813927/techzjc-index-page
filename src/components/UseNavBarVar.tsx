@@ -28,7 +28,7 @@ export function UseNavHeightVar() {
     const ro = new ResizeObserver(scheduleApply);
     ro.observe(nav);
 
-    scheduleApply();
+    apply();
     window.addEventListener('resize', scheduleApply);
 
     return () => {
