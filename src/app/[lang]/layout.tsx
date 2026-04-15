@@ -33,7 +33,6 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
               <Analytics />
             </>
             :
-            lang === 'zh-CN' &&
             <>
               <script id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
               <script
