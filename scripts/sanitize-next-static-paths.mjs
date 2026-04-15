@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
@@ -30,7 +31,7 @@ function sanitizeChunkSubpath(relativeSubpath) {
     .join("/");
 }
 
-async function collectFiles(dir) {
+async function collectFiles(dir, skipDirs = new Set()) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files = [];
 
@@ -38,7 +39,10 @@ async function collectFiles(dir) {
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
-      files.push(...await collectFiles(fullPath));
+      if (skipDirs.has(fullPath)) {
+        continue;
+      }
+      files.push(...await collectFiles(fullPath, skipDirs));
       continue;
     }
 
@@ -63,7 +67,7 @@ async function removeEmptyDirectories(dir) {
 
   const remainingEntries = await fs.readdir(dir);
   if (remainingEntries.length === 0) {
-    await fs.rmdir(dir);
+    await fs.rm(dir, { recursive: false });
   }
 }
 
@@ -125,12 +129,20 @@ async function main() {
 
   for (const { from, to } of fileMoves) {
     await fs.mkdir(path.dirname(to), { recursive: true });
+    try {
+      await fs.access(to);
+      throw new Error(`Sanitized chunk destination already exists on disk: ${to}`);
+    } catch (err) {
+      if (err.code !== "ENOENT") {
+        throw err;
+      }
+    }
     await fs.rename(from, to);
   }
 
   await removeEmptyDirectories(APP_CHUNKS_DIR);
 
-  const nextFiles = await collectFiles(NEXT_DIR);
+  const nextFiles = await collectFiles(NEXT_DIR, new Set([path.join(NEXT_DIR, "cache")]));
   const uniqueReplacements = Array.from(
     new Map(replacements.map(([from, to]) => [from, to])).entries(),
   ).sort((a, b) => b[0].length - a[0].length);
