@@ -31,9 +31,14 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
               <Analytics />
             </>
             :
+            lang === 'zh-CN' &&
             <>
               <script id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
-              <script dangerouslySetInnerHTML={{ __html: "LA.init({id:'3PdOUXA31SUg1C4G',ck:'3PdOUXA31SUg1C4G',autoTrack:true,hashMode:true,screenRecord:true})" }}></script>
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: "try{if(window.LA&&typeof window.LA.init==='function'){window.LA.init({id:'3PdOUXA31SUg1C4G',ck:'3PdOUXA31SUg1C4G',autoTrack:true,hashMode:true,screenRecord:true})}}catch(e){}"
+                }}
+              ></script>
             </>
         }
         <link rel="alternate" type="application/rss+xml" title={dict['metadata']['blog']['index']['rss_feed_link_title']} href={`https://techzjc.com/${lang}/rss.xml`} />
