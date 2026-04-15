@@ -30,6 +30,23 @@ const SCANNER_PATTERNS = [
 ];
 
 export function proxy(req: NextRequest) {
+  // TRACE is universally scanner noise; route handlers cannot export a TRACE
+  // handler, so intercept it here before any other routing logic.
+  if (req.method === "TRACE") {
+    const locale = getLocale(req as unknown as { headers: Headers });
+    const path = req.nextUrl.pathname;
+    const message = locale.toLowerCase().startsWith("zh")
+      ? `一个野生的扫描器出现了！野生的扫描器对 ${path} 使出了 ${req.method}…没有击中 ${path}！`
+      : `A wild scanner appeared! The wild scanner used ${req.method} on ${path}… It missed ${path}!`;
+    return new NextResponse(message.trim(), {
+      status: 404,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
+  }
+
   let { pathname } = req.nextUrl;
 
   const rawHost = (req.headers.get("host") || "").toLowerCase();
