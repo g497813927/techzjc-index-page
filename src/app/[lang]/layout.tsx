@@ -14,6 +14,8 @@ export async function generateStaticParams() {
 export default async function RootLayout({ children, params }: LayoutProps<'/[lang]'>) {
 
   const themeScript = `!function(){try{var e=window.localStorage.getItem("theme"),t=window.matchMedia("(prefers-color-scheme:dark)").matches;"dark"===e||!e&&t?(document.documentElement.classList.add("dark"),document.documentElement.setAttribute("data-theme","dark")):(document.documentElement.classList.remove("dark"),document.documentElement.setAttribute("data-theme","light"))}catch(e){}}();`;
+  // Guard LA.init: only runs if SDK loaded successfully, swallows errors silently
+  const laInitScript = "try{if(window.LA&&typeof window.LA.init==='function'){window.LA.init({id:'3PdOUXA31SUg1C4G',ck:'3PdOUXA31SUg1C4G',autoTrack:true,hashMode:true,screenRecord:true})}}catch(e){}";
   const { lang } = await params;
   const dict = await getDictionary(lang as 'en-US' | 'zh-CN');
   return (
@@ -35,9 +37,7 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
             <>
               <script id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
               <script
-                dangerouslySetInnerHTML={{
-                  __html: "try{if(window.LA&&typeof window.LA.init==='function'){window.LA.init({id:'3PdOUXA31SUg1C4G',ck:'3PdOUXA31SUg1C4G',autoTrack:true,hashMode:true,screenRecord:true})}}catch(e){}"
-                }}
+                dangerouslySetInnerHTML={{ __html: laInitScript }}
               ></script>
             </>
         }
