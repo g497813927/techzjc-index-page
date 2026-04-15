@@ -27,4 +27,3 @@ export const DELETE = handle;
 export const PATCH = handle;
 export const OPTIONS = handle;
 export const HEAD = handle;
-export const TRACE = handle;

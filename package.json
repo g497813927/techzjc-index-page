@@ -6,6 +6,7 @@
     "generate-licenses": "node ./scripts/generate-licenses.mjs",
     "dev": "echo NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) > .env.local && echo NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) >> .env.local && npm run generate-licenses && next dev",
     "build": "echo NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) > .env.local && echo NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) >> .env.local && npm run generate-licenses && next build",
+    "build:docker": "echo NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) > .env.local && echo NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) >> .env.local && npm run generate-licenses && next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
