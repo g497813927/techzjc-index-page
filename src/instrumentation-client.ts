@@ -2,38 +2,53 @@ type SentryModule = typeof import("@sentry/nextjs");
 type RouterTransitionStartArgs = Parameters<
   SentryModule["captureRouterTransitionStart"]
 >;
+type SentryFrame = {
+  filename?: string;
+};
 type SentryBeforeSendEvent = {
+  culprit?: string;
   exception?: {
     values?: Array<{
-      value?: string;
       mechanism?: {
         type?: string;
       };
       stacktrace?: {
-        frames?: Array<{
-          filename?: string;
-        }>;
+        frames?: SentryFrame[];
       };
+      value?: string;
     }>;
   };
   breadcrumbs?: Array<{
-    category?: string;
     message?: string;
     data?: Record<string, unknown>;
   }>;
+  request?: {
+    url?: string;
+  };
+  stacktrace?: {
+    frames?: SentryFrame[];
+  };
 };
 
 const isGlobalBuild = process.env.NEXT_PUBLIC_VERCEL_ENV === "true";
 const clientDsn =
   process.env.NEXT_PUBLIC_SENTRY_DSN ??
   "https://70be50dacaf31bdfb40465cf13af9f71@o4511261317398528.ingest.us.sentry.io/4511261318447104";
+const sentryApplicationKey =
+  process.env.NEXT_PUBLIC_SENTRY_APPLICATION_KEY ?? "techzjc-site-index";
 const sendDefaultPii = process.env.NEXT_PUBLIC_SENTRY_SEND_DEFAULT_PII === "true";
 const knownBrowserNoiseMessage =
   "Non-Error promise rejection captured with value: Response not successful: Received status code 400";
 const vercelToolbarNoisePatterns = ["/.well-known/vercel/jwe", /\/[a-z0-9]+\/view\b/i];
-const clarityExtensionNoisePatterns = [
-  "https://y.clarity.ms/",
-  "chrome-extension://bngpiglbalmenaabohcooocpnljgfemj/",
+const browserExtensionUrlPrefixes = [
+  "chrome-extension://",
+  "moz-extension://",
+  "ms-browser-extension://",
+  "safari-extension://",
+  "safari-web-extension://",
+];
+const browserExtensionNoisePatterns = [
+  ...browserExtensionUrlPrefixes,
   "injected-entry.js",
 ];
 
@@ -73,6 +88,10 @@ function matchesAnyPattern(value: string, patterns: Array<string | RegExp>) {
   );
 }
 
+function isBrowserExtensionUrl(value: string) {
+  return browserExtensionUrlPrefixes.some((prefix) => value.startsWith(prefix));
+}
+
 function hasNoiseBreadcrumb(
   event: SentryBeforeSendEvent,
   patterns: Array<string | RegExp>,
@@ -82,15 +101,43 @@ function hasNoiseBreadcrumb(
   );
 }
 
-function hasNoiseFrame(
-  exception: NonNullable<NonNullable<SentryBeforeSendEvent["exception"]>["values"]>[number],
-  patterns: Array<string | RegExp>,
-) {
-  return (exception.stacktrace?.frames ?? []).some(
-    (frame) =>
-      typeof frame.filename === "string" &&
-      matchesAnyPattern(frame.filename, patterns),
+function getEventFrames(event: SentryBeforeSendEvent) {
+  return [
+    ...(event.stacktrace?.frames ?? []),
+    ...(event.exception?.values ?? []).flatMap(
+      (exception) => exception.stacktrace?.frames ?? [],
+    ),
+  ];
+}
+
+function isExtensionFrame(frame: SentryFrame) {
+  return (
+    typeof frame.filename === "string" &&
+    matchesAnyPattern(frame.filename, browserExtensionNoisePatterns)
   );
+}
+
+function hasOnlyBrowserExtensionFrames(event: SentryBeforeSendEvent) {
+  const frames = getEventFrames(event);
+  return frames.length > 0 && frames.every(isExtensionFrame);
+}
+
+function isBrowserExtensionEvent(event: SentryBeforeSendEvent) {
+  if (
+    typeof event.culprit === "string" &&
+    matchesAnyPattern(event.culprit, browserExtensionNoisePatterns)
+  ) {
+    return true;
+  }
+
+  if (
+    typeof event.request?.url === "string" &&
+    isBrowserExtensionUrl(event.request.url)
+  ) {
+    return true;
+  }
+
+  return hasOnlyBrowserExtensionFrames(event);
 }
 
 function isKnownBrowserNoise(event: SentryBeforeSendEvent) {
@@ -104,11 +151,7 @@ function isKnownBrowserNoise(event: SentryBeforeSendEvent) {
     return false;
   }
 
-  return (
-    hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns) ||
-    hasNoiseBreadcrumb(event, clarityExtensionNoisePatterns) ||
-    hasNoiseFrame(exception, clarityExtensionNoisePatterns)
-  );
+  return hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns);
 }
 
 if (isGlobalBuild && clientDsn) {
@@ -118,11 +161,19 @@ if (isGlobalBuild && clientDsn) {
         dsn: clientDsn,
         sendDefaultPii,
         tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
-        integrations: [Sentry.replayIntegration()],
+        integrations: [
+          Sentry.thirdPartyErrorFilterIntegration({
+            filterKeys: [sentryApplicationKey],
+            behaviour:
+              "drop-error-if-exclusively-contains-third-party-frames",
+            ignoreSentryInternalFrames: true,
+          }),
+          Sentry.replayIntegration(),
+        ],
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
         beforeSend(event) {
-          if (isKnownBrowserNoise(event)) {
+          if (isBrowserExtensionEvent(event) || isKnownBrowserNoise(event)) {
             return null;
           }
 

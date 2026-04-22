@@ -50,7 +50,14 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
+          build-args: |
+            NEXT_PUBLIC_SENTRY_APPLICATION_KEY=techzjc-site-index
+            SENTRY_ORG=${{ vars.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }}
+            SENTRY_UPLOAD_SOURCEMAPS=true
           push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
+          secrets: |
+            sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
           tags: |
             ${{ vars.IMAGE }}:${{ github.sha }}
             ${{ vars.IMAGE }}:latest

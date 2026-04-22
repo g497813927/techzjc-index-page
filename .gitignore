@@ -45,3 +45,6 @@ public/LICENSES.json
 
 # Ignore content/ as it is sourced from a different repo
 /content/
+
+# Sentry Config File
+.env.sentry-build-plugin
