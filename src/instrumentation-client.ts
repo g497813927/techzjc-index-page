@@ -125,19 +125,29 @@ function isExtensionFrame(frame: SentryFrame) {
 }
 
 function getUnhandledRejectionReason(value: unknown): unknown {
-  if (!isRecord(value)) {
-    return value;
+  const seen = new Set<unknown>();
+  let currentValue = value;
+  let depth = 0;
+
+  while (depth < 8 && isRecord(currentValue) && !seen.has(currentValue)) {
+    seen.add(currentValue);
+
+    if ("reason" in currentValue) {
+      currentValue = currentValue.reason;
+      depth += 1;
+      continue;
+    }
+
+    if (isRecord(currentValue.detail) && "reason" in currentValue.detail) {
+      currentValue = currentValue.detail.reason;
+      depth += 1;
+      continue;
+    }
+
+    break;
   }
 
-  if ("reason" in value) {
-    return getUnhandledRejectionReason(value.reason);
-  }
-
-  if (isRecord(value.detail) && "reason" in value.detail) {
-    return getUnhandledRejectionReason(value.detail.reason);
-  }
-
-  return value;
+  return currentValue;
 }
 
 function collectCandidateStrings(
@@ -165,6 +175,15 @@ function collectCandidateStrings(
   }
 
   seen.add(value);
+
+  if (value instanceof Error) {
+    return [
+      value.name,
+      value.message,
+      value.stack,
+      ...collectCandidateStrings(value.cause, seen, depth + 1),
+    ].filter((entry): entry is string => typeof entry === "string");
+  }
 
   return Object.entries(value).flatMap(([key, entryValue]) => {
     if (
@@ -241,7 +260,6 @@ function isBrowserExtensionEvent(
 
 function isKnownBrowserNoise(
   event: SentryBeforeSendEvent,
-  hint?: SentryBeforeSendHint,
 ) {
   const exception = event.exception?.values?.[0];
   if (exception?.value !== knownBrowserNoiseMessage) {
@@ -253,10 +271,7 @@ function isKnownBrowserNoise(
     return false;
   }
 
-  return (
-    hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns) ||
-    isBrowserExtensionEvent(event, hint)
-  );
+  return hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns);
 }
 
 if (isGlobalBuild && clientDsn) {
@@ -278,10 +293,9 @@ if (isGlobalBuild && clientDsn) {
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
         beforeSend(event, hint) {
-          if (
-            isBrowserExtensionEvent(event, hint) ||
-            isKnownBrowserNoise(event, hint)
-          ) {
+          const isExtensionNoise = isBrowserExtensionEvent(event, hint);
+
+          if (isExtensionNoise || isKnownBrowserNoise(event)) {
             return null;
           }
 
