@@ -9,9 +9,15 @@ type SentryBeforeSendEvent = {
       mechanism?: {
         type?: string;
       };
+      stacktrace?: {
+        frames?: Array<{
+          filename?: string;
+        }>;
+      };
     }>;
   };
   breadcrumbs?: Array<{
+    category?: string;
     message?: string;
     data?: Record<string, unknown>;
   }>;
@@ -22,8 +28,14 @@ const clientDsn =
   process.env.NEXT_PUBLIC_SENTRY_DSN ??
   "https://70be50dacaf31bdfb40465cf13af9f71@o4511261317398528.ingest.us.sentry.io/4511261318447104";
 const sendDefaultPii = process.env.NEXT_PUBLIC_SENTRY_SEND_DEFAULT_PII === "true";
-const vercelToolbarNoiseMessage =
+const knownBrowserNoiseMessage =
   "Non-Error promise rejection captured with value: Response not successful: Received status code 400";
+const vercelToolbarNoisePatterns = ["/.well-known/vercel/jwe", /\/[a-z0-9]+\/view\b/i];
+const clarityExtensionNoisePatterns = [
+  "https://y.clarity.ms/",
+  "chrome-extension://bngpiglbalmenaabohcooocpnljgfemj/",
+  "injected-entry.js",
+];
 
 let sentryModulePromise: Promise<SentryModule> | undefined;
 
@@ -38,9 +50,52 @@ function handleSentryLoadError(context: string, error: unknown) {
   }
 }
 
-function isVercelToolbarNoise(event: SentryBeforeSendEvent) {
+function getBreadcrumbMessage(breadcrumb: NonNullable<SentryBeforeSendEvent["breadcrumbs"]>[number]) {
+  if (typeof breadcrumb.message === "string") {
+    return breadcrumb.message;
+  }
+
+  if (
+    breadcrumb.data &&
+    typeof breadcrumb.data === "object" &&
+    "url" in breadcrumb.data &&
+    typeof breadcrumb.data.url === "string"
+  ) {
+    return breadcrumb.data.url;
+  }
+
+  return "";
+}
+
+function matchesAnyPattern(value: string, patterns: Array<string | RegExp>) {
+  return patterns.some((pattern) =>
+    typeof pattern === "string" ? value.includes(pattern) : pattern.test(value),
+  );
+}
+
+function hasNoiseBreadcrumb(
+  event: SentryBeforeSendEvent,
+  patterns: Array<string | RegExp>,
+) {
+  return (event.breadcrumbs ?? []).some((breadcrumb) =>
+    matchesAnyPattern(getBreadcrumbMessage(breadcrumb), patterns),
+  );
+}
+
+function hasNoiseFrame(
+  exception: NonNullable<NonNullable<SentryBeforeSendEvent["exception"]>["values"]>[number],
+  patterns: Array<string | RegExp>,
+) {
+  return (exception.stacktrace?.frames ?? []).some(
+    (frame) =>
+      typeof frame.filename === "string" &&
+      matchesAnyPattern(frame.filename, patterns),
+  );
+}
+
+function isKnownBrowserNoise(event: SentryBeforeSendEvent) {
   const exception = event.exception?.values?.[0];
-  if (exception?.value !== vercelToolbarNoiseMessage) {
+  if (exception?.value !== knownBrowserNoiseMessage) {
     return false;
   }
 
@@ -49,22 +104,11 @@ function isVercelToolbarNoise(event: SentryBeforeSendEvent) {
     return false;
   }
 
-  return (event.breadcrumbs ?? []).some((breadcrumb) => {
-    const message =
-      typeof breadcrumb.message === "string"
-        ? breadcrumb.message
-        : breadcrumb.data &&
-            typeof breadcrumb.data === "object" &&
-            "url" in breadcrumb.data &&
-            typeof breadcrumb.data.url === "string"
-          ? breadcrumb.data.url
-          : "";
-
-    return (
-      message.includes("/.well-known/vercel/jwe") ||
-      /\/[a-z0-9]+\/view\b/i.test(message)
-    );
-  });
+  return (
+    hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns) ||
+    hasNoiseBreadcrumb(event, clarityExtensionNoisePatterns) ||
+    hasNoiseFrame(exception, clarityExtensionNoisePatterns)
+  );
 }
 
 if (isGlobalBuild && clientDsn) {
@@ -78,7 +122,7 @@ if (isGlobalBuild && clientDsn) {
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
         beforeSend(event) {
-          if (isVercelToolbarNoise(event)) {
+          if (isKnownBrowserNoise(event)) {
             return null;
           }
 
