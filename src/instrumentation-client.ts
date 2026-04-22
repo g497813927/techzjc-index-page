@@ -5,6 +5,9 @@ type RouterTransitionStartArgs = Parameters<
 type SentryFrame = {
   filename?: string;
 };
+type SentryBeforeSendHint = {
+  originalException?: unknown;
+};
 type SentryBeforeSendEvent = {
   culprit?: string;
   exception?: {
@@ -88,6 +91,10 @@ function matchesAnyPattern(value: string, patterns: Array<string | RegExp>) {
   );
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 function isBrowserExtensionUrl(value: string) {
   return browserExtensionUrlPrefixes.some((prefix) => value.startsWith(prefix));
 }
@@ -117,12 +124,96 @@ function isExtensionFrame(frame: SentryFrame) {
   );
 }
 
+function getUnhandledRejectionReason(value: unknown): unknown {
+  if (!isRecord(value)) {
+    return value;
+  }
+
+  if ("reason" in value) {
+    return getUnhandledRejectionReason(value.reason);
+  }
+
+  if (isRecord(value.detail) && "reason" in value.detail) {
+    return getUnhandledRejectionReason(value.detail.reason);
+  }
+
+  return value;
+}
+
+function collectCandidateStrings(
+  value: unknown,
+  seen = new Set<unknown>(),
+  depth = 0,
+): string[] {
+  if (typeof value === "string") {
+    return [value];
+  }
+
+  if (!value || depth > 3 || seen.has(value)) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    seen.add(value);
+    return value.flatMap((item) =>
+      collectCandidateStrings(item, seen, depth + 1),
+    );
+  }
+
+  if (!isRecord(value)) {
+    return [];
+  }
+
+  seen.add(value);
+
+  return Object.entries(value).flatMap(([key, entryValue]) => {
+    if (
+      typeof entryValue === "string" &&
+      [
+        "message",
+        "name",
+        "stack",
+        "filename",
+        "fileName",
+        "sourceURL",
+        "url",
+        "href",
+        "src",
+      ].includes(key)
+    ) {
+      return [entryValue];
+    }
+
+    return collectCandidateStrings(entryValue, seen, depth + 1);
+  });
+}
+
+function hasBrowserExtensionHint(hint?: SentryBeforeSendHint) {
+  const originalException = hint?.originalException;
+  if (!originalException) {
+    return false;
+  }
+
+  const reason = getUnhandledRejectionReason(originalException);
+  const candidateStrings = [
+    ...collectCandidateStrings(originalException),
+    ...collectCandidateStrings(reason),
+  ];
+
+  return candidateStrings.some((value) =>
+    matchesAnyPattern(value, browserExtensionNoisePatterns),
+  );
+}
+
 function hasOnlyBrowserExtensionFrames(event: SentryBeforeSendEvent) {
   const frames = getEventFrames(event);
   return frames.length > 0 && frames.every(isExtensionFrame);
 }
 
-function isBrowserExtensionEvent(event: SentryBeforeSendEvent) {
+function isBrowserExtensionEvent(
+  event: SentryBeforeSendEvent,
+  hint?: SentryBeforeSendHint,
+) {
   if (
     typeof event.culprit === "string" &&
     matchesAnyPattern(event.culprit, browserExtensionNoisePatterns)
@@ -137,10 +228,21 @@ function isBrowserExtensionEvent(event: SentryBeforeSendEvent) {
     return true;
   }
 
-  return hasOnlyBrowserExtensionFrames(event);
+  if (hasOnlyBrowserExtensionFrames(event)) {
+    return true;
+  }
+
+  if (hasNoiseBreadcrumb(event, browserExtensionNoisePatterns)) {
+    return true;
+  }
+
+  return hasBrowserExtensionHint(hint);
 }
 
-function isKnownBrowserNoise(event: SentryBeforeSendEvent) {
+function isKnownBrowserNoise(
+  event: SentryBeforeSendEvent,
+  hint?: SentryBeforeSendHint,
+) {
   const exception = event.exception?.values?.[0];
   if (exception?.value !== knownBrowserNoiseMessage) {
     return false;
@@ -151,7 +253,10 @@ function isKnownBrowserNoise(event: SentryBeforeSendEvent) {
     return false;
   }
 
-  return hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns);
+  return (
+    hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns) ||
+    isBrowserExtensionEvent(event, hint)
+  );
 }
 
 if (isGlobalBuild && clientDsn) {
@@ -172,8 +277,11 @@ if (isGlobalBuild && clientDsn) {
         ],
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
-        beforeSend(event) {
-          if (isBrowserExtensionEvent(event) || isKnownBrowserNoise(event)) {
+        beforeSend(event, hint) {
+          if (
+            isBrowserExtensionEvent(event, hint) ||
+            isKnownBrowserNoise(event, hint)
+          ) {
             return null;
           }
 
