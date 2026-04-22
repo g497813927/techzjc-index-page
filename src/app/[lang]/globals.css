@@ -152,3 +152,8 @@ a:hover {
   border: 0 !important;
   white-space: nowrap !important;
 }
+
+:root.no-js [data-motion-no-js="visible"] {
+    opacity: 1 !important;
+    transform: none !important;
+}

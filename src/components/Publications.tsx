@@ -17,6 +17,7 @@ export function Publications(props: { dict: any }) {
         <LazyMotion features={domAnimation}>
             <motion.div
                 className='container publication-section'
+                data-motion-no-js="visible"
                 initial={{
                     opacity: 0,
                     y: 20
@@ -35,6 +36,7 @@ export function Publications(props: { dict: any }) {
                         const key = pub.doi ?? pub.url ?? `${pub.title}-${pub.publication_year}`;
                         return (
                             <motion.li key={key} role="listitem" onClick={() => setSelected(pub)}
+                                data-motion-no-js="visible"
                                 initial="initial"
                                 whileHover="hover"
                                 whileFocus="hover"

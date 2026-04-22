@@ -15,6 +15,7 @@ export function PhotoWall(props: { dict: any }) {
             <AnimatePresence>
                 <motion.div
                     className="container photo-wall"
+                    data-motion-no-js="visible"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
