@@ -1,14 +1,5 @@
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getDictionary, hasLocale, type Locale } from "@/app/[lang]/dictionaries";
-
-function getLocaleFromCookie(cookieHeader: string | null): Locale | null {
-  const localeCookie = cookieHeader
-    ?.split("; ")
-    .find((row) => row.startsWith("locale="))
-    ?.split("=")[1];
-
-  return localeCookie && hasLocale(localeCookie) ? localeCookie : null;
-}
 
 function getLocaleFromAcceptLanguage(acceptLanguage: string | null): Locale {
   const preferredLanguage = acceptLanguage
@@ -20,9 +11,11 @@ function getLocaleFromAcceptLanguage(acceptLanguage: string | null): Locale {
 }
 
 export async function getNotFoundPageData() {
+  const cookieStore = await cookies();
   const headersList = await headers();
+  const localeCookie = cookieStore.get("locale")?.value;
   const locale =
-    getLocaleFromCookie(headersList.get("cookie")) ??
+    (localeCookie && hasLocale(localeCookie) ? localeCookie : null) ??
     getLocaleFromAcceptLanguage(headersList.get("accept-language"));
 
   return {
