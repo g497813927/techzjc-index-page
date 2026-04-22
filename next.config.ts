@@ -7,6 +7,8 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const isGlobalBuild = process.env.NEXT_PUBLIC_VERCEL_ENV === "true";
+const shouldUploadSourcemaps = process.env.SENTRY_UPLOAD_SOURCEMAPS === "true";
+const shouldApplySentryBuildPlugin = isGlobalBuild || shouldUploadSourcemaps;
 const sentryOrg = process.env.SENTRY_ORG ?? "jiacheng-zhao";
 const sentryProject = process.env.SENTRY_PROJECT ?? "javascript-nextjs";
 const sentryApplicationKey =
@@ -49,14 +51,16 @@ const nextConfig: NextConfig = {
 
 const config = withBundleAnalyzer(nextConfig);
 
-export default isGlobalBuild
+export default shouldApplySentryBuildPlugin
   ? withSentryConfig(config, {
       org: sentryOrg,
       project: sentryProject,
       silent: !process.env.CI,
       widenClientFileUpload: true,
-      unstable_sentryWebpackPluginOptions: {
-        applicationKey: sentryApplicationKey,
+      webpack: {
+        unstable_sentryWebpackPluginOptions: {
+          applicationKey: sentryApplicationKey,
+        },
       },
       _experimental: {
         turbopackApplicationKey: sentryApplicationKey,
