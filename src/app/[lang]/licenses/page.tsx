@@ -4,10 +4,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import Link from "next/link";
 import { Metadata } from 'next';
-import Image from "next/image";
 import "./page.css";
 import { notFound } from "next/navigation";
 import { getDictionary, hasLocale } from "../dictionaries";
+import { WeChatShareImage } from "@/components/WeChatShareImage";
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://techzjc.com/'),
@@ -69,7 +69,7 @@ export default async function LicensesPage({ params } : PageProps<'/[lang]/licen
     }
     return (
         <>
-            <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&subtitle=Open%20Source%20Licenses&width=800&height=800" width={800} height={800} className="hidden-wechat" />
+            <WeChatShareImage src="/opengraph-image?title=Techzjc&subtitle=Open%20Source%20Licenses&width=800&height=800" />
             <NavBar hasHero={false} dict={dict} />
             <section className="page-body container center-content column-content">
                 <h1 className="page-title">{dict['licenses']['title']}</h1>

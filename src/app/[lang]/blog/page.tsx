@@ -6,8 +6,8 @@ import { Footer } from '@/components/Footer';
 import { Metadata } from 'next';
 import { getDictionary, hasLocale } from '../dictionaries';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { generateMetadataAlternatives } from '@/utils/generateMetadataAlternatives';
+import { WeChatShareImage } from '@/components/WeChatShareImage';
 
 export async function generateMetadata({ params }: PageProps<'/[lang]/blog'>): Promise<Metadata> {
   const { lang } = await params;
@@ -54,7 +54,9 @@ export async function generateMetadata({ params }: PageProps<'/[lang]/blog'>): P
     const dict = await getDictionary(lang);
     return (
       <>
-        <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['index']['opengraph_image_subtitle'])}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
+        <WeChatShareImage
+          src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['index']['opengraph_image_subtitle'])}&width=800&height=800`}
+        />
         <NavBar hasHero={false} dict={dict} />
         <main className="page-body container column-content dissolve-in blog">
           <h1 className="page-title">{dict['blog']['title']}</h1>

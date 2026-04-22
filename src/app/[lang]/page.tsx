@@ -5,11 +5,11 @@ import { Footer } from '@/components/Footer'
 import { About } from '@/components/About';
 import { PhotoWall } from '@/components/PhotoWall';
 import { copyrightNotice, fetchedPhotos1, fetchedPhotos2 } from '@/data/photos';
-import Image from 'next/image';
 import { Metadata } from 'next';
 import { getDictionary, hasLocale } from './dictionaries';
 import { notFound } from 'next/navigation';
 import { generateMetadataAlternatives } from '@/utils/generateMetadataAlternatives';
+import { WeChatShareImage } from '@/components/WeChatShareImage';
 
 export async function generateMetadata({ params }: PageProps<'/[lang]'>): Promise<Metadata> {
     const { lang } = await params;
@@ -69,7 +69,7 @@ async function App({ params }: PageProps<'/[lang]'>) {
     const dict = await getDictionary(lang);
     return (
         <>
-            <Image alt="WeChat Share Image" src="/opengraph-image?title=Techzjc&width=800&height=800" width={800} height={800} className="hidden-wechat" />
+            <WeChatShareImage src="/opengraph-image?title=Techzjc&width=800&height=800" />
             <NavBar hasHero={true} dict={dict} />
             <main>
                 <HeroSection dict={dict} />
