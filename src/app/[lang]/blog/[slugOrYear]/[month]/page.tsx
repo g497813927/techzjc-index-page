@@ -3,13 +3,13 @@ import { Footer } from "@/components/Footer";
 import { getPostByYearAndMonth } from "@/lib/blog";
 import { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import "@/app/[lang]/blog/[slugOrYear]/page.css";
 import "@/app/[lang]/blog/page.css";
 import resolveParams from "@/lib/resolveParams";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { notFound } from "next/navigation";
 import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
+import { WeChatShareImage } from "@/components/WeChatShareImage";
 
 //eslint-disable-next-line
 type RouteParams = { lang: any; slugOrYear: string; month: string };
@@ -74,7 +74,9 @@ export default async function PostPage({ params }: Props) {
     const posts = getPostByYearAndMonth(year, month, lang);
     return (
         <>
-            <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
+            <WeChatShareImage
+                src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}`)}&width=800&height=800`}
+            />
             <NavBar hasHero={false} dict={dict} />
             <main className="page-body container column-content dissolve-in blog">
                 <h1 className="page-title">{dict['blog']['month']['title'].replace('{year}', year).replace('{month}', month)}</h1>

@@ -6,7 +6,6 @@ import { getAllSlugs, getPostBySlug } from "@/lib/blog";
 import { Metadata } from "next";
 import "./style-theme.css";
 import Link from "next/link";
-import Image from "next/image";
 import resolveParams from "@/lib/resolveParams";
 import CommentSection from "@/components/blog/CommentSection";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
@@ -14,6 +13,7 @@ import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternativ
 import { getMdxCompiled } from "@/lib/mdx";
 import ArticleProgress from "@/components/blog/ArticleProgress";
 import { UseNavHeightVar } from "@/components/UseNavBarVar";
+import { WeChatShareImage } from "@/components/WeChatShareImage";
 
 export const dynamic = 'force-static'
 
@@ -141,7 +141,9 @@ export default async function PostPage({ params }: Props) {
     const { content } = await getMdxCompiled(Post.content);
     return (
         <>
-            <Image alt="WeChat Share Image" src={`/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
+            <WeChatShareImage
+                src={`/opengraph-image?title=${encodeURIComponent(Post.title.length > 40 ? Post.title.slice(0, 37) + '...' : Post.title)}&subtitle=${encodeURIComponent(`by Techzjc`)}&width=800&height=800`}
+            />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }} />
             <UseNavHeightVar />
             <NavBar hasHero={false} dict={dict} />

@@ -2,7 +2,6 @@ import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import { getPostByYearMonthAndDay } from "@/lib/blog";
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import "@/app/[lang]/blog/[slugOrYear]/page.css";
 import "@/app/[lang]/blog/page.css";
@@ -10,6 +9,7 @@ import resolveParams from "@/lib/resolveParams";
 import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import { notFound } from "next/navigation";
 import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
+import { WeChatShareImage } from "@/components/WeChatShareImage";
 
 //eslint-disable-next-line
 type RouteParams = { lang: any; slugOrYear: string; month: string; day: string };
@@ -74,7 +74,9 @@ export default async function PostPage({ params }: Props) {
     const posts = getPostByYearMonthAndDay(year, month, day, lang);
     return (
         <>
-            <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}-${day}`)}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
+            <WeChatShareImage
+                src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(`Blog Posts in ${year}-${month}-${day}`)}&width=800&height=800`}
+            />
             <NavBar hasHero={false} dict={dict} />
             <main className="page-body container column-content dissolve-in blog">
                 <h1 className="page-title">{dict['blog']['day']['title'].replace('{year}', year).replace('{month}', month).replace('{day}', day)}</h1>

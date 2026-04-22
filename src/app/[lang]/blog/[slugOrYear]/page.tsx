@@ -4,12 +4,12 @@ import "./page.css";
 import { notFound, permanentRedirect } from 'next/navigation';
 import { getPostBySlug, getPostByYear, PostMeta } from "@/lib/blog";
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import "../page.css";
 import resolveParams from "@/lib/resolveParams";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { generateMetadataAlternatives } from "@/utils/generateMetadataAlternatives";
+import { WeChatShareImage } from "@/components/WeChatShareImage";
 
 
 type RouteParams = {
@@ -112,7 +112,9 @@ export default async function PostPage({ params }: Props) {
         const posts = getPostByYear(slugOrYear, lang);
         return (
             <>
-                <Image alt="WeChat Share Image" src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['slug_or_year']['opengraph_image_subtitle'].replace('{slugOrYear}', slugOrYear))}&width=800&height=800`} width={800} height={800} className="hidden-wechat" />
+                <WeChatShareImage
+                    src={`/opengraph-image?title=Techzjc&subtitle=${encodeURIComponent(dict['metadata']['blog']['slug_or_year']['opengraph_image_subtitle'].replace('{slugOrYear}', slugOrYear))}&width=800&height=800`}
+                />
                 <NavBar hasHero={false} dict={dict} />
                 <main className="page-body container column-content dissolve-in blog">
                     <h1 className="page-title">{dict['blog']['slug_or_year']['title'].replace('{slugOrYear}', slugOrYear)}</h1>
