@@ -2,7 +2,7 @@ type SentryModule = typeof import("@sentry/nextjs");
 type RouterTransitionStartArgs = Parameters<
   SentryModule["captureRouterTransitionStart"]
 >;
-type BrowserEvent = {
+type SentryBeforeSendEvent = {
   exception?: {
     values?: Array<{
       value?: string;
@@ -38,7 +38,7 @@ function handleSentryLoadError(context: string, error: unknown) {
   }
 }
 
-function isVercelToolbarNoise(event: BrowserEvent) {
+function isVercelToolbarNoise(event: SentryBeforeSendEvent) {
   const exception = event.exception?.values?.[0];
   if (exception?.value !== vercelToolbarNoiseMessage) {
     return false;
@@ -49,30 +49,22 @@ function isVercelToolbarNoise(event: BrowserEvent) {
     return false;
   }
 
-  const breadcrumbMessages = (event.breadcrumbs ?? []).map((breadcrumb) => {
-    if (typeof breadcrumb.message === "string") {
-      return breadcrumb.message;
-    }
+  return (event.breadcrumbs ?? []).some((breadcrumb) => {
+    const message =
+      typeof breadcrumb.message === "string"
+        ? breadcrumb.message
+        : breadcrumb.data &&
+            typeof breadcrumb.data === "object" &&
+            "url" in breadcrumb.data &&
+            typeof breadcrumb.data.url === "string"
+          ? breadcrumb.data.url
+          : "";
 
-    if (
-      breadcrumb.data &&
-      typeof breadcrumb.data === "object" &&
-      "url" in breadcrumb.data &&
-      typeof breadcrumb.data.url === "string"
-    ) {
-      return breadcrumb.data.url;
-    }
-
-    return "";
-  });
-
-  const hasVercelToolbarRequest = breadcrumbMessages.some(
-    (message) =>
+    return (
       message.includes("/.well-known/vercel/jwe") ||
-      /\/[a-z0-9]+\/view\b/i.test(message),
-  );
-
-  return hasVercelToolbarRequest;
+      /\/[a-z0-9]+\/view\b/i.test(message)
+    );
+  });
 }
 
 if (isGlobalBuild && clientDsn) {
