@@ -9,6 +9,8 @@ const withBundleAnalyzer = bundleAnalyzer({
 const isGlobalBuild = process.env.NEXT_PUBLIC_VERCEL_ENV === "true";
 const sentryOrg = process.env.SENTRY_ORG ?? "jiacheng-zhao";
 const sentryProject = process.env.SENTRY_PROJECT ?? "javascript-nextjs";
+const sentryApplicationKey =
+  process.env.NEXT_PUBLIC_SENTRY_APPLICATION_KEY ?? "techzjc-site-index";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -53,6 +55,12 @@ export default isGlobalBuild
       project: sentryProject,
       silent: !process.env.CI,
       widenClientFileUpload: true,
+      unstable_sentryWebpackPluginOptions: {
+        applicationKey: sentryApplicationKey,
+      },
+      _experimental: {
+        turbopackApplicationKey: sentryApplicationKey,
+      },
       ...(process.env.SENTRY_AUTH_TOKEN
         ? { authToken: process.env.SENTRY_AUTH_TOKEN }
         : {}),
