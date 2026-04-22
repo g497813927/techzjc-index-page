@@ -13,6 +13,7 @@ export function About(props: { dict: any }) {
                 <motion.section
                     id="about"
                     className="container"
+                    data-motion-no-js="visible"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
@@ -33,6 +34,7 @@ export function About(props: { dict: any }) {
                         </div>
                         <motion.div
                             className="card hobby-card"
+                            data-motion-no-js="visible"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.1 }}
@@ -131,6 +133,7 @@ export function About(props: { dict: any }) {
                         </motion.div>
                         <motion.div
                             className="card education-card"
+                            data-motion-no-js="visible"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.1 }}
@@ -149,6 +152,7 @@ export function About(props: { dict: any }) {
                                 {props.dict['about']['education']['children'].map((entry: any, index: number) => (
                                     <motion.li
                                         key={index}
+                                        data-motion-no-js="visible"
                                         initial={{ scale: 0 }}
                                         whileInView={{
                                             scale: 1,
