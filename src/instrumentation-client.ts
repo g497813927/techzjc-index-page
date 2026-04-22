@@ -101,24 +101,25 @@ function hasNoiseBreadcrumb(
   );
 }
 
-function hasNoiseFrame(
-  frames: SentryFrame[],
-  patterns: Array<string | RegExp>,
-) {
-  return frames.some(
-    (frame) =>
-      typeof frame.filename === "string" &&
-      matchesAnyPattern(frame.filename, patterns),
-  );
-}
-
 function getEventFrames(event: SentryBeforeSendEvent) {
   return [
     ...(event.stacktrace?.frames ?? []),
-    ...((event.exception?.values ?? []).flatMap(
+    ...(event.exception?.values ?? []).flatMap(
       (exception) => exception.stacktrace?.frames ?? [],
-    ) ?? []),
+    ),
   ];
+}
+
+function isExtensionFrame(frame: SentryFrame) {
+  return (
+    typeof frame.filename === "string" &&
+    matchesAnyPattern(frame.filename, browserExtensionNoisePatterns)
+  );
+}
+
+function hasOnlyBrowserExtensionFrames(event: SentryBeforeSendEvent) {
+  const frames = getEventFrames(event);
+  return frames.length > 0 && frames.every(isExtensionFrame);
 }
 
 function isBrowserExtensionEvent(event: SentryBeforeSendEvent) {
@@ -136,7 +137,7 @@ function isBrowserExtensionEvent(event: SentryBeforeSendEvent) {
     return true;
   }
 
-  return hasNoiseFrame(getEventFrames(event), browserExtensionNoisePatterns);
+  return hasOnlyBrowserExtensionFrames(event);
 }
 
 function isKnownBrowserNoise(event: SentryBeforeSendEvent) {
@@ -150,10 +151,7 @@ function isKnownBrowserNoise(event: SentryBeforeSendEvent) {
     return false;
   }
 
-  return (
-    hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns) ||
-    isBrowserExtensionEvent(event)
-  );
+  return hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns);
 }
 
 if (isGlobalBuild && clientDsn) {
@@ -175,10 +173,7 @@ if (isGlobalBuild && clientDsn) {
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
         beforeSend(event) {
-          if (
-            isBrowserExtensionEvent(event) ||
-            isKnownBrowserNoise(event)
-          ) {
+          if (isBrowserExtensionEvent(event) || isKnownBrowserNoise(event)) {
             return null;
           }
 
