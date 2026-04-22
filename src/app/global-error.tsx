@@ -18,9 +18,13 @@ export default function GlobalError({
       return;
     }
 
-    void import("@sentry/nextjs").then((Sentry) => {
-      Sentry.captureException(error);
-    });
+    void import("@sentry/nextjs")
+      .then((Sentry) => {
+        Sentry.captureException(error);
+      })
+      .catch(() => {
+        // Best-effort reporting: ignore failures to load Sentry in the error boundary.
+      });
   }, [error]);
 
   return (
