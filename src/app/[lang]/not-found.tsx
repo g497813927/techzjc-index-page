@@ -4,33 +4,33 @@ import { faChevronLeft, faTriangleExclamation } from "@fortawesome/free-solid-sv
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { getDictionary, hasLocale, type Locale } from "./dictionaries";
 import "./not-found.css";
 
 export default async function NotFoundError() {
   const headersList = await headers();
-  let locale = 'en-US';
-  // Check cookies for locale
-  const localeCookie = headersList.get('cookie')?.split('; ').find(row => row.startsWith('locale='))?.split('=')[1];
-  if (!localeCookie) {
-    // If no locale cookie, check Accept-Language header
-    const acceptLanguage = headersList.get('accept-language');
-    if (acceptLanguage) {
-      const acceptedLanguages = acceptLanguage.split(',').map(lang => lang.split(';')[0].trim());
-      if (acceptedLanguages.length > 0) {
-        locale = acceptedLanguages[0];
-      }
-    }
-  } else {
+  const localeCookie = headersList
+    .get("cookie")
+    ?.split("; ")
+    .find((row) => row.startsWith("locale="))
+    ?.split("=")[1];
+  const acceptLanguage = headersList.get("accept-language");
+
+  let locale: Locale = "en-US";
+  if (localeCookie && hasLocale(localeCookie)) {
     locale = localeCookie;
+  } else if (acceptLanguage) {
+    const preferredLanguage = acceptLanguage
+      .split(",")
+      .map((lang) => lang.split(";")[0].trim())
+      .find(Boolean);
+
+    if (preferredLanguage?.toLowerCase().startsWith("zh")) {
+      locale = "zh-CN";
+    }
   }
-  //eslint-disable-next-line
-  let dict: any = {};
-  try {
-    dict = await (await import(`./dictionaries/${locale}.json`)).default;
-  //eslint-disable-next-line
-  } catch (error) {
-    dict = await (await import(`./dictionaries/${locale}.json`)).default;
-  }
+
+  const dict = await getDictionary(locale);
   return (
     <>
       <NavBar hasHero={false} dict={dict} />
