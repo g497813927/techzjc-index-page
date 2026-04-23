@@ -6,7 +6,7 @@
     "generate-licenses": "node ./scripts/generate-licenses.mjs",
     "prepare-env": "echo NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse --short HEAD) > .env.local && echo NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) >> .env.local && npm run generate-licenses",
     "dev": "npm run prepare-env && next dev",
-    "build": "npm run prepare-env && next build",
+    "build": "npm run prepare-env && next build --webpack",
     "build:docker": "npm run prepare-env && next build --webpack && node ./scripts/sanitize-next-static-paths.mjs",
     "start": "next start",
     "lint": "eslint"
