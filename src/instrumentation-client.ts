@@ -5,6 +5,9 @@ type RouterTransitionStartArgs = Parameters<
 type SentryFrame = {
   filename?: string;
 };
+type SentryBeforeSendHint = {
+  originalException?: unknown;
+};
 type SentryBeforeSendEvent = {
   culprit?: string;
   exception?: {
@@ -88,6 +91,10 @@ function matchesAnyPattern(value: string, patterns: Array<string | RegExp>) {
   );
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 function isBrowserExtensionUrl(value: string) {
   return browserExtensionUrlPrefixes.some((prefix) => value.startsWith(prefix));
 }
@@ -117,12 +124,115 @@ function isExtensionFrame(frame: SentryFrame) {
   );
 }
 
+function getUnhandledRejectionReason(value: unknown): unknown {
+  const seen = new Set<unknown>();
+  let currentValue = value;
+  let depth = 0;
+
+  while (depth < 8 && isRecord(currentValue) && !seen.has(currentValue)) {
+    seen.add(currentValue);
+
+    if ("reason" in currentValue) {
+      currentValue = currentValue.reason;
+      depth += 1;
+      continue;
+    }
+
+    if (isRecord(currentValue.detail) && "reason" in currentValue.detail) {
+      currentValue = currentValue.detail.reason;
+      depth += 1;
+      continue;
+    }
+
+    break;
+  }
+
+  return currentValue;
+}
+
+function collectCandidateStrings(
+  value: unknown,
+  seen = new Set<unknown>(),
+  depth = 0,
+): string[] {
+  if (typeof value === "string") {
+    return [value];
+  }
+
+  if (!value || depth > 3 || seen.has(value)) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    seen.add(value);
+    return value.flatMap((item) =>
+      collectCandidateStrings(item, seen, depth + 1),
+    );
+  }
+
+  if (!isRecord(value)) {
+    return [];
+  }
+
+  seen.add(value);
+
+  if (value instanceof Error) {
+    return [
+      value.name,
+      value.message,
+      value.stack,
+      ...collectCandidateStrings(value.cause, seen, depth + 1),
+    ].filter((entry): entry is string => typeof entry === "string");
+  }
+
+  return Object.entries(value).flatMap(([key, entryValue]) => {
+    if (
+      typeof entryValue === "string" &&
+      [
+        "message",
+        "name",
+        "stack",
+        "filename",
+        "fileName",
+        "sourceURL",
+        "url",
+        "href",
+        "src",
+      ].includes(key)
+    ) {
+      return [entryValue];
+    }
+
+    return collectCandidateStrings(entryValue, seen, depth + 1);
+  });
+}
+
+function hasBrowserExtensionHint(hint?: SentryBeforeSendHint) {
+  const originalException = hint?.originalException;
+  if (!originalException) {
+    return false;
+  }
+
+  const reason = getUnhandledRejectionReason(originalException);
+  const candidateStrings = [
+    ...collectCandidateStrings(originalException),
+    ...collectCandidateStrings(reason),
+  ];
+
+  return candidateStrings.some((value) =>
+    matchesAnyPattern(value, browserExtensionNoisePatterns),
+  );
+}
+
 function hasOnlyBrowserExtensionFrames(event: SentryBeforeSendEvent) {
   const frames = getEventFrames(event);
   return frames.length > 0 && frames.every(isExtensionFrame);
 }
 
-function isBrowserExtensionEvent(event: SentryBeforeSendEvent) {
+function isBrowserExtensionEvent(
+  event: SentryBeforeSendEvent,
+  hint?: SentryBeforeSendHint,
+) {
   if (
     typeof event.culprit === "string" &&
     matchesAnyPattern(event.culprit, browserExtensionNoisePatterns)
@@ -137,10 +247,20 @@ function isBrowserExtensionEvent(event: SentryBeforeSendEvent) {
     return true;
   }
 
-  return hasOnlyBrowserExtensionFrames(event);
+  if (hasOnlyBrowserExtensionFrames(event)) {
+    return true;
+  }
+
+  if (hasNoiseBreadcrumb(event, browserExtensionNoisePatterns)) {
+    return true;
+  }
+
+  return hasBrowserExtensionHint(hint);
 }
 
-function isKnownBrowserNoise(event: SentryBeforeSendEvent) {
+function isKnownBrowserNoise(
+  event: SentryBeforeSendEvent,
+) {
   const exception = event.exception?.values?.[0];
   if (exception?.value !== knownBrowserNoiseMessage) {
     return false;
@@ -172,8 +292,10 @@ if (isGlobalBuild && clientDsn) {
         ],
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
-        beforeSend(event) {
-          if (isBrowserExtensionEvent(event) || isKnownBrowserNoise(event)) {
+        beforeSend(event, hint) {
+          const isExtensionNoise = isBrowserExtensionEvent(event, hint);
+
+          if (isExtensionNoise || isKnownBrowserNoise(event)) {
             return null;
           }
 
