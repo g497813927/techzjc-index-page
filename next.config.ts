@@ -7,8 +7,10 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const isGlobalBuild = process.env.NEXT_PUBLIC_VERCEL_ENV === "true";
+const isCnBuild = process.env.IN_FC === "true";
 const shouldUploadSourcemaps = process.env.SENTRY_UPLOAD_SOURCEMAPS === "true";
 const shouldApplySentryBuildPlugin = isGlobalBuild || shouldUploadSourcemaps;
+const enableAutomaticVercelMonitors = isGlobalBuild && !isCnBuild;
 const sentryOrg = process.env.SENTRY_ORG ?? "jiacheng-zhao";
 const sentryProject = process.env.SENTRY_PROJECT ?? "javascript-nextjs";
 const sentryApplicationKey =
@@ -58,6 +60,7 @@ export default shouldApplySentryBuildPlugin
       silent: !process.env.CI,
       widenClientFileUpload: true,
       webpack: {
+        automaticVercelMonitors: enableAutomaticVercelMonitors,
         unstable_sentryWebpackPluginOptions: {
           applicationKey: sentryApplicationKey,
         },
