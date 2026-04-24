@@ -102,25 +102,29 @@ function handle(req: Request) {
   const locale = acceptLanguage.split(",")[0] || "en-US";
   const request_url = new URL(req.url);
   const path = request_url.pathname;
-  // Get the client IP address for anonymized scanner logging.
-  const { rawIp, source: ipSource } = getClientIp(req);
 
   const message = locale.toLowerCase().startsWith("zh")
     ? `一个野生的扫描器出现了！野生的扫描器对 ${path} 使出了 ${req.method}…没有击中 ${path}！`
     : `A wild scanner appeared! The wild scanner used ${req.method} on ${path}… It missed ${path}!`;
 
   if (process.env.SCANNER_404_LOG_REQUESTS === "true") {
+    // Get the client's IP address for logging purposes
+    const { rawIp, source: ipSource } = getClientIp(req);
     const truncatedIp = truncateIp(rawIp);
 
     // Log the scanner activity with the truncated IP for analytics and threat intelligence purposes
+    // Note: This site is not a site that provides any user-specific functionality
+    // at the same time, its type is a personal website so DO NOT over-complicate the IP annoymization logic,
+    // for GDPR compliance. At the same time, it should be pretty low volume traffic, so storing cost is not a concern for now.
     console.log(
       {
+        type: "scanner-404",
         method: req.method,
         path,
         locale,
         truncatedIp,
         ipSource,
-      },
+      }
     );
   }
 
