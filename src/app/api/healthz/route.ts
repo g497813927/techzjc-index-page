@@ -1,10 +1,12 @@
+import { NextResponse } from "next/server";
+
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const isCnBuild = process.env.IN_FC === "true";
 
 export async function GET() {
-  return Response.json(
+  return NextResponse.json(
     {
       status: "ok",
       service: "techzjc-index",
