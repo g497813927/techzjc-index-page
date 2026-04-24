@@ -51,6 +51,9 @@ export function DebugItem(props: {dict: any}) {
             >2016-{new Date().getFullYear()} {dict['copyright'] ? dict['copyright']['title'] : 'Copyright Techzjc © All rights reserved.'} </div>&nbsp;&#8729;&nbsp;
             <Link href="/licenses" target="_blank" rel="noopener noreferrer">
                 {dict['copyright'] ? dict['copyright']['open_source_licenses'] : 'Open Source Licenses'}
+            </Link>&nbsp;&#8729;&nbsp;
+            <Link href="https://status.techzjc.com" target="_blank" rel="noopener noreferrer">
+                {dict['site-status']}
             </Link>
         </div>
     );

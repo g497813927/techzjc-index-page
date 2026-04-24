@@ -187,6 +187,7 @@
         "title": "Techzjc © 版权所有",
         "open_source_licenses": "开源组件许可"
     },
+    "site-status": "网站状态",
     "move-to-top-btn": {
         "aria_label": "回到顶部"
     },
