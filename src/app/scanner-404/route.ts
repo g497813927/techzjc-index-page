@@ -101,15 +101,15 @@ function truncateIp(rawIp: string) {
 function handle(req: Request) {
   const acceptLanguage = req.headers.get("accept-language") || "";
   const locale = acceptLanguage.split(",")[0] || "en-US";
-  const request_url = new URL(req.url);
-  const path = request_url.pathname;
+  const requestUrl = new URL(req.url);
+  const path = requestUrl.pathname;
 
   const message = locale.toLowerCase().startsWith("zh")
     ? `一个野生的扫描器出现了！野生的扫描器对 ${path} 使出了 ${req.method}…没有击中 ${path}！`
     : `A wild scanner appeared! The wild scanner used ${req.method} on ${path}… It missed ${path}!`;
 
   if (process.env.SCANNER_404_LOG_REQUESTS === "true") {
-    // Check whether the request is coming from the CDN or visiting directly by checking the X-Origin-Auth header 
+    // Check whether the request is coming from the CDN or visiting directly by checking the X-Origin-Auth header
     const originAuth = req.headers.get(HEADER_KEY);
     const cdnOriginAuth = process.env.CDN_ORIGIN_AUTH;
     let rawIp = "unknown";
