@@ -31,13 +31,13 @@ function handle(req: Request) {
         truncatedIp = "invalid-ip";
       }
     } else if (rawip.includes(":")) {
-      // IPv6
-      const hextets = rawip.split(":");
-      if (hextets.length >= 2) {
-        truncatedIp = `${hextets[0]}:${hextets[1]}::/32`;
-      } else {
-        truncatedIp = "invalid-ip";
-      }
+      // IPv6 - strip zone ID (e.g., %lo0) and handle compressed notation (e.g., ::1, fe80::1)
+      const ipWithoutZone = rawip.split("%")[0];
+      const parts = ipWithoutZone.split("::");
+      const leftHextets = parts[0] ? parts[0].split(":") : [];
+      const firstHextet = leftHextets[0] || "0";
+      const secondHextet = leftHextets[1] || "0";
+      truncatedIp = `${firstHextet}:${secondHextet}::/32`;
     }
 
     // Log the scanner activity with the truncated IP for analytics and threat intelligence purposes
@@ -48,7 +48,7 @@ function handle(req: Request) {
         locale,
         truncatedIp
       }
-    )
+    );
   }
 
   return new Response(
