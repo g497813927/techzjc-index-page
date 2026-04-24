@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
+import { HEADER_KEY } from "@/constants/headers";
 const locales = ["zh-CN", "en-US"];
 
 const TRUSTED_ORIGINS = ["cdn.techzjc.net"];
 const ALLOWED_DOMAINS = ["techzjc.com", "test-cn.techzjc.com"];
-export const HEADER_KEY = "x-origin-auth";
 
 function getLocale(request: { headers: Headers }): string {
   const headers = {

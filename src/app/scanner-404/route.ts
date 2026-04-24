@@ -1,4 +1,4 @@
-import { HEADER_KEY } from "@/proxy";
+import { HEADER_KEY } from "@/constants/headers";
 type ClientIp = {
   rawIp: string;
   source: "ali-cdn-real-ip" | "x-forwarded-for" | "unknown";
