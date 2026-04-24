@@ -120,16 +120,18 @@ function handle(req: Request) {
       ipSource = clientIp.source;
     } else {
       // This request is not from CDN, we should try to reference the raw IP from X-Forwarded-For or actual IP
-      rawIp = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+      rawIp =
+        getHeaderIp(req.headers.get("x-forwarded-for")) ||
+        getHeaderIp(req.headers.get("x-real-ip")) ||
+        "unknown";
       ipSource = "unknown";
     }
 
-    
     const truncatedIp = truncateIp(rawIp);
 
     // Log the scanner activity with the truncated IP for analytics and threat intelligence purposes
     // Note: This site is not a site that provides any user-specific functionality
-    // at the same time, its type is a personal website so DO NOT over-complicate the IP anoymization logic,
+    // at the same time, its type is a personal website so DO NOT over-complicate the IP anonymization logic,
     // for GDPR compliance. At the same time, it should be pretty low volume traffic, so storing cost is not a concern for now.
     console.log(
       {
