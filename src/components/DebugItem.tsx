@@ -53,7 +53,7 @@ export function DebugItem(props: {dict: any}) {
                 {dict['copyright'] ? dict['copyright']['open_source_licenses'] : 'Open Source Licenses'}
             </Link>&nbsp;&#8729;&nbsp;
             <Link href="https://status.techzjc.com" target="_blank" rel="noopener noreferrer">
-                {dict['site-status']}
+                {dict['site-status'] ? dict['site-status'] : 'Site Status'}
             </Link>
         </div>
     );
