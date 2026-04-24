@@ -88,15 +88,22 @@ export function proxy(req: NextRequest) {
     return NextResponse.rewrite(new URL("/scanner-404", req.url));
   }
 
+  if (SCANNER_PATTERNS.some((re) => re.test(pathname))) {
+    return NextResponse.rewrite(new URL("/scanner-404", req.url));
+  }
+
   if (
     pathname === "/favicon.ico" ||
     pathname === "/robots.txt" ||
     pathname === "/sitemap.xml" ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/_next/") ||
-    pathname.startsWith("/assets/") ||
     pathname.startsWith("/photos/")
   ) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/assets/")) {
     return NextResponse.next();
   }
 
@@ -106,10 +113,6 @@ export function proxy(req: NextRequest) {
     const url = req.nextUrl.clone();
     url.pathname = "/en-US";
     return NextResponse.redirect(url, 301);
-  }
-
-  if (SCANNER_PATTERNS.some((re) => re.test(pathname))) {
-    return NextResponse.rewrite(new URL("/scanner-404", req.url));
   }
 
   const pathnameHasLocale = locales.some(
