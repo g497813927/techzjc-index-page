@@ -5,7 +5,7 @@ function handle(req: Request) {
   const path = request_url.pathname;
   // Get the IP address of the client making the request so that it can be later used for analytics
   // Additional step pending - might later use a third-party service to check if the IP is from a known botnet or scanner network
-  // As traffics would first hit the CDN layer (if not directly accessing the origin server), we can check for headers
+  // As traffic would first hit the CDN layer (if not directly accessing the origin server), we can check for headers
   // that are specifically added by the CDN to identify the real client IP
   const cdnRealIp = req.headers.get("ali-cdn-real-ip");
   const forwardedFor = req.headers.get("x-forwarded-for");
