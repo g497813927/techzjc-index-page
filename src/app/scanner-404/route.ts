@@ -1,3 +1,4 @@
+import { HEADER_KEY } from "@/proxy";
 type ClientIp = {
   rawIp: string;
   source: "ali-cdn-real-ip" | "x-forwarded-for" | "unknown";
@@ -109,7 +110,7 @@ function handle(req: Request) {
 
   if (process.env.SCANNER_404_LOG_REQUESTS === "true") {
     // Check whether the request is coming from the CDN or visiting directly by checking the X-Origin-Auth header 
-    const originAuth = req.headers.get("x-origin-auth");
+    const originAuth = HEADER_KEY;
     let rawIp = "unknown";
     let ipSource = "unknown";
     if (originAuth && originAuth === process.env.CDN_ORIGIN_AUTH) {

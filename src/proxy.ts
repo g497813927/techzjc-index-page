@@ -5,7 +5,7 @@ const locales = ["zh-CN", "en-US"];
 
 const TRUSTED_ORIGINS = ["cdn.techzjc.net"];
 const ALLOWED_DOMAINS = ["techzjc.com", "test-cn.techzjc.com"];
-const HEADER_KEY = "x-origin-auth";
+export const HEADER_KEY = "x-origin-auth";
 
 function getLocale(request: { headers: Headers }): string {
   const headers = {
