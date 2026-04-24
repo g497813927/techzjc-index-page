@@ -108,7 +108,7 @@ function handle(req: Request) {
     : `A wild scanner appeared! The wild scanner used ${req.method} on ${path}… It missed ${path}!`;
 
   if (process.env.SCANNER_404_LOG_REQUESTS === "true") {
-    // Check if the request is sending from CDN or visit directly through checking the X-Origin-Auth header
+    // Check whether the request is coming from the CDN or visiting directly by checking the X-Origin-Auth header 
     const originAuth = req.headers.get("x-origin-auth");
     let rawIp = "unknown";
     let ipSource = "unknown";
@@ -124,7 +124,7 @@ function handle(req: Request) {
         getHeaderIp(req.headers.get("x-forwarded-for")) ||
         getHeaderIp(req.headers.get("x-real-ip")) ||
         "unknown";
-      ipSource = "unknown";
+      ipSource = "untrusted-header";
     }
 
     const truncatedIp = truncateIp(rawIp);
