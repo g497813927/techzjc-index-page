@@ -16,7 +16,7 @@ function handle(req: Request) {
     ? `一个野生的扫描器出现了！野生的扫描器对 ${path} 使出了 ${req.method}…没有击中 ${path}！` :
     `A wild scanner appeared! The wild scanner used ${req.method} on ${path}… It missed ${path}!`;
   
-  if (process.env.NEXT_PUBLIC_SENTRY_SEND_DEFAULT_PII === "true") {
+  if (process.env.SCANNER_404_LOG_REQUESTS === "true") {
     // Log for analytics, but truncate the last octet of the IP for privacy reasons (use subnet-level IP for analytics)
     // and threat intelligence purposes
 
