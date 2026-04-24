@@ -108,20 +108,35 @@ function handle(req: Request) {
     : `A wild scanner appeared! The wild scanner used ${req.method} on ${path}… It missed ${path}!`;
 
   if (process.env.SCANNER_404_LOG_REQUESTS === "true") {
-    // Get the client's IP address for logging purposes
-    const { rawIp, source: ipSource } = getClientIp(req);
+    // Check if the request is sending from CDN or visit directly through checking the X-Origin-Auth header
+    const originAuth = req.headers.get("x-origin-auth");
+    let rawIp = "unknown";
+    let ipSource = "unknown";
+    if (originAuth && originAuth === process.env.CDN_ORIGIN_AUTH) {
+      // This request is from CDN, we can trust the IP info in the headers
+      // Get the client's IP address for logging purposes
+      const clientIp = getClientIp(req);
+      rawIp = clientIp.rawIp;
+      ipSource = clientIp.source;
+    } else {
+      // This request is not from CDN, we should try to reference the raw IP from X-Forwarded-For or actual IP
+      rawIp = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+      ipSource = "unknown";
+    }
+
+    
     const truncatedIp = truncateIp(rawIp);
 
     // Log the scanner activity with the truncated IP for analytics and threat intelligence purposes
     // Note: This site is not a site that provides any user-specific functionality
-    // at the same time, its type is a personal website so DO NOT over-complicate the IP annoymization logic,
+    // at the same time, its type is a personal website so DO NOT over-complicate the IP anoymization logic,
     // for GDPR compliance. At the same time, it should be pretty low volume traffic, so storing cost is not a concern for now.
     console.log(
       {
         type: "scanner-404",
         method: req.method,
-        path,
-        locale,
+        path: path.length > 100 ? path.slice(0, 100) + "..." : path,
+        locale: locale.length > 20 ? locale.slice(0, 20) + "..." : locale,
         truncatedIp,
         ipSource,
       }
