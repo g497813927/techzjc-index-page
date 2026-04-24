@@ -7,7 +7,10 @@ function handle(req: Request) {
   // Additional step pending - might later use a third-party service to check if the IP is from a known botnet or scanner network
   // As traffics would first hit the CDN layer (if not directly accessing the origin server), we can check for headers
   // that are specifically added by the CDN to identify the real client IP
-  const rawip = req.headers.get("ali-cdn-real-ip") || req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+  const cdnRealIp = req.headers.get("ali-cdn-real-ip");
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const forwardedIp = forwardedFor?.split(",")?.[0]?.trim();
+  const rawip = cdnRealIp || forwardedIp || "unknown";
 
   const message = locale.toLowerCase().startsWith("zh")
     ? `一个野生的扫描器出现了！野生的扫描器对 ${path} 使出了 ${req.method}…没有击中 ${path}！` :
