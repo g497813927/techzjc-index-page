@@ -54,7 +54,7 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
           <CnCoreValuesMouseClickHelper />
         }
         <DebugBootstrap />
-        <MoveToTop dict={await (await import(`./dictionaries/${lang}.json`)).default} />
+        <MoveToTop dict={dict} />
         {children}
       </body>
     </html>

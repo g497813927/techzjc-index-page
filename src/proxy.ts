@@ -98,9 +98,12 @@ export function proxy(req: NextRequest) {
     pathname === "/sitemap.xml" ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/_next/") ||
-    pathname.startsWith("/assets/") ||
     pathname.startsWith("/photos/")
   ) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/assets/")) {
     return NextResponse.next();
   }
 
