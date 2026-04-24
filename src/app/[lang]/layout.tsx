@@ -4,20 +4,25 @@ import { MoveToTop } from "@/components/MoveToTop";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
-import { getDictionary } from "./dictionaries";
+import { getDictionary, hasLocale } from "./dictionaries";
 import { CnCoreValuesMouseClickHelper } from "@/utils/cnCoreValuesMouseClickHelper";
+import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
   return [{ lang: 'en-US' }, { lang: 'zh-CN' }];
 }
 
 export default async function RootLayout({ children, params }: LayoutProps<'/[lang]'>) {
-
   const themeScript = `!function(){var e=document.documentElement;e.classList.remove("no-js"),e.classList.add("js");try{var t=window.localStorage.getItem("theme"),a=window.matchMedia("(prefers-color-scheme:dark)").matches;"dark"===t||!t&&a?(e.classList.add("dark"),e.setAttribute("data-theme","dark")):(e.classList.remove("dark"),e.setAttribute("data-theme","light"))}catch(t){}}();`;
   // Guard LA.init: only runs if SDK loaded successfully, swallows errors silently
   const laInitScript = "try{if(window.LA&&typeof window.LA.init==='function'){window.LA.init({id:'3PdOUXA31SUg1C4G',ck:'3PdOUXA31SUg1C4G',autoTrack:true,hashMode:true,screenRecord:true})}}catch(e){}";
   const { lang } = await params;
-  const dict = await getDictionary(lang as 'en-US' | 'zh-CN');
+
+  if (!hasLocale(lang)) {
+    notFound();
+  }
+
+  const dict = await getDictionary(lang);
   return (
     <html suppressHydrationWarning lang={lang} className="no-js">
       <head>
@@ -49,7 +54,7 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
           <CnCoreValuesMouseClickHelper />
         }
         <DebugBootstrap />
-        <MoveToTop dict={await (await import(`./dictionaries/${(await params).lang}.json`)).default} />
+        <MoveToTop dict={await (await import(`./dictionaries/${lang}.json`)).default} />
         {children}
       </body>
     </html>

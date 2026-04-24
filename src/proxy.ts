@@ -88,6 +88,10 @@ export function proxy(req: NextRequest) {
     return NextResponse.rewrite(new URL("/scanner-404", req.url));
   }
 
+  if (SCANNER_PATTERNS.some((re) => re.test(pathname))) {
+    return NextResponse.rewrite(new URL("/scanner-404", req.url));
+  }
+
   if (
     pathname === "/favicon.ico" ||
     pathname === "/robots.txt" ||
@@ -106,10 +110,6 @@ export function proxy(req: NextRequest) {
     const url = req.nextUrl.clone();
     url.pathname = "/en-US";
     return NextResponse.redirect(url, 301);
-  }
-
-  if (SCANNER_PATTERNS.some((re) => re.test(pathname))) {
-    return NextResponse.rewrite(new URL("/scanner-404", req.url));
   }
 
   const pathnameHasLocale = locales.some(
