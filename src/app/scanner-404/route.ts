@@ -110,10 +110,11 @@ function handle(req: Request) {
 
   if (process.env.SCANNER_404_LOG_REQUESTS === "true") {
     // Check whether the request is coming from the CDN or visiting directly by checking the X-Origin-Auth header 
-    const originAuth = HEADER_KEY;
+    const originAuth = req.headers.get(HEADER_KEY);
+    const cdnOriginAuth = process.env.CDN_ORIGIN_AUTH;
     let rawIp = "unknown";
     let ipSource = "unknown";
-    if (originAuth && originAuth === process.env.CDN_ORIGIN_AUTH) {
+    if (cdnOriginAuth && originAuth === cdnOriginAuth) {
       // This request is from CDN, we can trust the IP info in the headers
       // Get the client's IP address for logging purposes
       const clientIp = getClientIp(req);
