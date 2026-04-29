@@ -68,7 +68,8 @@
   },
   "overrides": {
     "ajv": ">=8.18.0",
-    "minimatch": ">=10.2.1"
+    "minimatch": ">=10.2.1",
+    "postcss": "^8.5.10"
   },
   "browserslist": [
     "last 2 chrome versions",
