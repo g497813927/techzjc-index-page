@@ -27,8 +27,10 @@ ENV SENTRY_UPLOAD_SOURCEMAPS=$SENTRY_UPLOAD_SOURCEMAPS
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN --mount=type=secret,id=sentry_auth_token \
-    export SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token)" && \
+RUN --mount=type=secret,id=sentry_auth_token,required=false \
+    if [ "$SENTRY_UPLOAD_SOURCEMAPS" = "true" ] && [ -f /run/secrets/sentry_auth_token ]; then \
+      export SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token)"; \
+    fi && \
     npm run build:docker
 FROM base AS runner
 WORKDIR /app
