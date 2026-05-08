@@ -29,9 +29,10 @@ COPY . .
 
 RUN --mount=type=secret,id=sentry_auth_token,required=false \
     if [ "$SENTRY_UPLOAD_SOURCEMAPS" = "true" ] && [ -f /run/secrets/sentry_auth_token ]; then \
-      export SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token)"; \
-    fi && \
-    npm run build:docker
+      SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token)" npm run build:docker; \
+    else \
+      npm run build:docker; \
+    fi
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
