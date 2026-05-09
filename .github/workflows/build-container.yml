@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - '**'
-    tags:
-      - '**'
   workflow_dispatch:
 
 jobs:
@@ -55,7 +53,7 @@ jobs:
             SENTRY_ORG=${{ vars.SENTRY_ORG }}
             SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }}
             SENTRY_UPLOAD_SOURCEMAPS=true
-          push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           secrets: |
             sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
           tags: |
@@ -63,7 +61,7 @@ jobs:
             ${{ vars.IMAGE }}:latest
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    if: github.ref == 'refs/heads/main'
     name: Deploy to Alibaba Cloud FC
     concurrency:
       group: deploy-${{ github.ref }}
