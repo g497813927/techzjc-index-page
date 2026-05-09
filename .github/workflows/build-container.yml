@@ -42,7 +42,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push images if on Main or Tag
+      - name: Build image on non-protected refs
+        if: github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/')
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          build-args: |
+            NEXT_PUBLIC_SENTRY_APPLICATION_KEY=techzjc-site-index
+            SENTRY_ORG=${{ vars.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }}
+            SENTRY_UPLOAD_SOURCEMAPS=false
+          push: false
+
+      - name: Build and push images on Main
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         id: docker_build
         with:
@@ -53,7 +67,7 @@ jobs:
             SENTRY_ORG=${{ vars.SENTRY_ORG }}
             SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }}
             SENTRY_UPLOAD_SOURCEMAPS=true
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           secrets: |
             sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
           tags: |
