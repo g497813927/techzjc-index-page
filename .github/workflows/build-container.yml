@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - '**'
-    tags:
-      - '**'
   workflow_dispatch:
 
 jobs:
@@ -57,8 +55,8 @@ jobs:
             SENTRY_UPLOAD_SOURCEMAPS=false
           push: false
 
-      - name: Build and push images on Main or Tag
-        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+      - name: Build and push images on Main
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         id: docker_build
         with:
@@ -77,7 +75,7 @@ jobs:
             ${{ vars.IMAGE }}:latest
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    if: github.ref == 'refs/heads/main'
     name: Deploy to Alibaba Cloud FC
     concurrency:
       group: deploy-${{ github.ref }}
