@@ -22,7 +22,7 @@
     "@mdx-js/react": "3.1.1",
     "@next/mdx": "^16.2.9",
     "@next/third-parties": "^16.2.5",
-    "@sentry/nextjs": "^10.49.0",
+    "@sentry/nextjs": "^10.57.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "figlet": "^1.11.0",
