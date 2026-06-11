@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "typescript": "^6",
-    "@next/bundle-analyzer": "^16.2.6",
+    "@next/bundle-analyzer": "^16.2.9",
     "@tailwindcss/postcss": "^4",
     "@types/estree": "^1.0.9",
     "@types/ms": "^2.1.0",
