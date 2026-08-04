@@ -44,15 +44,6 @@ li:hover {
     transition: transform 0.2s ease-in-out;
 }
 
-@keyframes scroll-left {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
 .center-content {
     display: flex;
     justify-content: center;
@@ -156,4 +147,17 @@ a:hover {
 :root.no-js [data-motion-no-js="visible"] {
     opacity: 1 !important;
     transform: none !important;
+}
+
+/* Respect the user's reduced motion preference: suppress animations and transitions */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
+        scroll-behavior: auto !important;
+    }
 }

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import './MoveToTop.css';
+import { scrollBehavior } from "@/utils/reducedMotion";
 
 //eslint-disable-next-line
 export function MoveToTop({ dict }: { dict: any }) {
@@ -16,7 +17,7 @@ export function MoveToTop({ dict }: { dict: any }) {
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
-            behavior: 'smooth'
+            behavior: scrollBehavior()
         });
     }
 
