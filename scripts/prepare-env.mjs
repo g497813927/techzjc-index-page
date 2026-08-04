@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 /**
  * Refreshes only the package-owned generated keys in `.env.local`:
  *   - NEXT_PUBLIC_COMMIT_SHA
@@ -6,7 +7,7 @@
  *
  * Recovery boundary:
  *   - Every line that is not an assignment of a managed key is preserved
- *     verbatim (comments, unrelated keys, quoted values).
+ *     verbatim, along with the file's detected LF or CRLF line-ending style.
  *   - Managed keys are replaced at their first occurrence; duplicate
  *     assignments of a managed key are removed. Missing managed keys are
  *     appended at the end. A missing file is created with managed keys only.
@@ -14,8 +15,8 @@
  *     NEXT_PUBLIC_COMMIT_SHA value is kept; "unknown" is used when there is
  *     none. NEXT_PUBLIC_BUILD_TIME is always refreshed.
  *
- * Security: existing values are never printed; only key names and action
- * counts are logged.
+ * Security: existing values are never printed; only key names and whether the
+ * file was created or updated are logged.
  */
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -24,9 +25,13 @@ import path from "node:path";
 const ENV_FILE = path.join(process.cwd(), ".env.local");
 const MANAGED_KEYS = ["NEXT_PUBLIC_COMMIT_SHA", "NEXT_PUBLIC_BUILD_TIME"];
 
-function readExistingLines() {
+function readExistingFile() {
   try {
-    return fs.readFileSync(ENV_FILE, "utf8").split(/\r?\n/);
+    const content = fs.readFileSync(ENV_FILE, "utf8");
+    return {
+      eol: content.match(/\r\n|\n/)?.[0] ?? "\n",
+      lines: content.split(/\r\n|\n/),
+    };
   } catch (err) {
     if (err && err.code === "ENOENT") {
       return null;
@@ -86,20 +91,32 @@ function writeFileAtomically(content) {
     path.dirname(ENV_FILE),
     `.env.local.tmp-${process.pid}-${Date.now()}`,
   );
-  fs.writeFileSync(tmpFile, content, { mode: 0o600 });
-  fs.renameSync(tmpFile, ENV_FILE);
+  let published = false;
+  try {
+    fs.writeFileSync(tmpFile, content, { mode: 0o600 });
+    // Node replaces an existing file here; deleting it first would create a
+    // window where a failed publish could lose the local configuration.
+    fs.renameSync(tmpFile, ENV_FILE);
+    published = true;
+  } finally {
+    if (!published) {
+      fs.rmSync(tmpFile, { force: true });
+    }
+  }
 }
 
-const existingLines = readExistingLines();
+const existingFile = readExistingFile();
+const existingLines = existingFile?.lines ?? null;
 const managedValues = {
   NEXT_PUBLIC_COMMIT_SHA: resolveCommitSha(existingLines),
   NEXT_PUBLIC_BUILD_TIME: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
 };
 
 const merged = mergeLines(existingLines, managedValues);
-let content = merged.join("\n");
-if (!content.endsWith("\n")) {
-  content += "\n";
+const eol = existingFile?.eol ?? "\n";
+let content = merged.join(eol);
+if (!content.endsWith(eol)) {
+  content += eol;
 }
 
 writeFileAtomically(content);

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 /**
  * Minimal regression check for scripts/prepare-env.mjs.
  *
@@ -65,7 +66,7 @@ function readEnv(dir) {
 
 function toMap(content) {
   const map = new Map();
-  for (const line of content.split("\n")) {
+  for (const line of content.split(/\r?\n/)) {
     const eq = line.indexOf("=");
     if (eq > 0) {
       map.set(line.slice(0, eq), line.slice(eq + 1));
@@ -79,6 +80,7 @@ const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 // Case 1: unrelated entries survive a refresh; managed keys are updated.
 {
   const dir = makeTempRepo(true);
+  const eol = "\r\n";
   const expectedSha = execFileSync("git", ["rev-parse", "--short", "HEAD"], {
     cwd: dir,
     encoding: "utf8",
@@ -93,7 +95,7 @@ const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
       "NEXT_PUBLIC_COMMIT_SHA=stale-sha",
       "NEXT_PUBLIC_BUILD_TIME=stale-time",
       "",
-    ].join("\n"),
+    ].join(eol),
   );
 
   const log = runPrepareEnv(dir);
@@ -105,6 +107,12 @@ const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
   assert.equal(map.get("NEXT_PUBLIC_COMMIT_SHA"), expectedSha);
   assert.match(map.get("NEXT_PUBLIC_BUILD_TIME"), ISO_RE);
   assert.ok(content.includes("# unrelated comment"));
+  assert.ok(content.includes(eol), "CRLF line endings must be preserved");
+  assert.doesNotMatch(
+    content.replaceAll(eol, ""),
+    /[\r\n]/,
+    "rewritten content must not contain mixed line endings",
+  );
   assert.equal(
     content.split("NEXT_PUBLIC_COMMIT_SHA=").length - 1,
     1,
