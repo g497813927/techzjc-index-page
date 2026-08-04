@@ -37,7 +37,7 @@
     min-width: 374px;
     max-height: 250px;
     object-fit: cover;
-    z-index: 100;
+    z-index: 1;
     opacity: 0;
 }
 
