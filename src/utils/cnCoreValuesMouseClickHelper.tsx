@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { prefersReducedMotion } from "@/utils/reducedMotion";
 
 const coreValues = ["富强", "民主", "文明", "和谐", "自由", "平等", "公正", "法治", "爱国", "敬业", "诚信", "友善"];
 const colors = ["red", "orange", "gold"];
@@ -34,6 +35,11 @@ export function CnCoreValuesMouseClickHelper() {
     }
 
     useEffect(() => {
+        // Skip the decorative floating animation for users who prefer reduced motion
+        if (prefersReducedMotion()) {
+            return;
+        }
+
         let index = 0;
         function handleClick(event: MouseEvent) {
             index = (index) % coreValues.length;
