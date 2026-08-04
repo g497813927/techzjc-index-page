@@ -7,7 +7,7 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { getDictionary, hasLocale } from "./dictionaries";
 import { CnCoreValuesMouseClickHelper } from "@/utils/cnCoreValuesMouseClickHelper";
 import { notFound } from "next/navigation";
-import { MotionConfig } from "motion/react";
+import { MotionProvider } from "@/components/MotionProvider";
 
 export async function generateStaticParams() {
   return [{ lang: 'en-US' }, { lang: 'zh-CN' }];
@@ -57,9 +57,9 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
         <DebugBootstrap />
         <MoveToTop dict={dict} />
         {/* Respect the user's prefers-reduced-motion setting for all motion components */}
-        <MotionConfig reducedMotion="user">
+        <MotionProvider>
           {children}
-        </MotionConfig>
+        </MotionProvider>
       </body>
     </html>
   );

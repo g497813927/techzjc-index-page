@@ -49,7 +49,15 @@ function usePhotoRowRef(direction: 1 | -1) {
             el.scrollLeft = next;
         };
 
+        // Only runs while auto-scrolling is actually possible and the user
+        // is not interacting; otherwise the loop is fully stopped so no
+        // per-frame work happens while paused or reduced motion is preferred.
         const step = (ts: number) => {
+            if (!canAutoScroll() || isPaused()) {
+                rafId = 0;
+                lastTs = 0;
+                return;
+            }
             rafId = requestAnimationFrame(step);
             if (!lastTs) {
                 lastTs = ts;
@@ -57,11 +65,30 @@ function usePhotoRowRef(direction: 1 | -1) {
             }
             const dt = Math.min((ts - lastTs) / 1000, 0.05);
             lastTs = ts;
-            if (!canAutoScroll() || isPaused()) {
-                return;
-            }
             const speed = half / MARQUEE_DURATION_SECONDS;
             setScrollWrapped(el.scrollLeft + direction * speed * dt);
+        };
+
+        const ensureLoop = () => {
+            if (rafId === 0) {
+                lastTs = 0;
+                rafId = requestAnimationFrame(step);
+            }
+        };
+        const stopLoop = () => {
+            if (rafId !== 0) {
+                cancelAnimationFrame(rafId);
+                rafId = 0;
+                lastTs = 0;
+            }
+        };
+        // Restart/stop the loop when the reduced-motion preference changes
+        const onReducedMotionChange = () => {
+            if (canAutoScroll() && !isPaused()) {
+                ensureLoop();
+            } else {
+                stopLoop();
+            }
         };
 
         const scheduleResume = () => {
@@ -69,6 +96,7 @@ function usePhotoRowRef(direction: 1 | -1) {
             window.clearTimeout(idleTimer);
             idleTimer = window.setTimeout(() => {
                 interacting = false;
+                ensureLoop();
             }, RESUME_DELAY_MS);
         };
 
@@ -105,6 +133,7 @@ function usePhotoRowRef(direction: 1 | -1) {
         const onTouchStart = () => {
             touching = true;
             lastTouchX = null;
+            stopLoop();
         };
         const onTouchMove = (event: TouchEvent) => {
             if (event.touches.length !== 1) {
@@ -121,18 +150,27 @@ function usePhotoRowRef(direction: 1 | -1) {
             }
             lastTouchX = x;
         };
+
+        const onMouseEnter = () => { hovering = true; stopLoop(); };
+        const onMouseLeave = () => { hovering = false; ensureLoop(); };
+        const onFocusIn = () => { focused = true; stopLoop(); };
+        const onFocusOut = () => { focused = false; ensureLoop(); };
         const onTouchEnd = () => {
             touching = false;
             lastTouchX = null;
+            ensureLoop();
+        };
+        const onResize = () => {
+            half = el.scrollWidth / 2;
+            if (canAutoScroll() && !isPaused()) {
+                ensureLoop();
+            } else {
+                stopLoop();
+            }
         };
 
-        const onMouseEnter = () => { hovering = true; };
-        const onMouseLeave = () => { hovering = false; };
-        const onFocusIn = () => { focused = true; };
-        const onFocusOut = () => { focused = false; };
-        const onResize = () => { half = el.scrollWidth / 2; };
-
         window.addEventListener('resize', onResize);
+        reducedMotionQuery.addEventListener('change', onReducedMotionChange);
         el.addEventListener('scroll', onScroll, { passive: true });
         el.addEventListener('wheel', onWheel, { passive: false });
         el.addEventListener('keydown', onKeyDown);
@@ -145,12 +183,15 @@ function usePhotoRowRef(direction: 1 | -1) {
         el.addEventListener('focusin', onFocusIn);
         el.addEventListener('focusout', onFocusOut);
 
-        rafId = requestAnimationFrame(step);
+        if (canAutoScroll() && !isPaused()) {
+            rafId = requestAnimationFrame(step);
+        }
 
         return () => {
             cancelAnimationFrame(rafId);
             window.clearTimeout(idleTimer);
             window.removeEventListener('resize', onResize);
+            reducedMotionQuery.removeEventListener('change', onReducedMotionChange);
             el.removeEventListener('scroll', onScroll);
             el.removeEventListener('wheel', onWheel);
             el.removeEventListener('keydown', onKeyDown);
@@ -194,7 +235,7 @@ export function PhotoWall(props: { dict: any }) {
                     >
                         <div className="photos-track">
                             {photo_1.map((photo, index) => (
-                                <ImageSkeleton key={index} url={photo.url} alt={photo.alt + ' ' + copyrightNotice || photo.name} />
+                                <ImageSkeleton key={index} url={photo.url} alt={photo.alt ? `${photo.alt} ${copyrightNotice}` : photo.name} />
                             ))}
                         </div>
                     </div>
@@ -207,7 +248,7 @@ export function PhotoWall(props: { dict: any }) {
                     >
                         <div className="photos-track">
                             {photo_2.map((url, index) => (
-                                <ImageSkeleton key={index} url={url.url} alt={url.alt + ' ' + copyrightNotice || url.name} />
+                                <ImageSkeleton key={index} url={url.url} alt={url.alt ? `${url.alt} ${copyrightNotice}` : url.name} />
                             ))}
                         </div>
                     </div>
