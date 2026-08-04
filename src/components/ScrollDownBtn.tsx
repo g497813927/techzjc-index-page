@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, domAnimation, LazyMotion, motion } from "motion/react";
+import { scrollBehavior } from "@/utils/reducedMotion";
 
 
 export function ScrollDownBtn() {
@@ -13,7 +14,7 @@ export function ScrollDownBtn() {
                     onClick={() => {
                         window.scrollBy({
                             top: window.innerHeight,
-                            behavior: 'smooth'
+                            behavior: scrollBehavior()
                         });
                     }} aria-label="Scroll down"
                     animate={{ y: [0, -10, 0] }}
