@@ -7,6 +7,7 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { getDictionary, hasLocale } from "./dictionaries";
 import { CnCoreValuesMouseClickHelper } from "@/utils/cnCoreValuesMouseClickHelper";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import { MotionProvider } from "@/components/MotionProvider";
 
 export async function generateStaticParams() {
@@ -31,20 +32,13 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
         {
-          process.env.NEXT_PUBLIC_VERCEL_ENV === 'true' ?
-            <>
-              <GoogleAnalytics gaId="G-1ZLSY6R45Z" />
-              <GoogleTagManager gtmId="GTM-N4FFLQFV" />
-              <SpeedInsights />
-              <Analytics />
-            </>
-            :
-            <>
-              <script id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
-              <script
-                dangerouslySetInnerHTML={{ __html: laInitScript }}
-              ></script>
-            </>
+          process.env.NEXT_PUBLIC_VERCEL_ENV === 'true' &&
+          <>
+            <GoogleAnalytics gaId="G-1ZLSY6R45Z" />
+            <GoogleTagManager gtmId="GTM-N4FFLQFV" />
+            <SpeedInsights />
+            <Analytics />
+          </>
         }
         <link rel="alternate" type="application/rss+xml" title={dict['metadata']['blog']['index']['rss_feed_link_title']} href={`https://techzjc.com/${lang}/rss.xml`} />
         <link rel="alternate" type="application/atom+xml" title={dict['metadata']['blog']['index']['atom_feed_link_title']} href={`https://techzjc.com/${lang}/atom.xml`} />
@@ -60,6 +54,21 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
         <MotionProvider>
           {children}
         </MotionProvider>
+        {
+          process.env.NEXT_PUBLIC_VERCEL_ENV !== 'true' &&
+          <>
+            <Script
+              id="LA_COLLECT"
+              src="https://sdk.51.la/js-sdk-pro.min.js"
+              strategy="beforeInteractive"
+            />
+            <Script
+              id="LA_COLLECT_INIT"
+              strategy="beforeInteractive"
+              dangerouslySetInnerHTML={{ __html: laInitScript }}
+            />
+          </>
+        }
       </body>
     </html>
   );

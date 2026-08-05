@@ -1,3 +1,4 @@
+import type { getDictionary } from "@/app/[lang]/dictionaries";
 import { Footer } from "@/components/Footer";
 import { NavBar } from "@/components/NavBar";
 import { faChevronLeft, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
@@ -8,7 +9,7 @@ export function NotFoundContent({
   dict,
   homeHref,
 }: {
-  dict: any;
+  dict: Awaited<ReturnType<typeof getDictionary>>;
   homeHref: string;
 }) {
   return (
