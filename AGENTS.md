@@ -17,4 +17,4 @@
 ## Companion rules
 
 - When changing user-visible copy, update both `src/app/[lang]/dictionaries/en-US.json` and `src/app/[lang]/dictionaries/zh-CN.json`.
-- `content/blog/` is synchronized from an external repository during the build; do not edit it directly in this repository.
+- `content/blog/` is synchronized from an external repository during the CI/container build workflow (`.github/workflows/build-container.yml`); do not edit it directly in this repository.
