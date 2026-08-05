@@ -6,16 +6,73 @@ on:
       - '**'
   workflow_dispatch:
 
+env:
+  BLOG_CONTENT_REPOSITORY: g497813927/techzjc-blog-content
+  BLOG_CONTENT_REF: main
+
+concurrency:
+  group: build-container-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   checks:
     name: Package checks
     runs-on: ubuntu-latest
+    outputs:
+      blog_content_revision: ${{ steps.resolve_blog_content.outputs.revision }}
     permissions:
       contents: read
 
     steps:
+      - name: Resolve Blog Content revision
+        id: resolve_blog_content
+        env:
+          GH_TOKEN: ${{ secrets.BLOG_CONTENT_SYNC_PAT }}
+        run: |
+          set -euo pipefail
+          actual_revision="$(gh api --method GET "repos/$BLOG_CONTENT_REPOSITORY/commits/$BLOG_CONTENT_REF" --jq .sha)"
+          if [[ ! "$actual_revision" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error title=Invalid resolved Blog Content revision::$actual_revision"
+            exit 1
+          fi
+          echo "revision=$actual_revision" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Resolved Blog Content input"
+            printf -- '- Repository: `%s`\n' "$BLOG_CONTENT_REPOSITORY"
+            printf -- '- Source ref: `%s`\n' "$BLOG_CONTENT_REF"
+            printf -- '- Blog revision: `%s`\n' "$actual_revision"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Prepare Blog Content to content/blog
+        run: mkdir -p content
+
+      - name: Sync Blog Content
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BLOG_CONTENT_REPOSITORY }}
+          path: content/blog
+          token: ${{ secrets.BLOG_CONTENT_SYNC_PAT }}
+          ref: ${{ steps.resolve_blog_content.outputs.revision }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify Blog Content revision
+        env:
+          BLOG_CONTENT_REVISION: ${{ steps.resolve_blog_content.outputs.revision }}
+        run: |
+          actual_revision="$(git -C content/blog rev-parse HEAD)"
+          if [[ "$actual_revision" != "$BLOG_CONTENT_REVISION" ]]; then
+            echo "::error title=Blog Content revision mismatch::Expected $BLOG_CONTENT_REVISION, got $actual_revision"
+            exit 1
+          fi
+          {
+            echo "### Checked build inputs"
+            printf -- '- Site revision: `%s`\n' "$GITHUB_SHA"
+            printf -- '- Blog revision: `%s`\n' "$actual_revision"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -56,10 +113,29 @@ jobs:
       - name: Sync Blog Content
         uses: actions/checkout@v4
         with:
-          repository: g497813927/techzjc-blog-content
+          repository: ${{ env.BLOG_CONTENT_REPOSITORY }}
           path: content/blog
           token: ${{ secrets.BLOG_CONTENT_SYNC_PAT }}
+          ref: ${{ needs.checks.outputs.blog_content_revision }}
           fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify and record Blog Content revision
+        id: built_blog_content
+        env:
+          BLOG_CONTENT_REVISION: ${{ needs.checks.outputs.blog_content_revision }}
+        run: |
+          actual_revision="$(git -C content/blog rev-parse HEAD)"
+          if [[ "$actual_revision" != "$BLOG_CONTENT_REVISION" ]]; then
+            echo "::error title=Blog Content revision mismatch::Expected $BLOG_CONTENT_REVISION, got $actual_revision"
+            exit 1
+          fi
+          echo "revision=$actual_revision" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Docker build inputs"
+            printf -- '- Site revision: `%s`\n' "$GITHUB_SHA"
+            printf -- '- Blog revision: `%s`\n' "$actual_revision"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -74,6 +150,9 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            com.techzjc.blog.revision=${{ steps.built_blog_content.outputs.revision }}
           build-args: |
             NEXT_PUBLIC_SENTRY_APPLICATION_KEY=techzjc-site-index
             SENTRY_ORG=${{ vars.SENTRY_ORG }}
@@ -88,6 +167,9 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            com.techzjc.blog.revision=${{ steps.built_blog_content.outputs.revision }}
           build-args: |
             NEXT_PUBLIC_SENTRY_APPLICATION_KEY=techzjc-site-index
             SENTRY_ORG=${{ vars.SENTRY_ORG }}
@@ -97,6 +179,7 @@ jobs:
           secrets: |
             sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
           tags: |
+            ${{ vars.IMAGE }}:${{ github.sha }}-${{ steps.built_blog_content.outputs.revision }}
             ${{ vars.IMAGE }}:${{ github.sha }}
             ${{ vars.IMAGE }}:latest
   deploy:
