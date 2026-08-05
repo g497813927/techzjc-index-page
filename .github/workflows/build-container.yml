@@ -7,7 +7,33 @@ on:
   workflow_dispatch:
 
 jobs:
+  checks:
+    name: Package checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run lint
+        run: npm run lint
+
   build:
+    needs: checks
     name: Build and Push Docker Image (amd64)
     runs-on: ubuntu-latest
     outputs:
@@ -74,7 +100,9 @@ jobs:
             ${{ vars.IMAGE }}:${{ github.sha }}
             ${{ vars.IMAGE }}:latest
   deploy:
-    needs: build
+    needs:
+      - checks
+      - build
     if: github.ref == 'refs/heads/main'
     name: Deploy to Alibaba Cloud FC
     concurrency:
