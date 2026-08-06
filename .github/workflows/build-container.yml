@@ -155,6 +155,7 @@ jobs:
             com.techzjc.blog.revision=${{ steps.built_blog_content.outputs.revision }}
           build-args: |
             NEXT_PUBLIC_SENTRY_APPLICATION_KEY=techzjc-site-index
+            BLOG_CONTENT_REVISION=${{ steps.built_blog_content.outputs.revision }}
             SENTRY_ORG=${{ vars.SENTRY_ORG }}
             SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }}
             SENTRY_UPLOAD_SOURCEMAPS=false
@@ -172,6 +173,7 @@ jobs:
             com.techzjc.blog.revision=${{ steps.built_blog_content.outputs.revision }}
           build-args: |
             NEXT_PUBLIC_SENTRY_APPLICATION_KEY=techzjc-site-index
+            BLOG_CONTENT_REVISION=${{ steps.built_blog_content.outputs.revision }}
             SENTRY_ORG=${{ vars.SENTRY_ORG }}
             SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }}
             SENTRY_UPLOAD_SOURCEMAPS=true
@@ -214,3 +216,33 @@ jobs:
           default_serverless_devs_key: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
         run: |
           s deploy -t s.yaml --use-local -y
+
+      - name: Accept deployed revision behavior
+        env:
+          REGION: ${{ vars.REGION }}
+          FC_NAME: ${{ vars.FC_NAME }}
+          IMAGE: ${{ vars.IMAGE }}
+          IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
+          BLOG_CONTENT_REVISION: ${{ needs.checks.outputs.blog_content_revision }}
+          default_serverless_devs_key: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
+        run: |
+          set -euo pipefail
+          expected_commit="$(git rev-parse --short "$GITHUB_SHA")"
+          deployed_revision="$GITHUB_SHA@$IMAGE_DIGEST"
+          expected_image="$IMAGE@$IMAGE_DIGEST"
+          npm run smoke:fc -- \
+            --region "$REGION" \
+            --function "$FC_NAME" \
+            --revision "$deployed_revision" \
+            --expected-commit "$expected_commit" \
+            --expected-blog-revision "$BLOG_CONTENT_REVISION" \
+            --expected-image "$expected_image"
+          {
+            echo "### Accepted FC deployment"
+            printf -- '- Region: `%s`\n' "$REGION"
+            printf -- '- Function: `%s`\n' "$FC_NAME"
+            printf -- '- Revision: `%s`\n' "$deployed_revision"
+            printf -- '- Blog revision: `%s`\n' "$BLOG_CONTENT_REVISION"
+            printf -- '- Image: `%s`\n' "$expected_image"
+            printf -- '- Health commit: `%s`\n' "$expected_commit"
+          } >> "$GITHUB_STEP_SUMMARY"

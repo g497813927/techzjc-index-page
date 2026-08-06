@@ -93,6 +93,7 @@ export function proxy(req: NextRequest) {
   }
 
   if (
+    (pathname === "/invoke" && process.env.IN_FC === "true") ||
     pathname === "/favicon.ico" ||
     pathname === "/robots.txt" ||
     pathname === "/sitemap.xml" ||

@@ -1,0 +1,9 @@
+{
+  "region": "fixture-region",
+  "functionName": "fixture-function",
+  "runtime": "custom-container",
+  "customContainerConfig": {
+    "port": 9000
+  },
+  "timeout": 10
+}

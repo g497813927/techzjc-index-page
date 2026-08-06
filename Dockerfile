@@ -35,8 +35,10 @@ RUN --mount=type=secret,id=sentry_auth_token,required=false \
     fi
 FROM base AS runner
 WORKDIR /app
+ARG BLOG_CONTENT_REVISION=unknown
 ENV NODE_ENV=production
 ENV PORT=9000
+ENV BLOG_CONTENT_REVISION=$BLOG_CONTENT_REVISION
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
