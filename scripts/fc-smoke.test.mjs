@@ -97,7 +97,7 @@ describe("FC post-deploy smoke fixture", () => {
     assert.match(result.stdout, /function=fixture-function/);
     assert.match(result.stdout, /revision=fixture-revision@sha256:fixture-digest/);
     assert.match(result.stdout, /blogRevision=beadfeedbeadfeedbeadfeedbeadfeedbeadfeed/);
-    assert.match(result.stdout, new RegExp(`image=${fixtureImage.replace(/[/.:]/g, "\\$&")}`));
+    assert.match(result.stdout, new RegExp(`image=${fixtureImage.replace(/[\\/.:]/g, "\\$&")}`));
   });
 
   test("rejects a response from a different region", () => {
