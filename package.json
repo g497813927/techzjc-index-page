@@ -5,9 +5,11 @@
   "scripts": {
     "generate-licenses": "node ./scripts/generate-licenses.mjs",
     "prepare-env": "node ./scripts/prepare-env.mjs && npm run generate-licenses",
-    "test": "npm run test:prepare-env && npm run test:scanner-404",
+    "test": "npm run test:prepare-env && npm run test:scanner-404 && npm run test:fc-smoke",
     "test:prepare-env": "node ./scripts/prepare-env.test.mjs",
     "test:scanner-404": "node --test ./scripts/scanner-404.test.mjs",
+    "test:fc-smoke": "node --test ./scripts/fc-smoke.test.mjs",
+    "smoke:fc": "node ./scripts/fc-smoke.mjs",
     "dev": "npm run prepare-env && next dev",
     "build": "npm run prepare-env && next build --webpack",
     "build:docker": "npm run prepare-env && next build --webpack && node ./scripts/sanitize-next-static-paths.mjs",

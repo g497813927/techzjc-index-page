@@ -11,9 +11,12 @@ export async function GET() {
       status: "ok",
       service: "techzjc-index",
       region:
-        process.env.VERCEL_REGION ?? (isCnBuild ? "cn-hangzhou" : "unknown"),
+        process.env.VERCEL_REGION ??
+        process.env.FC_REGION ??
+        (isCnBuild ? "cn-hangzhou" : "unknown"),
       timestamp: new Date().toISOString(),
       commit: process.env.NEXT_PUBLIC_COMMIT_SHA ?? "unknown",
+      blogRevision: process.env.BLOG_CONTENT_REVISION ?? "unknown",
     },
     {
       headers: {

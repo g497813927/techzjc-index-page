@@ -1,0 +1,14 @@
+[2026-08-06 00:00:00] [INFO] [FC3] - Querying function fixture-function in region fixture-region
+
+{
+  "region": "fixture-region",
+  "functionName": "fixture-function",
+  "runtime": "custom-container",
+  "customContainerConfig": {
+    "image": "ghcr.io/techzjc/site-index@sha256:fixture-digest",
+    "resolvedImageUri": "registry-vpc.example.com/techzjc/site-index@sha256:fixture-digest",
+    "port": 9000
+  },
+  "timeout": 10
+}
+✔ [index-site] completed (0.6s)
