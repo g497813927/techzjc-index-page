@@ -136,6 +136,32 @@ export function assertImageMatches(functionInfo, expectedImage) {
   return actualImage;
 }
 
+export function functionOwnerId(functionInfo) {
+  const arn = functionInfo?.functionArn;
+  if (typeof arn !== "string") {
+    return null;
+  }
+  const match = arn.match(/^acs:fc:[^:]*:([^:]+):functions\//);
+  return match ? match[1] : null;
+}
+
+export function assertAccountMatches(functionInfo, expectedAccountId) {
+  const ownerId = functionOwnerId(functionInfo);
+  if (!ownerId) {
+    throw new Error(
+      `FC metadata did not expose a functionArn (expected account=${expectedAccountId}); cannot verify the invoke endpoint account`,
+    );
+  }
+  if (ownerId !== expectedAccountId) {
+    throw new Error(
+      `expected account=${expectedAccountId}, received function owner=${ownerId}; ` +
+        "the credentials AccountID (ALIYUN_ACCOUNT_ID) must match the account owning the FC function, " +
+        "otherwise the invoke endpoint targets the wrong account namespace",
+    );
+  }
+  return ownerId;
+}
+
 export function assertHealthyPayload(
   payload,
   expectedCommit,
@@ -186,6 +212,7 @@ export function assertHealthyPayload(
 function parseArguments(argv) {
   const options = {};
   const allowed = new Set([
+    "--expected-account-id",
     "--expected-blog-revision",
     "--expected-commit",
     "--expected-image",
@@ -212,6 +239,7 @@ function parseArguments(argv) {
   }
 
   for (const required of [
+    "--expected-account-id",
     "--expected-blog-revision",
     "--expected-commit",
     "--expected-image",
@@ -306,17 +334,21 @@ export async function run(argv) {
   let options;
   try {
     options = parseArguments(argv);
+    const functionInfo = parseFunctionInfo(await fetchFunctionInfo(options));
+    const actualAccount = assertAccountMatches(
+      functionInfo,
+      options["--expected-account-id"],
+    );
+    const actualImage = assertImageMatches(
+      functionInfo,
+      options["--expected-image"],
+    );
     const output = await invokeFunction(options);
     const payload = assertHealthyPayload(
       parseInvokeResult(output),
       options["--expected-commit"],
       options["--region"],
       options["--expected-blog-revision"],
-    );
-    const functionInfo = parseFunctionInfo(await fetchFunctionInfo(options));
-    const actualImage = assertImageMatches(
-      functionInfo,
-      options["--expected-image"],
     );
     console.log(
       [
@@ -326,6 +358,7 @@ export async function run(argv) {
         `revision=${options["--revision"]}`,
         `commit=${payload.commit}`,
         `blogRevision=${payload.blogRevision}`,
+        `account=${actualAccount}`,
         `image=${actualImage}`,
       ].join(" "),
     );

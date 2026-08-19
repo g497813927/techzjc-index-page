@@ -1,6 +1,7 @@
 {
   "region": "fixture-region",
   "functionName": "fixture-function",
+  "functionArn": "acs:fc:fixture-region:1234567890123456:functions/fixture-function",
   "runtime": "custom-container",
   "customContainerConfig": {
     "port": 9000
