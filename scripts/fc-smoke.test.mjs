@@ -7,8 +7,10 @@ import { describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
+  assertAccountMatches,
   assertHealthyPayload,
   assertImageMatches,
+  functionOwnerId,
   parseFunctionInfo,
   parseInvokeResult,
 } from "./fc-smoke.mjs";
@@ -26,6 +28,7 @@ const functionInfoFixturePath = path.join(
   "fc-smoke-function-info.txt",
 );
 const fixtureOutput = fs.readFileSync(fixturePath, "utf8");
+const fixtureAccountId = "1234567890123456";
 const fixtureBlogRevision = "beadfeedbeadfeedbeadfeedbeadfeedbeadfeed";
 const fixtureImage = "ghcr.io/techzjc/site-index@sha256:fixture-digest";
 const baseArguments = [
@@ -40,6 +43,8 @@ const baseArguments = [
   "fixture-region",
   "--revision",
   "fixture-revision@sha256:fixture-digest",
+  "--expected-account-id",
+  fixtureAccountId,
   "--expected-blog-revision",
   fixtureBlogRevision,
   "--expected-image",
@@ -83,6 +88,14 @@ describe("FC post-deploy smoke fixture", () => {
       assertImageMatches(functionInfo, fixtureImage),
       fixtureImage,
     );
+    assert.deepEqual(functionOwnerId(functionInfo), {
+      status: "ok",
+      accountId: fixtureAccountId,
+    });
+    assert.equal(
+      assertAccountMatches(functionInfo, fixtureAccountId),
+      fixtureAccountId,
+    );
   });
 
   test("runs the same CLI path without cloud access", () => {
@@ -97,6 +110,7 @@ describe("FC post-deploy smoke fixture", () => {
     assert.match(result.stdout, /function=fixture-function/);
     assert.match(result.stdout, /revision=fixture-revision@sha256:fixture-digest/);
     assert.match(result.stdout, /blogRevision=beadfeedbeadfeedbeadfeedbeadfeedbeadfeed/);
+    assert.match(result.stdout, new RegExp(`account=${fixtureAccountId}`));
     assert.match(result.stdout, new RegExp(`image=${fixtureImage.replace(/[\\/.:]/g, "\\$&")}`));
   });
 
@@ -207,6 +221,54 @@ describe("FC post-deploy smoke fixture", () => {
 
     assert.equal(result.status, 1);
     assert.match(result.stderr, /did not expose a container image/);
+  });
+
+  test("rejects a function owned by a different account before invoking", () => {
+    const result = spawnSync(
+      process.execPath,
+      argumentsWith({
+        "--expected-commit": "0123456",
+        "--function-info-fixture": path.join(
+          scriptDirectory,
+          "fixtures",
+          "fc-smoke-function-info-wrong-account.txt",
+        ),
+      }),
+      {
+        encoding: "utf8",
+        env: { ...process.env, GITHUB_ACTIONS: "true" },
+      },
+    );
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /::error title=FC post-deploy smoke rejected::/);
+    assert.match(result.stderr, new RegExp(`expected account=${fixtureAccountId}`));
+    assert.match(result.stderr, /received function owner=9999999999999999/);
+    assert.match(result.stderr, /ALIYUN_ACCOUNT_ID/);
+  });
+
+  test("rejects FC metadata that does not expose a functionArn", () => {
+    const functionInfo = parseFunctionInfo(
+      fs.readFileSync(functionInfoFixturePath, "utf8"),
+    );
+    delete functionInfo.functionArn;
+
+    assert.throws(
+      () => assertAccountMatches(functionInfo, fixtureAccountId),
+      /did not expose a functionArn/,
+    );
+  });
+
+  test("rejects FC metadata with an unparseable functionArn", () => {
+    const functionInfo = parseFunctionInfo(
+      fs.readFileSync(functionInfoFixturePath, "utf8"),
+    );
+    functionInfo.functionArn = "not-a-valid-arn";
+
+    assert.throws(
+      () => assertAccountMatches(functionInfo, fixtureAccountId),
+      /not a recognized FC ARN/,
+    );
   });
 
   test("does not accept JSON printed outside the Invoke Result boundary", () => {

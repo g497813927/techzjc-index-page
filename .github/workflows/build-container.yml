@@ -224,6 +224,7 @@ jobs:
           IMAGE: ${{ vars.IMAGE }}
           IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
           BLOG_CONTENT_REVISION: ${{ needs.checks.outputs.blog_content_revision }}
+          ALIYUN_ACCOUNT_ID: ${{ secrets.ALIYUN_ACCOUNT_ID }}
           default_serverless_devs_key: "{\"AccountID\":\"${{ secrets.ALIYUN_ACCOUNT_ID }}\",\"AccessKeyID\":\"${{ secrets.ALIYUN_ACCESS_KEY_ID }}\",\"AccessKeySecret\":\"${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}\"}"
         run: |
           set -euo pipefail
@@ -234,6 +235,7 @@ jobs:
             --region "$REGION" \
             --function "$FC_NAME" \
             --revision "$deployed_revision" \
+            --expected-account-id "$ALIYUN_ACCOUNT_ID" \
             --expected-commit "$expected_commit" \
             --expected-blog-revision "$BLOG_CONTENT_REVISION" \
             --expected-image "$expected_image"

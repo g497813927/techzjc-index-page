@@ -136,6 +136,43 @@ export function assertImageMatches(functionInfo, expectedImage) {
   return actualImage;
 }
 
+export function functionOwnerId(functionInfo) {
+  const arn = functionInfo?.functionArn;
+  if (typeof arn !== "string" || arn.length === 0) {
+    return { status: "missing" };
+  }
+  // FC 3.0 ARN: acs:fc:{region}:{accountId}:functions/{functionName}
+  // FC 2.0 ARN: acs:fc:{region}:{accountId}:services/{serviceName}/functions/{functionName}
+  // Both share the account ID in the 4th colon-delimited segment.
+  const match = arn.match(/^acs:fc:[^:]*:([^:]+):/);
+  if (!match) {
+    return { status: "unparseable", arn };
+  }
+  return { status: "ok", accountId: match[1] };
+}
+
+export function assertAccountMatches(functionInfo, expectedAccountId) {
+  const result = functionOwnerId(functionInfo);
+  if (result.status === "missing") {
+    throw new Error(
+      `FC metadata did not expose a functionArn (expected account=${expectedAccountId}); cannot verify the invoke endpoint account`,
+    );
+  }
+  if (result.status === "unparseable") {
+    throw new Error(
+      `FC metadata functionArn is not a recognized FC ARN (received ${JSON.stringify(result.arn)}, expected account=${expectedAccountId})`,
+    );
+  }
+  if (result.accountId !== expectedAccountId) {
+    throw new Error(
+      `expected account=${expectedAccountId}, received function owner=${result.accountId}; ` +
+        "the credentials AccountID (ALIYUN_ACCOUNT_ID) must match the account owning the FC function, " +
+        "otherwise the invoke endpoint targets the wrong account namespace",
+    );
+  }
+  return result.accountId;
+}
+
 export function assertHealthyPayload(
   payload,
   expectedCommit,
@@ -186,6 +223,7 @@ export function assertHealthyPayload(
 function parseArguments(argv) {
   const options = {};
   const allowed = new Set([
+    "--expected-account-id",
     "--expected-blog-revision",
     "--expected-commit",
     "--expected-image",
@@ -212,6 +250,7 @@ function parseArguments(argv) {
   }
 
   for (const required of [
+    "--expected-account-id",
     "--expected-blog-revision",
     "--expected-commit",
     "--expected-image",
@@ -306,17 +345,21 @@ export async function run(argv) {
   let options;
   try {
     options = parseArguments(argv);
+    const functionInfo = parseFunctionInfo(await fetchFunctionInfo(options));
+    const actualAccount = assertAccountMatches(
+      functionInfo,
+      options["--expected-account-id"],
+    );
+    const actualImage = assertImageMatches(
+      functionInfo,
+      options["--expected-image"],
+    );
     const output = await invokeFunction(options);
     const payload = assertHealthyPayload(
       parseInvokeResult(output),
       options["--expected-commit"],
       options["--region"],
       options["--expected-blog-revision"],
-    );
-    const functionInfo = parseFunctionInfo(await fetchFunctionInfo(options));
-    const actualImage = assertImageMatches(
-      functionInfo,
-      options["--expected-image"],
     );
     console.log(
       [
@@ -326,6 +369,7 @@ export async function run(argv) {
         `revision=${options["--revision"]}`,
         `commit=${payload.commit}`,
         `blogRevision=${payload.blogRevision}`,
+        `account=${actualAccount}`,
         `image=${actualImage}`,
       ].join(" "),
     );
