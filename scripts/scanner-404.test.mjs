@@ -196,7 +196,7 @@ describe("scanner-404 CDN trust", () => {
   });
 });
 
-describe("scanner-404 handle", () => {
+describe("scanner-404 handle", { concurrency: false }, () => {
   function makeRequest(url, { method = "GET", acceptLanguage = "" } = {}) {
     return new Request(url, {
       method,
