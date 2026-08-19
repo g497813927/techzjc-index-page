@@ -138,3 +138,52 @@ export function truncateIp(rawIp) {
 
   return rawIp === "unknown" ? "unknown" : "invalid-ip";
 }
+
+const HEADER_KEY = "x-origin-auth";
+
+/**
+ * @param {Request} req
+ */
+export function handle(req) {
+  const acceptLanguage = req.headers.get("accept-language") || "";
+  const locale = acceptLanguage.split(",")[0] || "en-US";
+  const requestUrl = new URL(req.url);
+  const path = requestUrl.pathname;
+
+  const message = locale.toLowerCase().startsWith("zh")
+    ? `一个野生的扫描器出现了！野生的扫描器对 ${path} 使出了 ${req.method}…没有击中 ${path}！`
+    : `A wild scanner appeared! The wild scanner used ${req.method} on ${path}… It missed ${path}!`;
+
+  if (process.env.SCANNER_404_LOG_REQUESTS === "true") {
+    const originAuth = req.headers.get(HEADER_KEY);
+    const cdnOriginAuth = process.env.CDN_ORIGIN_AUTH;
+    const clientIp = getClientIp({
+      originAuth,
+      cdnOriginAuth,
+      aliCdnRealIp: req.headers.get("ali-cdn-real-ip"),
+      forwardedIp: req.headers.get("x-forwarded-for"),
+      realIp: req.headers.get("x-real-ip"),
+    });
+    const rawIp = clientIp.rawIp;
+    const ipSource = clientIp.source;
+
+    const truncatedIp = truncateIp(rawIp);
+
+    console.log({
+      type: "scanner-404",
+      method: req.method,
+      path: path.length > 100 ? path.slice(0, 100) + "..." : path,
+      locale: locale.length > 20 ? locale.slice(0, 20) + "..." : locale,
+      truncatedIp,
+      ipSource,
+    });
+  }
+
+  return new Response(message.trim(), {
+    status: 404,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store, max-age=0",
+    },
+  });
+}
