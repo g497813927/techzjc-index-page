@@ -138,28 +138,39 @@ export function assertImageMatches(functionInfo, expectedImage) {
 
 export function functionOwnerId(functionInfo) {
   const arn = functionInfo?.functionArn;
-  if (typeof arn !== "string") {
-    return null;
+  if (typeof arn !== "string" || arn.length === 0) {
+    return { status: "missing" };
   }
-  const match = arn.match(/^acs:fc:[^:]*:([^:]+):functions\//);
-  return match ? match[1] : null;
+  // FC 3.0 ARN: acs:fc:{region}:{accountId}:functions/{functionName}
+  // FC 2.0 ARN: acs:fc:{region}:{accountId}:services/{serviceName}/functions/{functionName}
+  // Both share the account ID in the 4th colon-delimited segment.
+  const match = arn.match(/^acs:fc:[^:]*:([^:]+):/);
+  if (!match) {
+    return { status: "unparseable", arn };
+  }
+  return { status: "ok", accountId: match[1] };
 }
 
 export function assertAccountMatches(functionInfo, expectedAccountId) {
-  const ownerId = functionOwnerId(functionInfo);
-  if (!ownerId) {
+  const result = functionOwnerId(functionInfo);
+  if (result.status === "missing") {
     throw new Error(
       `FC metadata did not expose a functionArn (expected account=${expectedAccountId}); cannot verify the invoke endpoint account`,
     );
   }
-  if (ownerId !== expectedAccountId) {
+  if (result.status === "unparseable") {
     throw new Error(
-      `expected account=${expectedAccountId}, received function owner=${ownerId}; ` +
+      `FC metadata functionArn is not a recognized FC ARN (received ${JSON.stringify(result.arn)}, expected account=${expectedAccountId})`,
+    );
+  }
+  if (result.accountId !== expectedAccountId) {
+    throw new Error(
+      `expected account=${expectedAccountId}, received function owner=${result.accountId}; ` +
         "the credentials AccountID (ALIYUN_ACCOUNT_ID) must match the account owning the FC function, " +
         "otherwise the invoke endpoint targets the wrong account namespace",
     );
   }
-  return ownerId;
+  return result.accountId;
 }
 
 export function assertHealthyPayload(

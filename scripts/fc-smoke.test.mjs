@@ -88,7 +88,10 @@ describe("FC post-deploy smoke fixture", () => {
       assertImageMatches(functionInfo, fixtureImage),
       fixtureImage,
     );
-    assert.equal(functionOwnerId(functionInfo), fixtureAccountId);
+    assert.deepEqual(functionOwnerId(functionInfo), {
+      status: "ok",
+      accountId: fixtureAccountId,
+    });
     assert.equal(
       assertAccountMatches(functionInfo, fixtureAccountId),
       fixtureAccountId,
@@ -253,6 +256,18 @@ describe("FC post-deploy smoke fixture", () => {
     assert.throws(
       () => assertAccountMatches(functionInfo, fixtureAccountId),
       /did not expose a functionArn/,
+    );
+  });
+
+  test("rejects FC metadata with an unparseable functionArn", () => {
+    const functionInfo = parseFunctionInfo(
+      fs.readFileSync(functionInfoFixturePath, "utf8"),
+    );
+    functionInfo.functionArn = "not-a-valid-arn";
+
+    assert.throws(
+      () => assertAccountMatches(functionInfo, fixtureAccountId),
+      /not a recognized FC ARN/,
     );
   });
 
