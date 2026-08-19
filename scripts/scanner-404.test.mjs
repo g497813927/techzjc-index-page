@@ -5,6 +5,7 @@ import { describe, test } from "node:test";
 import {
   expandIpv6,
   getClientIp,
+  handle,
   isTrustedCdnRequest,
   truncateIp,
   truncateIpv4,
@@ -192,5 +193,92 @@ describe("scanner-404 CDN trust", () => {
       }),
       { rawIp: "unknown", source: "untrusted-header" },
     );
+  });
+});
+
+describe("scanner-404 handle", { concurrency: false }, () => {
+  function makeRequest(url, { method = "GET", acceptLanguage = "" } = {}) {
+    return new Request(url, {
+      method,
+      headers: acceptLanguage ? { "accept-language": acceptLanguage } : {},
+    });
+  }
+
+  test("returns 404 with English message for non-zh locale", async () => {
+    const res = await handle(makeRequest("http://localhost/wp-login.php", {
+      method: "POST",
+      acceptLanguage: "en-US,en;q=0.9",
+    }));
+
+    assert.equal(res.status, 404);
+    assert.equal(res.headers.get("Content-Type"), "text/plain; charset=utf-8");
+    assert.equal(res.headers.get("Cache-Control"), "no-store, max-age=0");
+    const body = await res.text();
+    assert.match(body, /A wild scanner appeared/);
+    assert.match(body, /wp-login\.php/);
+    assert.match(body, /POST/);
+  });
+
+  test("returns 404 with Chinese message for zh locale", async () => {
+    const res = await handle(makeRequest("http://localhost/admin", {
+      method: "GET",
+      acceptLanguage: "zh-CN,zh;q=0.9",
+    }));
+
+    assert.equal(res.status, 404);
+    const body = await res.text();
+    assert.match(body, /一个野生的扫描器出现了/);
+    assert.match(body, /\/admin/);
+  });
+
+  test("defaults to English when accept-language is missing", async () => {
+    const res = await handle(makeRequest("http://localhost/secret"));
+    assert.equal(res.status, 404);
+    const body = await res.text();
+    assert.match(body, /A wild scanner appeared/);
+  });
+
+  test("does not log when SCANNER_404_LOG_REQUESTS is not true", async () => {
+    const original = process.env.SCANNER_404_LOG_REQUESTS;
+    delete process.env.SCANNER_404_LOG_REQUESTS;
+
+    const logs = [];
+    const originalLog = console.log;
+    console.log = (...args) => logs.push(args);
+
+    try {
+      await handle(makeRequest("http://localhost/test"));
+      assert.equal(logs.length, 0);
+    } finally {
+      console.log = originalLog;
+      if (original !== undefined) process.env.SCANNER_404_LOG_REQUESTS = original;
+    }
+  });
+
+  test("logs request details when SCANNER_404_LOG_REQUESTS is true", async () => {
+    const original = process.env.SCANNER_404_LOG_REQUESTS;
+    process.env.SCANNER_404_LOG_REQUESTS = "true";
+
+    const logs = [];
+    const originalLog = console.log;
+    console.log = (...args) => logs.push(args);
+
+    try {
+      await handle(makeRequest("http://localhost/phpinfo.php", {
+        method: "GET",
+        acceptLanguage: "en-US",
+      }));
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0][0].type, "scanner-404");
+      assert.equal(logs[0][0].method, "GET");
+      assert.equal(logs[0][0].path, "/phpinfo.php");
+    } finally {
+      console.log = originalLog;
+      if (original !== undefined) {
+        process.env.SCANNER_404_LOG_REQUESTS = original;
+      } else {
+        delete process.env.SCANNER_404_LOG_REQUESTS;
+      }
+    }
   });
 });
