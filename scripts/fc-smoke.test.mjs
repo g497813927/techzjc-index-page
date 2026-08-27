@@ -11,6 +11,7 @@ import {
   assertHealthyPayload,
   assertImageMatches,
   functionOwnerId,
+  functionInfoCommandArgs,
   parseFunctionInfo,
   parseInvokeResult,
 } from "./fc-smoke.mjs";
@@ -95,6 +96,26 @@ describe("FC post-deploy smoke fixture", () => {
     assert.equal(
       assertAccountMatches(functionInfo, fixtureAccountId),
       fixtureAccountId,
+    );
+  });
+
+  test("requests machine-readable function metadata from Serverless Devs", () => {
+    assert.deepEqual(
+      functionInfoCommandArgs("fixture-region", "fixture-function"),
+      [
+        "cli",
+        "fc3",
+        "info",
+        "--region",
+        "fixture-region",
+        "--function-name",
+        "fixture-function",
+        "--access",
+        "default_serverless_devs_key",
+        "--silent",
+        "--output-format",
+        "json",
+      ],
     );
   });
 

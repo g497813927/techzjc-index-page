@@ -295,23 +295,30 @@ async function invokeFunction(options) {
   );
 }
 
+export function functionInfoCommandArgs(region, functionName) {
+  return [
+    "cli",
+    "fc3",
+    "info",
+    "--region",
+    region,
+    "--function-name",
+    functionName,
+    "--access",
+    "default_serverless_devs_key",
+    "--silent",
+    "--output-format",
+    "json",
+  ];
+}
+
 async function fetchFunctionInfo(options) {
   if (options["--function-info-fixture"]) {
     return fs.readFile(options["--function-info-fixture"], "utf8");
   }
 
   return runServerlessDevs(
-    [
-      "cli",
-      "fc3",
-      "info",
-      "--region",
-      options["--region"],
-      "--function-name",
-      options["--function"],
-      "--access",
-      "default_serverless_devs_key",
-    ],
+    functionInfoCommandArgs(options["--region"], options["--function"]),
     "Serverless Devs metadata lookup failed",
   );
 }
