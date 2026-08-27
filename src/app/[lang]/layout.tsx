@@ -9,6 +9,8 @@ import { CnCoreValuesMouseClickHelper } from "@/utils/cnCoreValuesMouseClickHelp
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { MotionProvider } from "@/components/MotionProvider";
+import { OutboundNavigationGuard } from "@/components/OutboundNavigationGuard";
+import { getConfiguredVercelHostnames } from "@/lib/browserSecurity";
 
 export async function generateStaticParams() {
   return [{ lang: 'en-US' }, { lang: 'zh-CN' }];
@@ -16,8 +18,6 @@ export async function generateStaticParams() {
 
 export default async function RootLayout({ children, params }: LayoutProps<'/[lang]'>) {
   const themeScript = `!function(){var e=document.documentElement;e.classList.remove("no-js"),e.classList.add("js");try{var t=window.localStorage.getItem("theme"),a=window.matchMedia("(prefers-color-scheme:dark)").matches;"dark"===t||!t&&a?(e.classList.add("dark"),e.setAttribute("data-theme","dark")):(e.classList.remove("dark"),e.setAttribute("data-theme","light"))}catch(t){}}();`;
-  // Guard LA.init: only runs if SDK loaded successfully, swallows errors silently
-  const laInitScript = "try{if(window.LA&&typeof window.LA.init==='function'){window.LA.init({id:'3PdOUXA31SUg1C4G',ck:'3PdOUXA31SUg1C4G',autoTrack:true,hashMode:true,screenRecord:true})}}catch(e){}";
   const { lang } = await params;
 
   if (!hasLocale(lang)) {
@@ -28,7 +28,9 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
   return (
     <html suppressHydrationWarning lang={lang} className="no-js">
       <head>
-        <script
+        <Script
+          id="theme-bootstrap"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
         {
@@ -44,6 +46,10 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
         <link rel="alternate" type="application/atom+xml" title={dict['metadata']['blog']['index']['atom_feed_link_title']} href={`https://techzjc.com/${lang}/atom.xml`} />
       </head>
       <body>
+        <OutboundNavigationGuard
+          copy={dict['outbound_navigation']}
+          trustedHostnames={getConfiguredVercelHostnames(process.env)}
+        />
         {
           lang === 'zh-CN' &&
           <CnCoreValuesMouseClickHelper />
@@ -54,21 +60,6 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
         <MotionProvider>
           {children}
         </MotionProvider>
-        {
-          process.env.NEXT_PUBLIC_VERCEL_ENV !== 'true' &&
-          <>
-            <Script
-              id="LA_COLLECT"
-              src="https://sdk.51.la/js-sdk-pro.min.js"
-              strategy="beforeInteractive"
-            />
-            <Script
-              id="LA_COLLECT_INIT"
-              strategy="beforeInteractive"
-              dangerouslySetInnerHTML={{ __html: laInitScript }}
-            />
-          </>
-        }
       </body>
     </html>
   );
