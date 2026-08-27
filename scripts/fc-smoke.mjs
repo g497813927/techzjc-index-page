@@ -9,6 +9,14 @@ import { pathToFileURL } from "node:url";
 const execFileAsync = promisify(execFile);
 const INVOKE_RESULT_MARKER = "Invoke Result:";
 const EXPECTED_SERVICE = "techzjc-index";
+const ROLLOUT_RETRY_DELAYS_MS = [5_000, 10_000, 20_000, 30_000, 30_000];
+
+class StaleDeploymentRevisionError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "StaleDeploymentRevisionError";
+  }
+}
 
 function stripAnsi(value) {
   return value.replace(/\u001b\[[0-?]*[ -/]*[@-~]/g, "");
@@ -208,18 +216,87 @@ export function assertHealthyPayload(
       `expected an ISO timestamp, received ${JSON.stringify(payload.timestamp)}`,
     );
   }
-  if (payload.commit !== expectedCommit) {
+  if (
+    typeof payload.commit !== "string" ||
+    !/^[0-9a-f]{7,40}$/.test(payload.commit)
+  ) {
     throw new Error(
-      `expected commit=${expectedCommit}, received ${JSON.stringify(payload.commit)}`,
+      `expected commit to be a 7-40 character lowercase Git SHA, received ${JSON.stringify(payload.commit)}`,
     );
   }
-  if (payload.blogRevision !== expectedBlogRevision) {
+  if (
+    typeof payload.blogRevision !== "string" ||
+    !/^[0-9a-f]{40}$/.test(payload.blogRevision)
+  ) {
     throw new Error(
-      `expected blogRevision=${expectedBlogRevision}, received ${JSON.stringify(payload.blogRevision)}`,
+      `expected blogRevision to be a 40-character lowercase Git SHA, received ${JSON.stringify(payload.blogRevision)}`,
+    );
+  }
+  if (
+    payload.commit !== expectedCommit ||
+    payload.blogRevision !== expectedBlogRevision
+  ) {
+    throw new StaleDeploymentRevisionError(
+      `expected commit=${expectedCommit}, received ${JSON.stringify(payload.commit)}; ` +
+        `expected blogRevision=${expectedBlogRevision}, received ${JSON.stringify(payload.blogRevision)}`,
     );
   }
 
   return payload;
+}
+
+function delay(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+export async function waitForHealthyPayload({
+  invoke,
+  expectedCommit,
+  expectedRegion,
+  expectedBlogRevision,
+  retryDelaysMs = ROLLOUT_RETRY_DELAYS_MS,
+  sleep = delay,
+  onRetry = () => {},
+}) {
+  if (
+    !Array.isArray(retryDelaysMs) ||
+    retryDelaysMs.some(
+      (milliseconds) => !Number.isFinite(milliseconds) || milliseconds < 0,
+    )
+  ) {
+    throw new Error("retryDelaysMs must contain only non-negative numbers");
+  }
+
+  const maxAttempts = retryDelaysMs.length + 1;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return assertHealthyPayload(
+        parseInvokeResult(await invoke()),
+        expectedCommit,
+        expectedRegion,
+        expectedBlogRevision,
+      );
+    } catch (error) {
+      if (!(error instanceof StaleDeploymentRevisionError)) {
+        throw error;
+      }
+      if (attempt === maxAttempts) {
+        throw new StaleDeploymentRevisionError(
+          `${error.message}; rollout did not converge after ${maxAttempts} attempts`,
+        );
+      }
+
+      onRetry({
+        delayMs: retryDelaysMs[attempt - 1],
+        error,
+        nextAttempt: attempt + 1,
+        maxAttempts,
+      });
+      await sleep(retryDelaysMs[attempt - 1]);
+    }
+  }
+
+  throw new Error("FC rollout polling ended without a result");
 }
 
 function parseArguments(argv) {
@@ -379,13 +456,18 @@ export async function run(argv) {
       functionInfo,
       options["--expected-image"],
     );
-    const output = await invokeFunction(options);
-    const payload = assertHealthyPayload(
-      parseInvokeResult(output),
-      options["--expected-commit"],
-      options["--region"],
-      options["--expected-blog-revision"],
-    );
+    const payload = await waitForHealthyPayload({
+      invoke: () => invokeFunction(options),
+      expectedCommit: options["--expected-commit"],
+      expectedRegion: options["--region"],
+      expectedBlogRevision: options["--expected-blog-revision"],
+      retryDelaysMs: options["--fixture"] ? [] : ROLLOUT_RETRY_DELAYS_MS,
+      onRetry: ({ delayMs, error, nextAttempt, maxAttempts }) => {
+        console.warn(
+          `FC smoke waiting for rollout attempt=${nextAttempt}/${maxAttempts} delay=${delayMs}ms reason=${error.message}`,
+        );
+      },
+    });
     console.log(
       [
         "FC smoke accepted",

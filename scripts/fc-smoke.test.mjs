@@ -14,6 +14,7 @@ import {
   functionInfoCommandArgs,
   parseFunctionInfo,
   parseInvokeResult,
+  waitForHealthyPayload,
 } from "./fc-smoke.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -78,6 +79,117 @@ describe("FC post-deploy smoke fixture", () => {
       ),
       payload,
     );
+  });
+
+  test("waits for an otherwise healthy stale FC instance to roll forward", async () => {
+    const stalePayload = parseInvokeResult(fixtureOutput);
+    stalePayload.commit = "7654321";
+    const outputs = [
+      `${fixtureOutput.slice(0, fixtureOutput.lastIndexOf("{"))}${JSON.stringify(stalePayload)}`,
+      fixtureOutput,
+    ];
+    const delays = [];
+    const retries = [];
+
+    const payload = await waitForHealthyPayload({
+      invoke: async () => outputs.shift(),
+      expectedCommit: "0123456",
+      expectedRegion: "fixture-region",
+      expectedBlogRevision: fixtureBlogRevision,
+      retryDelaysMs: [25, 50],
+      sleep: async (milliseconds) => delays.push(milliseconds),
+      onRetry: (retry) => retries.push(retry),
+    });
+
+    assert.equal(payload.commit, "0123456");
+    assert.deepEqual(delays, [25]);
+    assert.equal(retries.length, 1);
+    assert.equal(retries[0].delayMs, 25);
+    assert.equal(retries[0].nextAttempt, 2);
+    assert.equal(retries[0].maxAttempts, 3);
+    assert.match(retries[0].error.message, /expected commit=0123456/);
+  });
+
+  test("fails closed when stale FC instances exhaust the rollout attempts", async () => {
+    const stalePayload = parseInvokeResult(fixtureOutput);
+    stalePayload.blogRevision = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
+    const staleOutput =
+      `${fixtureOutput.slice(0, fixtureOutput.lastIndexOf("{"))}${JSON.stringify(stalePayload)}`;
+    let invocations = 0;
+
+    await assert.rejects(
+      waitForHealthyPayload({
+        invoke: async () => {
+          invocations += 1;
+          return staleOutput;
+        },
+        expectedCommit: "0123456",
+        expectedRegion: "fixture-region",
+        expectedBlogRevision: fixtureBlogRevision,
+        retryDelaysMs: [0],
+        sleep: async () => {},
+      }),
+      new RegExp(
+        `expected blogRevision=${fixtureBlogRevision}.*did not converge after 2 attempts`,
+      ),
+    );
+    assert.equal(invocations, 2);
+  });
+
+  test("does not retry a response with the wrong region", async () => {
+    const wrongRegionPayload = parseInvokeResult(fixtureOutput);
+    wrongRegionPayload.region = "other-region";
+    const wrongRegionOutput =
+      `${fixtureOutput.slice(0, fixtureOutput.lastIndexOf("{"))}${JSON.stringify(wrongRegionPayload)}`;
+    let invocations = 0;
+    let delays = 0;
+
+    await assert.rejects(
+      waitForHealthyPayload({
+        invoke: async () => {
+          invocations += 1;
+          return wrongRegionOutput;
+        },
+        expectedCommit: "0123456",
+        expectedRegion: "fixture-region",
+        expectedBlogRevision: fixtureBlogRevision,
+        retryDelaysMs: [0, 0],
+        sleep: async () => {
+          delays += 1;
+        },
+      }),
+      /expected region=fixture-region/,
+    );
+    assert.equal(invocations, 1);
+    assert.equal(delays, 0);
+  });
+
+  test("does not retry a response with an invalid revision contract", async () => {
+    const invalidPayload = parseInvokeResult(fixtureOutput);
+    delete invalidPayload.commit;
+    const invalidOutput =
+      `${fixtureOutput.slice(0, fixtureOutput.lastIndexOf("{"))}${JSON.stringify(invalidPayload)}`;
+    let invocations = 0;
+    let delays = 0;
+
+    await assert.rejects(
+      waitForHealthyPayload({
+        invoke: async () => {
+          invocations += 1;
+          return invalidOutput;
+        },
+        expectedCommit: "0123456",
+        expectedRegion: "fixture-region",
+        expectedBlogRevision: fixtureBlogRevision,
+        retryDelaysMs: [0, 0],
+        sleep: async () => {
+          delays += 1;
+        },
+      }),
+      /expected commit to be a 7-40 character lowercase Git SHA/,
+    );
+    assert.equal(invocations, 1);
+    assert.equal(delays, 0);
   });
 
   test("extracts the deployed image from FC function metadata", () => {
@@ -168,7 +280,7 @@ describe("FC post-deploy smoke fixture", () => {
           "fixture-region",
           fixtureBlogRevision,
         ),
-      new RegExp(`expected blogRevision=${fixtureBlogRevision}`),
+      /expected blogRevision to be a 40-character lowercase Git SHA/,
     );
   });
 
