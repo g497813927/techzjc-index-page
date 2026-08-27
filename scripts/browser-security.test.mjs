@@ -497,7 +497,7 @@ describe("content security policy", () => {
     assert.doesNotMatch(policy, /unsafe-eval/);
   });
 
-  test("allows Clarity resources only when global analytics are enabled", () => {
+  test("allows Microsoft Clarity sources only when Microsoft Clarity is enabled", () => {
     const policy = buildContentSecurityPolicy({
       enableMicrosoftClarity: true,
     });
@@ -523,7 +523,7 @@ describe("content security policy", () => {
     );
     assert.deepEqual(
       getPolicySources(policy, "connect-src").filter(isClaritySource),
-      ["https://www.clarity.ms", ...letteredSources],
+      guidanceSources,
     );
     assert.deepEqual(
       getPolicySources(policy, "img-src").filter(isClaritySource),
@@ -535,8 +535,11 @@ describe("content security policy", () => {
     );
     assert.doesNotMatch(policy, /https:\/\/\*\.clarity\.ms/);
 
-    const policyWithoutGlobalAnalytics = buildContentSecurityPolicy();
-    assert.doesNotMatch(policyWithoutGlobalAnalytics, /clarity\.ms|c\.bing\.com/);
+    const policyWithoutMicrosoftClarity = buildContentSecurityPolicy();
+    assert.doesNotMatch(
+      policyWithoutMicrosoftClarity,
+      /clarity\.ms|c\.bing\.com/,
+    );
   });
 
   test("adds unsafe-eval only for the Next.js development runtime", () => {

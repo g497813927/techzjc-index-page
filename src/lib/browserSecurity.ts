@@ -567,7 +567,7 @@ export function buildContentSecurityPolicy(
     "https://*.ingest.us.sentry.io",
     "https://*.ingest.sentry.io",
     ...(options.enableMicrosoftClarity
-      ? ["https://www.clarity.ms", ...MICROSOFT_CLARITY_LETTERED_SOURCES]
+      ? MICROSOFT_CLARITY_GUIDANCE_SOURCES
       : []),
     ...(options.isDevelopment ? ["ws:"] : []),
   ];
