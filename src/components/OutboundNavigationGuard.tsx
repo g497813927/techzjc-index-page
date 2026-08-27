@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import {
+  calculateExternalLinkManifestUsableUntil,
   canonicalizeNavigationUrl,
   classifyNavigation,
   redactNavigationUrl,
@@ -81,9 +82,11 @@ function parseExternalLinkManifest(
     expiresAt: validated.expiresAt,
     expiresAtMs,
     cachedAtMs,
-    usableUntilMs: Math.min(
+    usableUntilMs: calculateExternalLinkManifestUsableUntil(
       expiresAtMs,
-      cachedAtMs + EXTERNAL_LINK_CACHE_MAX_AGE_MS,
+      servedAtMs,
+      cachedAtMs,
+      EXTERNAL_LINK_CACHE_MAX_AGE_MS,
     ),
     urls: validated.urls,
   };

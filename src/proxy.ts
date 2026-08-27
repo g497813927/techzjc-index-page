@@ -3,6 +3,7 @@ import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { HEADER_KEY } from "@/constants/headers";
 import {
+  firstHeaderListValue,
   isAllowedApplicationHost,
   normalizeHostHeader,
 } from "@/lib/browserSecurity";
@@ -53,7 +54,8 @@ export function proxy(req: NextRequest) {
   let { pathname } = req.nextUrl;
 
   const host = normalizeHostHeader(
-    req.headers.get("x-forwarded-host") || req.headers.get("host"),
+    firstHeaderListValue(req.headers.get("x-forwarded-host")) ||
+      req.headers.get("host"),
   );
 
   if (TRUSTED_ORIGINS.includes(host)) {

@@ -4,11 +4,14 @@ import { describe, test } from "node:test";
 
 import {
   buildContentSecurityPolicy,
+  calculateExternalLinkManifestUsableUntil,
   canonicalizeNavigationUrl,
   classifyNavigation,
+  firstHeaderListValue,
   getConfiguredVercelHostnames,
   isAllowedApplicationHost,
   isOwnedSiteHostname,
+  normalizeHostAuthority,
   normalizeHostHeader,
   normalizeHostname,
   redactNavigationUrl,
@@ -45,6 +48,24 @@ describe("browser security host matching", () => {
       "techzjc.com,evil.example",
     ]) {
       assert.equal(normalizeHostHeader(invalid), "");
+    }
+  });
+
+  test("selects and validates the first forwarded Host authority", () => {
+    assert.equal(
+      firstHeaderListValue("TECHZJC.com:443, proxy.internal"),
+      "TECHZJC.com:443",
+    );
+    assert.equal(normalizeHostAuthority("TECHZJC.com:443"), "techzjc.com:443");
+    assert.equal(normalizeHostAuthority("TECHZJC.com."), "techzjc.com.");
+    assert.equal(normalizeHostAuthority("[::1]:3000"), "[::1]:3000");
+    for (const invalid of [
+      "techzjc.com@evil.example",
+      "techzjc.com/path",
+      "techzjc.com,evil.example",
+      "999.999.999.999",
+    ]) {
+      assert.equal(normalizeHostAuthority(invalid), "");
     }
   });
 
@@ -353,6 +374,22 @@ describe("external-link manifest", () => {
         { now },
       ),
       { ok: false, reason: "stale-response" },
+    );
+  });
+
+  test("caps cache usability at the original response freshness deadline", () => {
+    const servedAt = now - 14 * 60 * 1_000;
+    const cachedAt = now;
+    const expiresAt = now + 24 * 60 * 60 * 1_000;
+
+    assert.equal(
+      calculateExternalLinkManifestUsableUntil(
+        expiresAt,
+        servedAt,
+        cachedAt,
+        15 * 60 * 1_000,
+      ),
+      now + 60 * 1_000,
     );
   });
 

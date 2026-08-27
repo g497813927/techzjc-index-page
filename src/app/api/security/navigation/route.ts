@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { redactNavigationUrl } from "@/lib/browserSecurity";
+import {
+  firstHeaderListValue,
+  normalizeHostAuthority,
+  redactNavigationUrl,
+} from "@/lib/browserSecurity";
 import { readLimitedRequestBody } from "@/lib/readLimitedRequestBody";
 
 export const dynamic = "force-dynamic";
@@ -29,17 +33,16 @@ function sanitizeLocation(value: unknown) {
   };
 }
 
-function firstHeaderValue(value: string | null) {
-  return value?.split(",")[0]?.trim() ?? "";
-}
-
 function getEffectiveRequestOrigin(request: Request) {
   const requestUrl = new URL(request.url);
-  const host =
-    firstHeaderValue(request.headers.get("x-forwarded-host")) ||
-    firstHeaderValue(request.headers.get("host")) ||
-    requestUrl.host;
-  const forwardedProtocol = firstHeaderValue(
+  const forwardedHostHeader = request.headers.get("x-forwarded-host");
+  const hostHeader = request.headers.get("host");
+  const rawHost =
+    forwardedHostHeader !== null
+      ? firstHeaderListValue(forwardedHostHeader)
+      : (hostHeader ?? requestUrl.host);
+  const host = normalizeHostAuthority(rawHost);
+  const forwardedProtocol = firstHeaderListValue(
     request.headers.get("x-forwarded-proto"),
   ).toLowerCase();
   const protocol =
@@ -47,10 +50,14 @@ function getEffectiveRequestOrigin(request: Request) {
       ? `${forwardedProtocol}:`
       : requestUrl.protocol;
 
+  if (!host) {
+    return null;
+  }
+
   try {
     return new URL(`${protocol}//${host}`).origin;
   } catch {
-    return requestUrl.origin;
+    return null;
   }
 }
 
@@ -66,7 +73,11 @@ function isAllowedBrowserOrigin(request: Request) {
   }
 
   try {
-    return new URL(origin).origin === getEffectiveRequestOrigin(request);
+    const effectiveRequestOrigin = getEffectiveRequestOrigin(request);
+    return (
+      effectiveRequestOrigin !== null &&
+      new URL(origin).origin === effectiveRequestOrigin
+    );
   } catch {
     return false;
   }

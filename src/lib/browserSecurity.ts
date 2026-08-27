@@ -67,6 +67,11 @@ export interface ContentSecurityPolicyOptions {
   isDevelopment?: boolean;
 }
 
+type ParsedHostAuthority = {
+  authority: string;
+  hostname: string;
+};
+
 export function unwrapApiEnvelope(value: unknown): unknown | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
@@ -102,31 +107,67 @@ export function normalizeHostname(value: string | null | undefined): string {
   }
 }
 
+/** Select the leftmost value from a comma-separated forwarding header. */
+export function firstHeaderListValue(value: string | null | undefined): string {
+  return value?.split(",")[0]?.trim() ?? "";
+}
+
 /** Parse an HTTP Host authority without accepting URL syntax or credentials. */
-export function normalizeHostHeader(value: string | null | undefined): string {
-  const raw = value?.trim().toLowerCase() ?? "";
+function parseHostAuthority(
+  value: string | null | undefined,
+): ParsedHostAuthority | null {
+  const source = value ?? "";
+  const raw = source.trim().toLowerCase();
   if (
     !raw ||
-    raw !== value?.toLowerCase() ||
+    source !== source.trim() ||
     /[\s/\\@?#,]/.test(raw) ||
     raw.includes("://")
   ) {
-    return "";
+    return null;
   }
 
   const match = raw.startsWith("[")
     ? /^(\[::1\])(?::(\d{1,5}))?$/.exec(raw)
     : /^([a-z0-9.-]+)(?::(\d{1,5}))?$/.exec(raw);
   if (!match) {
-    return "";
+    return null;
   }
 
   const port = match[2];
   if (port && (Number(port) < 1 || Number(port) > 65_535)) {
-    return "";
+    return null;
   }
 
-  return match[1].replace(/\.$/, "");
+  const authorityHostname = match[1];
+  const hostname = authorityHostname.replace(/\.$/, "");
+  const authority = port
+    ? `${authorityHostname}:${port}`
+    : authorityHostname;
+
+  try {
+    const parsed = new URL(`http://${authority}`);
+    if (parsed.hostname.toLowerCase() !== authorityHostname) {
+      return null;
+    }
+  } catch {
+    return null;
+  }
+
+  return {
+    authority,
+    hostname,
+  };
+}
+
+export function normalizeHostAuthority(
+  value: string | null | undefined,
+): string {
+  return parseHostAuthority(value)?.authority ?? "";
+}
+
+export function normalizeHostHeader(value: string | null | undefined): string {
+  return parseHostAuthority(value)?.hostname ?? "";
 }
 
 export function isLoopbackHostname(hostname: string): boolean {
@@ -317,6 +358,26 @@ export function shouldAdoptExternalLinkManifest(
     return false;
   }
   return [...candidate.urls].every((url) => current.urls.has(url));
+}
+
+export function calculateExternalLinkManifestUsableUntil(
+  expiresAtMs: number,
+  servedAtMs: number,
+  cachedAtMs: number,
+  cacheMaxAgeMs: number,
+): number {
+  if (
+    ![expiresAtMs, servedAtMs, cachedAtMs, cacheMaxAgeMs].every(Number.isFinite) ||
+    cacheMaxAgeMs < 0
+  ) {
+    return Number.NaN;
+  }
+
+  return Math.min(
+    expiresAtMs,
+    servedAtMs + MAX_EXTERNAL_LINK_RESPONSE_AGE_MS,
+    cachedAtMs + cacheMaxAgeMs,
+  );
 }
 
 export function getConfiguredVercelHostnames(env: Environment): string[] {
