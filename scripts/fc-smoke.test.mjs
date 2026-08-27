@@ -101,7 +101,11 @@ describe("FC post-deploy smoke fixture", () => {
 
   test("requests machine-readable function metadata from Serverless Devs", () => {
     assert.deepEqual(
-      functionInfoCommandArgs("fixture-region", "fixture-function"),
+      functionInfoCommandArgs(
+        "fixture-region",
+        "fixture-function",
+        "/tmp/function-info.json",
+      ),
       [
         "cli",
         "fc3",
@@ -115,6 +119,8 @@ describe("FC post-deploy smoke fixture", () => {
         "--silent",
         "--output-format",
         "json",
+        "--output-file",
+        "/tmp/function-info.json",
       ],
     );
   });
