@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
 
@@ -295,7 +297,7 @@ async function invokeFunction(options) {
   );
 }
 
-export function functionInfoCommandArgs(region, functionName) {
+export function functionInfoCommandArgs(region, functionName, outputFile) {
   return [
     "cli",
     "fc3",
@@ -309,6 +311,8 @@ export function functionInfoCommandArgs(region, functionName) {
     "--silent",
     "--output-format",
     "json",
+    "--output-file",
+    outputFile,
   ];
 }
 
@@ -317,10 +321,24 @@ async function fetchFunctionInfo(options) {
     return fs.readFile(options["--function-info-fixture"], "utf8");
   }
 
-  return runServerlessDevs(
-    functionInfoCommandArgs(options["--region"], options["--function"]),
-    "Serverless Devs metadata lookup failed",
+  const temporaryDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "fc-smoke-metadata-"),
   );
+  const outputFile = path.join(temporaryDirectory, "function-info.json");
+
+  try {
+    await runServerlessDevs(
+      functionInfoCommandArgs(
+        options["--region"],
+        options["--function"],
+        outputFile,
+      ),
+      "Serverless Devs metadata lookup failed",
+    );
+    return await fs.readFile(outputFile, "utf8");
+  } finally {
+    await fs.rm(temporaryDirectory, { recursive: true, force: true });
+  }
 }
 
 async function runServerlessDevs(args, failureTitle) {
