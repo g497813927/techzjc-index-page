@@ -18,6 +18,7 @@ const sentryApplicationKey =
   process.env.NEXT_PUBLIC_SENTRY_APPLICATION_KEY ?? "techzjc-site-index";
 const contentSecurityPolicy = buildContentSecurityPolicy({
   isDevelopment: process.env.NODE_ENV === "development",
+  enableMicrosoftClarity: isGlobalBuild && !isCnBuild,
 });
 
 const nextConfig: NextConfig = {

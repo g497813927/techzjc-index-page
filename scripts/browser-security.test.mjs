@@ -21,6 +21,14 @@ import {
 } from "../src/lib/browserSecurity.ts";
 import { readLimitedRequestBody } from "../src/lib/readLimitedRequestBody.ts";
 
+function getPolicySources(policy, directiveName) {
+  const directive = policy
+    .split(";")
+    .map((value) => value.trim())
+    .find((value) => value.startsWith(`${directiveName} `));
+  return directive?.split(/\s+/).slice(1) ?? [];
+}
+
 describe("browser security host matching", () => {
   test("normalizes ports, case, trailing dots, and IPv6 loopback", () => {
     assert.equal(normalizeHostname("TECHZJC.com.:443"), "techzjc.com");
@@ -482,10 +490,53 @@ describe("content security policy", () => {
     assert.match(policy, /connect-src[^;]*https:\/\/api\.techzjc\.com/);
     assert.match(policy, /img-src[^;]*https:\/\/www\.googletagmanager\.com/);
     assert.match(policy, /frame-src 'self'/);
+    assert.match(policy, /frame-src[^;]*https:\/\/giscus\.app/);
     assert.match(policy, /script-src-attr 'none'/);
     assert.match(policy, /report-uri \/api\/security\/csp-report/);
     assert.doesNotMatch(policy, /51\.la|lovehgg|tnm589/);
     assert.doesNotMatch(policy, /unsafe-eval/);
+  });
+
+  test("allows Microsoft Clarity sources only when Microsoft Clarity is enabled", () => {
+    const policy = buildContentSecurityPolicy({
+      enableMicrosoftClarity: true,
+    });
+
+    const letteredSources = [..."abcdefghijklmnopqrstuvwxyz"].map(
+      (letter) => `https://${letter}.clarity.ms`,
+    );
+    const guidanceSources = [
+      "https://www.clarity.ms",
+      "https://c.bing.com",
+      ...letteredSources,
+    ];
+    const isClaritySource = (source) =>
+      source.endsWith(".clarity.ms") || source === "https://c.bing.com";
+
+    assert.deepEqual(getPolicySources(policy, "default-src"), ["'self'"]);
+    assert.deepEqual(
+      getPolicySources(policy, "script-src").filter(isClaritySource),
+      ["https://www.clarity.ms", "https://scripts.clarity.ms"],
+    );
+    assert.deepEqual(
+      getPolicySources(policy, "connect-src").filter(isClaritySource),
+      guidanceSources,
+    );
+    assert.deepEqual(
+      getPolicySources(policy, "img-src").filter(isClaritySource),
+      [...letteredSources, "https://c.bing.com"],
+    );
+    assert.deepEqual(
+      getPolicySources(policy, "worker-src").filter(isClaritySource),
+      [],
+    );
+    assert.doesNotMatch(policy, /https:\/\/\*\.clarity\.ms/);
+
+    const policyWithoutMicrosoftClarity = buildContentSecurityPolicy();
+    assert.doesNotMatch(
+      policyWithoutMicrosoftClarity,
+      /clarity\.ms|c\.bing\.com/,
+    );
   });
 
   test("adds unsafe-eval only for the Next.js development runtime", () => {
