@@ -1,17 +1,17 @@
-/* eslint-disable no-console */
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const NEXT_DIR = path.join(process.cwd(), ".next");
 const STATIC_DIR = path.join(NEXT_DIR, "static");
 const APP_CHUNKS_DIR = path.join(STATIC_DIR, "chunks", "app");
 const TEXT_FILE_EXTENSIONS = new Set([".js", ".json", ".html", ".map", ".txt"]);
 
-function encodePathForAssetUrl(relativePath) {
+export function encodePathForAssetUrl(relativePath) {
   return relativePath.split("/").map(encodeURIComponent).join("/");
 }
 
-function sanitizeDynamicSegment(segment) {
+export function sanitizeDynamicSegment(segment) {
   const optionalCatchAllMatch = segment.match(/^\[\[(?:\.\.\.)?(.+)\]\]$/);
   const dynamicMatch = segment.match(/^\[(?:\.\.\.)?(.+)\]$/);
   const paramName = optionalCatchAllMatch?.[1] ?? dynamicMatch?.[1];
@@ -24,7 +24,7 @@ function sanitizeDynamicSegment(segment) {
   return `__param_${safeName}`;
 }
 
-function sanitizeChunkSubpath(relativeSubpath) {
+export function sanitizeChunkSubpath(relativeSubpath) {
   return relativeSubpath
     .split("/")
     .map(sanitizeDynamicSegment)
@@ -176,4 +176,9 @@ async function main() {
   );
 }
 
-await main();
+const isDirectRun = process.argv[1] &&
+  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+
+if (isDirectRun) {
+  await main();
+}

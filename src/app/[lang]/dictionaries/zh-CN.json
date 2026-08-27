@@ -191,6 +191,10 @@
     "move-to-top-btn": {
         "aria_label": "回到顶部"
     },
+    "outbound_navigation": {
+        "confirm": "您即将离开 Techzjc 并访问 {destination}，是否继续？",
+        "blocked": "Techzjc 已拦截使用不安全或无效地址的链接（{destination}）。"
+    },
     "blog": {
         "title": "博客",
         "end_of_articles_page": "你已经到达文章列表的末尾。",
