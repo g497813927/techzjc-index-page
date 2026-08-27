@@ -4,6 +4,14 @@ const MAX_EXTERNAL_LINK_URL_LENGTH = 2_048;
 const MAX_EXTERNAL_LINK_REVISION_LENGTH = 128;
 const MAX_EXTERNAL_LINK_RESPONSE_AGE_MS = 15 * 60 * 1_000;
 const MAX_CLOCK_SKEW_MS = 5 * 60 * 1_000;
+const MICROSOFT_CLARITY_LETTERED_SOURCES = [..."abcdefghijklmnopqrstuvwxyz"].map(
+  (letter) => `https://${letter}.clarity.ms`,
+);
+const MICROSOFT_CLARITY_GUIDANCE_SOURCES = [
+  "https://www.clarity.ms",
+  "https://c.bing.com",
+  ...MICROSOFT_CLARITY_LETTERED_SOURCES,
+];
 const SAFE_NAVIGATION_PROTOCOLS = new Set([
   "http:",
   "https:",
@@ -65,6 +73,7 @@ export interface ExternalLinkManifestVersion {
 
 export interface ContentSecurityPolicyOptions {
   isDevelopment?: boolean;
+  enableMicrosoftClarity?: boolean;
 }
 
 type ParsedHostAuthority = {
@@ -527,17 +536,25 @@ export function redactNavigationUrl(
  * A cache-safe CSP for the statically rendered site. `unsafe-inline` is kept
  * for Next.js hydration data, the theme bootstrap, JSON-LD, and existing React
  * inline styles. External executable code remains restricted to the app and
- * the two explicitly used analytics providers.
+ * the explicitly used analytics providers.
  */
 export function buildContentSecurityPolicy(
   options: ContentSecurityPolicyOptions = {},
 ): string {
+  const clarityDefaultSources = options.enableMicrosoftClarity
+    ? MICROSOFT_CLARITY_GUIDANCE_SOURCES
+    : [];
   const scriptSources = [
     "'self'",
     "'unsafe-inline'",
     ...(options.isDevelopment ? ["'unsafe-eval'"] : []),
     "https://www.googletagmanager.com",
     "https://va.vercel-scripts.com",
+    // The current www.clarity.ms/tag bootstrap loads its runtime from this
+    // separate host; keep it script-only and verify it on deployed previews.
+    ...(options.enableMicrosoftClarity
+      ? ["https://www.clarity.ms", "https://scripts.clarity.ms"]
+      : []),
   ];
   const connectSources = [
     "'self'",
@@ -549,11 +566,14 @@ export function buildContentSecurityPolicy(
     "https://vitals.vercel-insights.com",
     "https://*.ingest.us.sentry.io",
     "https://*.ingest.sentry.io",
+    ...(options.enableMicrosoftClarity
+      ? ["https://www.clarity.ms", ...MICROSOFT_CLARITY_LETTERED_SOURCES]
+      : []),
     ...(options.isDevelopment ? ["ws:"] : []),
   ];
 
   const directives: string[][] = [
-    ["default-src", "'self'"],
+    ["default-src", "'self'", ...clarityDefaultSources],
     ["base-uri", "'self'"],
     ["script-src", ...scriptSources],
     ["script-src-attr", "'none'"],
@@ -567,6 +587,9 @@ export function buildContentSecurityPolicy(
       "https://www.google-analytics.com",
       "https://*.google-analytics.com",
       "https://www.googletagmanager.com",
+      ...(options.enableMicrosoftClarity
+        ? [...MICROSOFT_CLARITY_LETTERED_SOURCES, "https://c.bing.com"]
+        : []),
     ],
     ["font-src", "'self'", "data:"],
     ["connect-src", ...connectSources],
