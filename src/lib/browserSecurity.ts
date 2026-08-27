@@ -541,9 +541,6 @@ export function redactNavigationUrl(
 export function buildContentSecurityPolicy(
   options: ContentSecurityPolicyOptions = {},
 ): string {
-  const clarityDefaultSources = options.enableMicrosoftClarity
-    ? MICROSOFT_CLARITY_GUIDANCE_SOURCES
-    : [];
   const scriptSources = [
     "'self'",
     "'unsafe-inline'",
@@ -573,7 +570,7 @@ export function buildContentSecurityPolicy(
   ];
 
   const directives: string[][] = [
-    ["default-src", "'self'", ...clarityDefaultSources],
+    ["default-src", "'self'"],
     ["base-uri", "'self'"],
     ["script-src", ...scriptSources],
     ["script-src-attr", "'none'"],

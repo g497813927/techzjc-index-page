@@ -513,10 +513,7 @@ describe("content security policy", () => {
     const isClaritySource = (source) =>
       source.endsWith(".clarity.ms") || source === "https://c.bing.com";
 
-    assert.deepEqual(
-      getPolicySources(policy, "default-src").filter(isClaritySource),
-      guidanceSources,
-    );
+    assert.deepEqual(getPolicySources(policy, "default-src"), ["'self'"]);
     assert.deepEqual(
       getPolicySources(policy, "script-src").filter(isClaritySource),
       ["https://www.clarity.ms", "https://scripts.clarity.ms"],
