@@ -299,6 +299,7 @@ describe("FC post-deploy smoke fixture", () => {
     assert.match(result.stderr, /function=fixture-function/);
     assert.match(result.stderr, /revision=fixture-revision@sha256:fixture-digest/);
     assert.match(result.stderr, /expected commit=7654321/);
+    assert.match(result.stderr, /rollout did not converge after 1 attempt$/m);
   });
 
   test("rejects the same site commit paired with a different blog revision", () => {

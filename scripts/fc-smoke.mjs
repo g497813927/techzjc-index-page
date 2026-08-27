@@ -281,8 +281,9 @@ export async function waitForHealthyPayload({
         throw error;
       }
       if (attempt === maxAttempts) {
+        const attemptLabel = maxAttempts === 1 ? "attempt" : "attempts";
         throw new StaleDeploymentRevisionError(
-          `${error.message}; rollout did not converge after ${maxAttempts} attempts`,
+          `${error.message}; rollout did not converge after ${maxAttempts} ${attemptLabel}`,
         );
       }
 
