@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { HEADER_KEY } from "@/constants/headers";
+import {
+  firstHeaderListValue,
+  isAllowedApplicationHost,
+  normalizeHostHeader,
+} from "@/lib/browserSecurity";
 const locales = ["zh-CN", "en-US"];
 
 const TRUSTED_ORIGINS = ["cdn.techzjc.net"];
-const ALLOWED_DOMAINS = ["techzjc.com", "test-cn.techzjc.com"];
 
 function getLocale(request: { headers: Headers }): string {
   const headers = {
@@ -49,14 +53,10 @@ export function proxy(req: NextRequest) {
 
   let { pathname } = req.nextUrl;
 
-  const rawHost = (req.headers.get("host") || "").toLowerCase();
-  const xForwardedHostRaw = (
-    req.headers.get("x-forwarded-host") || ""
-  ).toLowerCase();
-  const host = (xForwardedHostRaw || rawHost).split(",")[0].trim();
-
-  const isLocalhost =
-    host.split(":")[0] === "localhost" || host.split(":")[0] === "127.0.0.1";
+  const host = normalizeHostHeader(
+    firstHeaderListValue(req.headers.get("x-forwarded-host")) ||
+      req.headers.get("host"),
+  );
 
   if (TRUSTED_ORIGINS.includes(host)) {
     const authHeader = req.headers.get(HEADER_KEY);
@@ -73,10 +73,7 @@ export function proxy(req: NextRequest) {
     // Ensure that Vercel preview & local development are not blocked if not using a trusted origin.
     // if in production mode, block it
   } else if (
-    !ALLOWED_DOMAINS.includes(host) &&
-    process.env.VERCEL_ENV !== "preview" &&
-    process.env.NODE_ENV !== "development" &&
-    !isLocalhost &&
+    !isAllowedApplicationHost(host, process.env) &&
     // As FC already has its own security mechanism to gate access (e.g.
     // API Gateway with auth token check (checks CDN's X-Origin-Auth header already at API Gateway layer,
     // which happens before reaching FC, so no need to re-check at FC proxy layer here),

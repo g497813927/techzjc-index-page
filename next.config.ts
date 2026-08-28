@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import { buildContentSecurityPolicy } from "./src/lib/browserSecurity";
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -15,6 +16,10 @@ const sentryOrg = process.env.SENTRY_ORG ?? "jiacheng-zhao";
 const sentryProject = process.env.SENTRY_PROJECT ?? "javascript-nextjs";
 const sentryApplicationKey =
   process.env.NEXT_PUBLIC_SENTRY_APPLICATION_KEY ?? "techzjc-site-index";
+const contentSecurityPolicy = buildContentSecurityPolicy({
+  isDevelopment: process.env.NODE_ENV === "development",
+  enableMicrosoftClarity: isGlobalBuild && !isCnBuild,
+});
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -25,6 +30,35 @@ const nextConfig: NextConfig = {
     'localhost',
     '::1'
   ],
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: contentSecurityPolicy,
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), geolocation=(), microphone=()",
+          },
+        ],
+      },
+    ];
+  },
   images: {
     qualities: [50, 60, 75],
     remotePatterns: [

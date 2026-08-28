@@ -191,6 +191,10 @@
     "move-to-top-btn": {
         "aria_label": "Move to top"
     },
+    "outbound_navigation": {
+        "confirm": "You are about to leave Techzjc and open {destination}. Continue?",
+        "blocked": "Techzjc blocked a link that uses an unsafe or invalid address ({destination})."
+    },
     "blog": {
         "title": "Blog",
         "end_of_articles_page": "You've reached the end of the blog posts.",
