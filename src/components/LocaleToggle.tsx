@@ -1,7 +1,9 @@
+"use client";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import './LocaleToggle.css';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 const availableLocales = [
@@ -16,7 +18,8 @@ const availableLocales = [
 ]
 
 function persistLocalePreference(locale: string) {
-    document.cookie = `locale=${locale}; Path=/; Max-Age=31536000; SameSite=Lax`;
+    const secureAttribute = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `locale=${encodeURIComponent(locale)}; Path=/; Max-Age=31536000; SameSite=Lax${secureAttribute}`;
 }
 
 //eslint-disable-next-line
@@ -25,6 +28,15 @@ export function LocaleToggle(props: {dict: any}) {
     const pathname = usePathname();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        const localeFromPath = pathname.match(/^\/(en-US|zh-CN)(?:\/|$)/)?.[1];
+        if (localeFromPath) {
+            // Persist explicit localized URLs in the browser without adding a
+            // cache-busting Set-Cookie header to the server response.
+            persistLocalePreference(localeFromPath);
+        }
+    }, [pathname]);
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);

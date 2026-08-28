@@ -1,6 +1,11 @@
-type SentryModule = typeof import("@/lib/sentryClientRuntime");
+import {
+  captureRouterTransitionStart,
+  init,
+  thirdPartyErrorFilterIntegration,
+} from "@/lib/sentryClientRuntime";
+
 type RouterTransitionStartArgs = Parameters<
-  SentryModule["captureRouterTransitionStart"]
+  typeof captureRouterTransitionStart
 >;
 type SentryFrame = {
   filename?: string;
@@ -55,39 +60,7 @@ const browserExtensionNoisePatterns = [
   "injected-entry.js",
 ];
 
-let sentryModulePromise: Promise<SentryModule> | undefined;
-let sentryInitializationPromise: Promise<SentryModule> | undefined;
-
-function loadSentry() {
-  sentryModulePromise ??= import("@/lib/sentryClientRuntime");
-  return sentryModulePromise;
-}
-
-function handleSentryLoadError(context: string, error: unknown) {
-  if (process.env.NODE_ENV === "development") {
-    console.warn(`Failed to load Sentry for ${context}.`, error);
-  }
-}
-
-function runAfterPageLoadWhenIdle(callback: () => void) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  const schedule = () => {
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(callback, { timeout: 3_000 });
-    } else {
-      globalThis.setTimeout(callback, 0);
-    }
-  };
-
-  if (document.readyState === "complete") {
-    schedule();
-  } else {
-    window.addEventListener("load", schedule, { once: true });
-  }
-}
+let sentryInitialized = false;
 
 function getBreadcrumbMessage(breadcrumb: NonNullable<SentryBeforeSendEvent["breadcrumbs"]>[number]) {
   if (typeof breadcrumb.message === "string") {
@@ -296,41 +269,38 @@ function isKnownBrowserNoise(
 }
 
 function initializeSentry() {
-  sentryInitializationPromise ??= loadSentry().then((Sentry) => {
-      Sentry.init({
-        dsn: clientDsn,
-        sendDefaultPii,
-        tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
-        integrations: [
-          Sentry.thirdPartyErrorFilterIntegration({
-            filterKeys: [sentryApplicationKey],
-            behaviour:
-              "drop-error-if-exclusively-contains-third-party-frames",
-            ignoreSentryInternalFrames: true,
-          }),
-        ],
-        beforeSend(event, hint) {
-          const isExtensionNoise = isBrowserExtensionEvent(event, hint);
+  if (sentryInitialized || !isGlobalBuild || !clientDsn) {
+    return;
+  }
 
-          if (isExtensionNoise || isKnownBrowserNoise(event)) {
-            return null;
-          }
+  init({
+    dsn: clientDsn,
+    sendDefaultPii,
+    tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
+    integrations: [
+      thirdPartyErrorFilterIntegration({
+        filterKeys: [sentryApplicationKey],
+        behaviour: "drop-error-if-exclusively-contains-third-party-frames",
+        ignoreSentryInternalFrames: true,
+      }),
+    ],
+    beforeSend(event, hint) {
+      const isExtensionNoise = isBrowserExtensionEvent(event, hint);
 
-          return event;
-        },
-      });
-      return Sentry;
-    });
+      if (isExtensionNoise || isKnownBrowserNoise(event)) {
+        return null;
+      }
 
-  return sentryInitializationPromise;
+      return event;
+    },
+  });
+  sentryInitialized = true;
 }
 
 if (isGlobalBuild && clientDsn) {
-  runAfterPageLoadWhenIdle(() => {
-    void initializeSentry().catch((error) => {
-      handleSentryLoadError("client initialization", error);
-    });
-  });
+  // Install Sentry's global error and rejection handlers during instrumentation
+  // evaluation, before application bundles can execute or hydration can fail.
+  initializeSentry();
 }
 
 export const onRouterTransitionStart = (...args: RouterTransitionStartArgs) => {
@@ -338,11 +308,6 @@ export const onRouterTransitionStart = (...args: RouterTransitionStartArgs) => {
     return;
   }
 
-  void initializeSentry()
-    .then((Sentry) => {
-      Sentry.captureRouterTransitionStart(...args);
-    })
-    .catch((error) => {
-      handleSentryLoadError("router transition instrumentation", error);
-    });
+  initializeSentry();
+  captureRouterTransitionStart(...args);
 };
