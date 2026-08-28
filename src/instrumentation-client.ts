@@ -1,6 +1,11 @@
-type SentryModule = typeof import("@sentry/nextjs");
+import {
+  captureRouterTransitionStart,
+  init,
+  thirdPartyErrorFilterIntegration,
+} from "@/lib/sentryClientRuntime";
+
 type RouterTransitionStartArgs = Parameters<
-  SentryModule["captureRouterTransitionStart"]
+  typeof captureRouterTransitionStart
 >;
 type SentryFrame = {
   filename?: string;
@@ -55,18 +60,7 @@ const browserExtensionNoisePatterns = [
   "injected-entry.js",
 ];
 
-let sentryModulePromise: Promise<SentryModule> | undefined;
-
-function loadSentry() {
-  sentryModulePromise ??= import("@sentry/nextjs");
-  return sentryModulePromise;
-}
-
-function handleSentryLoadError(context: string, error: unknown) {
-  if (process.env.NODE_ENV === "development") {
-    console.warn(`Failed to load Sentry for ${context}.`, error);
-  }
-}
+let sentryInitialized = false;
 
 function getBreadcrumbMessage(breadcrumb: NonNullable<SentryBeforeSendEvent["breadcrumbs"]>[number]) {
   if (typeof breadcrumb.message === "string") {
@@ -274,38 +268,39 @@ function isKnownBrowserNoise(
   return hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns);
 }
 
+function initializeSentry() {
+  if (sentryInitialized || !isGlobalBuild || !clientDsn) {
+    return;
+  }
+
+  init({
+    dsn: clientDsn,
+    sendDefaultPii,
+    tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
+    integrations: [
+      thirdPartyErrorFilterIntegration({
+        filterKeys: [sentryApplicationKey],
+        behaviour: "drop-error-if-exclusively-contains-third-party-frames",
+        ignoreSentryInternalFrames: true,
+      }),
+    ],
+    beforeSend(event, hint) {
+      const isExtensionNoise = isBrowserExtensionEvent(event, hint);
+
+      if (isExtensionNoise || isKnownBrowserNoise(event)) {
+        return null;
+      }
+
+      return event;
+    },
+  });
+  sentryInitialized = true;
+}
+
 if (isGlobalBuild && clientDsn) {
-  void loadSentry()
-    .then((Sentry) => {
-      Sentry.init({
-        dsn: clientDsn,
-        sendDefaultPii,
-        tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
-        integrations: [
-          Sentry.thirdPartyErrorFilterIntegration({
-            filterKeys: [sentryApplicationKey],
-            behaviour:
-              "drop-error-if-exclusively-contains-third-party-frames",
-            ignoreSentryInternalFrames: true,
-          }),
-          Sentry.replayIntegration(),
-        ],
-        replaysSessionSampleRate: 0.1,
-        replaysOnErrorSampleRate: 1.0,
-        beforeSend(event, hint) {
-          const isExtensionNoise = isBrowserExtensionEvent(event, hint);
-
-          if (isExtensionNoise || isKnownBrowserNoise(event)) {
-            return null;
-          }
-
-          return event;
-        },
-      });
-    })
-    .catch((error) => {
-      handleSentryLoadError("client initialization", error);
-    });
+  // Install Sentry's global error and rejection handlers during instrumentation
+  // evaluation, before application bundles can execute or hydration can fail.
+  initializeSentry();
 }
 
 export const onRouterTransitionStart = (...args: RouterTransitionStartArgs) => {
@@ -313,11 +308,6 @@ export const onRouterTransitionStart = (...args: RouterTransitionStartArgs) => {
     return;
   }
 
-  void loadSentry()
-    .then((Sentry) => {
-      Sentry.captureRouterTransitionStart(...args);
-    })
-    .catch((error) => {
-      handleSentryLoadError("router transition instrumentation", error);
-    });
+  initializeSentry();
+  captureRouterTransitionStart(...args);
 };

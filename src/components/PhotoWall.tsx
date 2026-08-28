@@ -30,12 +30,13 @@ function usePhotoRowRef(direction: 1 | -1) {
         let focused = false;
         let touching = false;
         let interacting = false;
+        let isVisible = typeof IntersectionObserver === "undefined";
         let idleTimer = 0;
         let rafId = 0;
         let lastTs = 0;
 
         const canAutoScroll = () =>
-            !reducedMotionQuery.matches && half > el.clientWidth;
+            isVisible && !reducedMotionQuery.matches && half > el.clientWidth;
         const isPaused = () => hovering || focused || touching || interacting;
 
         const setScrollWrapped = (x: number) => {
@@ -183,6 +184,18 @@ function usePhotoRowRef(direction: 1 | -1) {
         el.addEventListener('focusin', onFocusIn);
         el.addEventListener('focusout', onFocusOut);
 
+        const visibilityObserver = typeof IntersectionObserver === "undefined"
+            ? null
+            : new IntersectionObserver(([entry]) => {
+                isVisible = entry?.isIntersecting ?? false;
+                if (canAutoScroll() && !isPaused()) {
+                    ensureLoop();
+                } else {
+                    stopLoop();
+                }
+            }, { rootMargin: "200px 0px" });
+        visibilityObserver?.observe(el);
+
         if (canAutoScroll() && !isPaused()) {
             rafId = requestAnimationFrame(step);
         }
@@ -190,6 +203,7 @@ function usePhotoRowRef(direction: 1 | -1) {
         return () => {
             cancelAnimationFrame(rafId);
             window.clearTimeout(idleTimer);
+            visibilityObserver?.disconnect();
             window.removeEventListener('resize', onResize);
             reducedMotionQuery.removeEventListener('change', onReducedMotionChange);
             el.removeEventListener('scroll', onScroll);

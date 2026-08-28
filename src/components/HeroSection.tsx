@@ -14,7 +14,9 @@ export function HeroSection({ dict }: { dict: any }) {
                     }
                     fill
                     sizes="100vw"
-                    loading="lazy"
+                    quality={60}
+                    loading="eager"
+                    fetchPriority="high"
                 />
             </div>
             <div className="background-overlay"></div>

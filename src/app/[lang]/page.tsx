@@ -11,6 +11,10 @@ import { notFound } from 'next/navigation';
 import { generateMetadataAlternatives } from '@/utils/generateMetadataAlternatives';
 import { WeChatShareImage } from '@/components/WeChatShareImage';
 
+// The index is fully determined by the locale dictionaries and bundled data.
+// Keep it prerendered so Vercel and ESA can serve HTML from their shared caches.
+export const dynamic = 'force-static';
+
 export async function generateMetadata({ params }: PageProps<'/[lang]'>): Promise<Metadata> {
     const { lang } = await params;
     if (!hasLocale(lang)) notFound();

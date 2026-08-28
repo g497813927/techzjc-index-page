@@ -124,10 +124,10 @@ export function proxy(req: NextRequest) {
     ?.includes("text/markdown");
 
   if (pathnameHasLocale) {
-    // Locale is already in the pathname, we treat user preference as is and set cookie
+    // The explicit pathname is authoritative. Avoid setting a cookie on this
+    // response: Set-Cookie makes an otherwise static locale page uncacheable at
+    // both Vercel and the outer CDN.
     const locale = pathname.split("/")[1];
-    const response = NextResponse.next();
-    response.cookies.set("locale", locale, { path: "/" });
     // If markdown is requested, head to /markdown route handler
     if (isMarkdownRequested) {
       const url = req.nextUrl.clone();
@@ -139,11 +139,9 @@ export function proxy(req: NextRequest) {
         const restOfPath = pathname.slice(localePrefix.length);
         url.pathname = `${localePrefix}/markdown${restOfPath}`;
       }
-      const rewriteResponse = NextResponse.rewrite(url);
-      rewriteResponse.cookies.set("locale", locale, { path: "/" });
-      return rewriteResponse;
+      return NextResponse.rewrite(url);
     }
-    return response;
+    return NextResponse.next();
   }
 
   const locale = getLocale(req as unknown as { headers: Headers });
@@ -168,9 +166,7 @@ export function proxy(req: NextRequest) {
     }
   }
   url.pathname = `/${locale}${pathname}`;
-  const response = NextResponse.rewrite(url);
-  response.cookies.set("locale", locale, { path: "/" });
-  return response;
+  return NextResponse.rewrite(url);
 }
 
 export const config = {
