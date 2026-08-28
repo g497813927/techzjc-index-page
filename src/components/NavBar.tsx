@@ -33,7 +33,7 @@ export function NavBar({ hasHero, dict }: { hasHero?: boolean; dict: any }) {
     return (
         <nav className="navbar" id="navbar">
             <div className="nav-content">
-                <Link href={"/"} className="home-link">
+                <Link href={"/"} prefetch={false} className="home-link">
                     <h1 className="logo">TECHZJC</h1>
                 </Link>
                 <div className="nav-links">

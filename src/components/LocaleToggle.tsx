@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import './LocaleToggle.css';
 import { useState } from "react";
-import { usePathname, redirect } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const availableLocales = [
     {
@@ -15,10 +15,15 @@ const availableLocales = [
     }
 ]
 
+function persistLocalePreference(locale: string) {
+    document.cookie = `locale=${locale}; Path=/; Max-Age=31536000; SameSite=Lax`;
+}
+
 //eslint-disable-next-line
 export function LocaleToggle(props: {dict: any}) {
     const dict = props.dict;
     const pathname = usePathname();
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleDropdown = () => {
@@ -27,7 +32,11 @@ export function LocaleToggle(props: {dict: any}) {
 
     const changeLocale = (locale: string) => {
         const pathWithoutLocale = pathname.replace(/^\/(en-US|zh-CN)/, '');
-        redirect(`/${locale}${pathWithoutLocale}`);
+        // Persist the preference in the browser so the server can keep static
+        // locale responses free of Set-Cookie and therefore CDN-cacheable.
+        persistLocalePreference(locale);
+        setIsOpen(false);
+        router.push(`/${locale}${pathWithoutLocale}`);
     };
     
 

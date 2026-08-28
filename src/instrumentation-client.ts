@@ -1,4 +1,4 @@
-type SentryModule = typeof import("@sentry/nextjs");
+type SentryModule = typeof import("@/lib/sentryClientRuntime");
 type RouterTransitionStartArgs = Parameters<
   SentryModule["captureRouterTransitionStart"]
 >;
@@ -56,15 +56,36 @@ const browserExtensionNoisePatterns = [
 ];
 
 let sentryModulePromise: Promise<SentryModule> | undefined;
+let sentryInitializationPromise: Promise<SentryModule> | undefined;
 
 function loadSentry() {
-  sentryModulePromise ??= import("@sentry/nextjs");
+  sentryModulePromise ??= import("@/lib/sentryClientRuntime");
   return sentryModulePromise;
 }
 
 function handleSentryLoadError(context: string, error: unknown) {
   if (process.env.NODE_ENV === "development") {
     console.warn(`Failed to load Sentry for ${context}.`, error);
+  }
+}
+
+function runAfterPageLoadWhenIdle(callback: () => void) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const schedule = () => {
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(callback, { timeout: 3_000 });
+    } else {
+      globalThis.setTimeout(callback, 0);
+    }
+  };
+
+  if (document.readyState === "complete") {
+    schedule();
+  } else {
+    window.addEventListener("load", schedule, { once: true });
   }
 }
 
@@ -274,9 +295,8 @@ function isKnownBrowserNoise(
   return hasNoiseBreadcrumb(event, vercelToolbarNoisePatterns);
 }
 
-if (isGlobalBuild && clientDsn) {
-  void loadSentry()
-    .then((Sentry) => {
+function initializeSentry() {
+  sentryInitializationPromise ??= loadSentry().then((Sentry) => {
       Sentry.init({
         dsn: clientDsn,
         sendDefaultPii,
@@ -288,10 +308,7 @@ if (isGlobalBuild && clientDsn) {
               "drop-error-if-exclusively-contains-third-party-frames",
             ignoreSentryInternalFrames: true,
           }),
-          Sentry.replayIntegration(),
         ],
-        replaysSessionSampleRate: 0.1,
-        replaysOnErrorSampleRate: 1.0,
         beforeSend(event, hint) {
           const isExtensionNoise = isBrowserExtensionEvent(event, hint);
 
@@ -302,10 +319,18 @@ if (isGlobalBuild && clientDsn) {
           return event;
         },
       });
-    })
-    .catch((error) => {
+      return Sentry;
+    });
+
+  return sentryInitializationPromise;
+}
+
+if (isGlobalBuild && clientDsn) {
+  runAfterPageLoadWhenIdle(() => {
+    void initializeSentry().catch((error) => {
       handleSentryLoadError("client initialization", error);
     });
+  });
 }
 
 export const onRouterTransitionStart = (...args: RouterTransitionStartArgs) => {
@@ -313,7 +338,7 @@ export const onRouterTransitionStart = (...args: RouterTransitionStartArgs) => {
     return;
   }
 
-  void loadSentry()
+  void initializeSentry()
     .then((Sentry) => {
       Sentry.captureRouterTransitionStart(...args);
     })
