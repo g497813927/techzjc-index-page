@@ -2,38 +2,17 @@
 
 import { useEffect } from "react";
 import { triggerDebuggerListeners } from "@/utils/debug";
-import figlet from 'figlet'
-import Larry3D from "figlet/fonts/Larry 3D";
-import Standard from "figlet/fonts/Standard";
 
 export function DebugBootstrap() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    figlet.parseFont("Larry3D", Larry3D);
-    figlet.parseFont("Standard", Standard);
-
-    const fontToUse = window.innerWidth < 600 ? "Standard" : "Larry3D";
-
-    console.log(
-      "%c" +
-      figlet.textSync('TECHZJC', {
-        font: fontToUse
-      }) +
-      "%c\n" +
-      "%c Commit %c " + process.env.NEXT_PUBLIC_COMMIT_SHA + " %c %c </> %c React + TypeScript %c\n\n" +
-      "%c Build at %c " + process.env.NEXT_PUBLIC_BUILD_TIME + " %c",
-      "color: #2181c2; font-weight: bold; font-family: monospace;",
-      "color: transparent;",
-      "background: #5c5c5c; padding: 1px; border-radius: 3px 0 0 3px; color: #FFFFFF",
-      "background: #52BF04; padding: 1px; border-radius: 0 3px 3px 0; color: #FFFFFF",
-      "background: transparent; padding: 1px;",
-      "background: #5c5c5c; padding: 1px; border-radius: 3px 0 0 3px; color: #FFFFFF",
-      "background: #2181c2; padding: 1px; border-radius: 0 3px 3px 0; color: #FFFFFF",
-      "background: transparent;",
-      "background: #5c5c5c; padding: 1px; border-radius: 3px 0 0 3px; color: #FFFFFF",
-      "background: #F2B544; padding: 1px; border-radius: 0 3px 3px 0; color: #FFFFFF",
-      "background: transparent; padding: 1px;"
+    console.info(
+      "%c TECHZJC %c Commit %s · Built %s",
+      "background: #2181c2; color: #fff; padding: 2px 4px; border-radius: 3px;",
+      "color: inherit;",
+      process.env.NEXT_PUBLIC_COMMIT_SHA,
+      process.env.NEXT_PUBLIC_BUILD_TIME,
     );
 
     if (process.env.NEXT_PUBLIC_VERCEL_ENV === "true") {
@@ -50,18 +29,32 @@ export function DebugBootstrap() {
     triggerDebuggerListeners();
 
     if (localStorage.getItem("enable-debug") === "true") {
-      import("vconsole").then(({ default: VConsole }) => {
-        const vConsole = new VConsole();
-        const vercel_build = process.env.NEXT_PUBLIC_VERCEL_ENV === "true" ? "\n▲ Deployed on Vercel" : ""
-        vConsole.log.log(figlet.textSync('TECHZJC', {
-          font: fontToUse
-        }) +
-          "\nCommit: " + process.env.NEXT_PUBLIC_COMMIT_SHA +
-          "\n</> React + TypeScript\n" +
-          "Build at: " + process.env.NEXT_PUBLIC_BUILD_TIME + "\n" +
-          vercel_build
-        );
-      });
+      void Promise.all([
+        import("figlet"),
+        import("figlet/fonts/Larry 3D"),
+        import("figlet/fonts/Standard"),
+        import("vconsole"),
+      ]).then(([{ default: figlet }, { default: Larry3D }, { default: Standard }, { default: VConsole }]) => {
+          figlet.parseFont("Larry3D", Larry3D);
+          figlet.parseFont("Standard", Standard);
+          const fontToUse = window.innerWidth < 600 ? "Standard" : "Larry3D";
+          const vConsole = new VConsole();
+          const vercelBuild = process.env.NEXT_PUBLIC_VERCEL_ENV === "true"
+            ? "\n▲ Deployed on Vercel"
+            : "";
+
+          vConsole.log.log(
+            figlet.textSync("TECHZJC", { font: fontToUse }) +
+              "\nCommit: " + process.env.NEXT_PUBLIC_COMMIT_SHA +
+              "\n</> React + TypeScript\n" +
+              "Build at: " + process.env.NEXT_PUBLIC_BUILD_TIME +
+              vercelBuild,
+          );
+        }).catch((error) => {
+          if (process.env.NODE_ENV === "development") {
+            console.warn("Failed to load the optional debug console.", error);
+          }
+        });
     }
   }, []);
 

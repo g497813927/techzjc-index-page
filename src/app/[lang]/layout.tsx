@@ -3,7 +3,6 @@ import { DebugBootstrap } from "@/components/DebugBootstrap";
 import { MoveToTop } from "@/components/MoveToTop";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { getDictionary, hasLocale } from "./dictionaries";
 import { CnCoreValuesMouseClickHelper } from "@/utils/cnCoreValuesMouseClickHelper";
 import { notFound } from "next/navigation";
@@ -36,8 +35,18 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
         {
           process.env.NEXT_PUBLIC_VERCEL_ENV === 'true' &&
           <>
-            <GoogleAnalytics gaId="G-1ZLSY6R45Z" />
-            <GoogleTagManager gtmId="GTM-N4FFLQFV" />
+            <Script
+              id="gtm-bootstrap"
+              strategy="lazyOnload"
+              dangerouslySetInnerHTML={{
+                __html: "window.dataLayer=window.dataLayer||[];window.dataLayer.push({'gtm.start':Date.now(),event:'gtm.js'});",
+              }}
+            />
+            <Script
+              id="gtm-script"
+              strategy="lazyOnload"
+              src="https://www.googletagmanager.com/gtm.js?id=GTM-N4FFLQFV"
+            />
             <SpeedInsights />
             <Analytics />
           </>

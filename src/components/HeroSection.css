@@ -63,11 +63,9 @@
 @keyframes slide-in {
     from {
         transform: translateY(50px);
-        opacity: 0;
     }
     to {
         transform: translateY(0);
-        opacity: 1;
     }
 }
 
@@ -109,4 +107,3 @@
 .arrow span:nth-child(2) {
   transform: rotate(-45deg) translateX(8px);
 }
-
