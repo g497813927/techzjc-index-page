@@ -12,12 +12,56 @@ const locales = ["zh-CN", "en-US"];
 const TRUSTED_ORIGINS = ["cdn.techzjc.net"];
 
 function getLocale(request: { headers: Headers }): string {
-  const headers = {
-    "accept-language": request.headers.get("accept-language") || "",
-  };
-  const languages = new Negotiator({ headers }).languages();
-  const locale = match(languages, locales, "en-US");
-  return locale;
+  const ranges = (request.headers.get("accept-language") || "")
+    .split(",")
+    .flatMap((preference) => {
+      const [language, ...parameters] = preference.trim().split(";");
+      if (language.trim() === "*") return [["*", ...parameters].join(";")];
+      try {
+        // Normalize individually so malformed tags cannot discard valid ones.
+        // Extensions do not affect our language choice; Intl removes them
+        // safely, including private-use subtags the matcher's regex mishandles.
+        const baseName = new Intl.Locale(language.trim()).baseName;
+        return [[baseName, ...parameters].join(";")];
+      } catch {
+        return [];
+      }
+    });
+
+  // Evaluate explicit exclusions before best-fit mapping changes specificity.
+  // A regional preference cannot override en;q=0 for an en-US response, while
+  // the more specific en-US;q=0.5 can. The fallback wildcard keeps otherwise
+  // unmentioned locales eligible for best-fit matching, even with '*;q=0'.
+  const eligibleLocales = new Negotiator({
+    headers: {
+      "accept-language": [
+        ...ranges.filter((range) => range.split(";")[0] !== "*"),
+        "*",
+      ].join(","),
+    },
+  }).languages(locales);
+  const preferences = ranges.flatMap((preference) => {
+    const [baseName, ...parameters] = preference.split(";");
+    if (baseName === "*" || !new Negotiator({
+      headers: { "accept-language": preference },
+    }).language()) {
+      // Keep negative regional ranges scoped: en-GB;q=0 does not reject en-US.
+      return [preference];
+    }
+    const supported = match([baseName], eligibleLocales, "");
+    if (!supported) return [];
+
+    // Supported locales keep their exact specificity. Other positive variants
+    // express a language-level preference after safe best-fit matching.
+    const range = locales.includes(baseName)
+      ? baseName
+      : new Intl.Locale(supported).language;
+    return [[range, ...parameters].join(";")];
+  });
+  const headers = { "accept-language": preferences.join(",") };
+  // Passing available locales retains wildcard weights and q=0 exclusions.
+  // English remains the tie-breaker and the fallback when none is acceptable.
+  return new Negotiator({ headers }).languages(["en-US", "zh-CN"])[0] || "en-US";
 }
 
 const SCANNER_PATTERNS = [
