@@ -15,7 +15,17 @@ function getLocale(request: { headers: Headers }): string {
   const headers = {
     "accept-language": request.headers.get("accept-language") || "",
   };
-  const languages = new Negotiator({ headers }).languages();
+  const languages = new Negotiator({ headers }).languages().flatMap((language) => {
+    try {
+      // HTTP wildcards and malformed tags are not valid Intl locales. Check
+      // each preference separately so a bad tag cannot discard valid ones.
+      // Extensions do not affect our language choice. Removing them with Intl
+      // also avoids the matcher's regex mishandling valid private-use subtags.
+      return [new Intl.Locale(language).baseName];
+    } catch {
+      return [];
+    }
+  });
   const locale = match(languages, locales, "en-US");
   return locale;
 }
