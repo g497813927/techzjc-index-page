@@ -15,7 +15,7 @@ for (const prototype of [http.Server.prototype, https.Server.prototype]) {
       args[1].end("HTTP/1.1 404 Not Found\r\nConnection: close\r\nCache-Control: no-store, max-age=0\r\nContent-Length: 0\r\nX-Content-Type-Options: nosniff\r\n\r\n");
       return true;
     }
-    if (["request", "checkContinue", "checkExpectation"].includes(event) && args[0]?.method === "TRACE") {
+    if ((event === "request" || event === "checkContinue" || event === "checkExpectation") && args[0]?.method === "TRACE") {
       const [request, response] = args;
       // Do not echo the request, headers, credentials, or body.
       response.writeHead(404, {

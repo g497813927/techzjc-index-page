@@ -6,7 +6,7 @@
     "generate-licenses": "node ./scripts/generate-licenses.mjs",
     "prepare-env": "node ./scripts/prepare-env.mjs && npm run generate-licenses",
     "test": "npm run test:prepare-env && npm run test:scanner-404 && npm run test:fc-smoke && npm run test:sanitize-paths && npm run test:browser-security && npm run test:fuzz-regressions",
-    "test:fuzz-regressions": "node --loader ./scripts/fuzz-regressions/typescript-loader.mjs --test ./scripts/fuzz-regressions/*.test.mjs",
+    "test:fuzz-regressions": "node ./scripts/fuzz-regressions/run.mjs",
     "test:prepare-env": "node ./scripts/prepare-env.test.mjs",
     "test:scanner-404": "node --test ./scripts/scanner-404.test.mjs",
     "test:fc-smoke": "node --test ./scripts/fc-smoke.test.mjs",

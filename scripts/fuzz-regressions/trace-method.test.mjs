@@ -16,6 +16,7 @@ test("TRACE is rejected before the first listener and does not disclose input", 
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
     received.push(req.method);
+    res.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "X-Content-Type-Options": "nosniff" });
     res.end(JSON.stringify({ method: req.method, path: req.url, body: Buffer.concat(chunks).toString() }));
   });
   server.listen(0, "127.0.0.1");
@@ -48,6 +49,8 @@ test("TRACE is rejected before the first listener and does not disclose input", 
     for (const method of ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]) {
       const result = await request(method, "/normal?x=1", "normal-body");
       assert.equal(result.status, 200);
+      assert.equal(result.headers["content-type"], "application/json; charset=utf-8");
+      assert.equal(result.headers["x-content-type-options"], "nosniff");
       assert.deepEqual(JSON.parse(result.body), { method, path: "/normal?x=1", body: "normal-body" });
     }
     const concurrent = await Promise.all(Array.from({ length: 20 }, (_, i) => request(i % 2 ? "POST" : "TRACE", "/", "body")));
