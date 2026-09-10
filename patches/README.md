@@ -8,8 +8,8 @@ missing-post handler can return 404.
 `next-16.3.0-prerender.json` changes the matcher argument to
 `prepareResult.encodedResolvedPathname` in both CommonJS and ES module build
 templates. The decoded pathname remains in use for manifest lookups and cache
-keys. The patch does not change static generation, ISR, or the blog route's
-rendering configuration.
+keys. The patch does not change static-generation/ISR configuration or the blog
+route's rendering configuration.
 
 `npm install` and `npm ci` run `scripts/patch-next-prerender.mjs` through
 `postinstall`. The Docker dependency stage copies the script and recipe before
