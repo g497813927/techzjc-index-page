@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { HEADER_KEY } from "@/constants/headers";
+import { hasValidPathEncoding } from "@/lib/requestPath";
 import {
   firstHeaderListValue,
   isAllowedApplicationHost,
@@ -34,6 +35,13 @@ const SCANNER_PATTERNS = [
 ];
 
 export function proxy(req: NextRequest) {
+  if (!hasValidPathEncoding(req.nextUrl.pathname)) {
+    return new NextResponse(null, {
+      status: 400,
+      headers: { "Cache-Control": "no-store, max-age=0" },
+    });
+  }
+
   // TRACE is universally scanner noise; route handlers cannot export a TRACE
   // handler, so intercept it here before any other routing logic.
   if (req.method === "TRACE") {
