@@ -36,7 +36,6 @@ describe("F1: malformed language preferences remain controlled", () => {
   test("keeps valid preferences before and after invalid tags", () => {
     for (const language of [
       "zh-CN,*;q=0.9",
-      "*,zh-CN;q=0.9",
       "en_US,zh-CN;q=0.9,en-US;q=0.8",
       "en--US,zh-CN;q=0.9",
       "zh-Hans-CN,en_US;q=0.8",
@@ -63,6 +62,50 @@ describe("F1: malformed language preferences remain controlled", () => {
     }
   });
 
+  test("keeps wildcard weights and specific exclusions during matching", () => {
+    for (const [language, locale] of [
+      ["en-US;q=0,*;q=0.5", "zh-CN"],
+      ["en;q=0,*;q=0.5", "zh-CN"],
+      ["zh-CN;q=0,*;q=0.5", "en-US"],
+      ["zh;q=0,*;q=0.5", "en-US"],
+      ["*,zh-CN;q=0.9", "en-US"],
+      ["zh-CN;q=0.5,*;q=1", "en-US"],
+      ["*;q=0.5,zh-CN;q=0.9", "zh-CN"],
+      ["en-US;q=0.5,*;q=1", "zh-CN"],
+      ["*;q=0,zh-CN;q=0.5", "zh-CN"],
+      ["en;q=0,en-US;q=0.5,*;q=0.1", "en-US"],
+      ["en-US;q=0,en;q=0.8,*;q=0.5", "zh-CN"],
+      ["en-US;q=0,en-GB;q=0.8,*;q=0.5", "zh-CN"],
+      ["en;q=0,en-GB;q=0.8,*;q=0.5", "zh-CN"],
+      ["zh;q=0,zh-TW;q=0.8,*;q=0.5", "en-US"],
+      ["en;q=0,en-GB;q=0.8,zh-CN;q=0.5", "zh-CN"],
+      ["zh;q=0,zh-TW;q=0.8,en-US;q=0.5", "en-US"],
+      ["en;q=0,en-US;q=0.5,*;q=0", "en-US"],
+      ["en-GB;q=0.5,*;q=0", "en-US"],
+      ["zh-TW;q=0.5,*;q=0", "zh-CN"],
+      ["en-GB;q=0,*;q=1", "en-US"],
+      ["en-GB;q=0,zh-CN;q=0.5,*;q=1", "en-US"],
+      ["zh-TW;q=0,en-US;q=0,*;q=1", "zh-CN"],
+      ["zh-Hans-CN;q=0,en-US;q=0,*;q=1", "zh-CN"],
+      ["en-US-u-ca-gregory;q=0,*;q=0.5", "zh-CN"],
+      ["en_US,en-US;q=0,*;q=0.5", "zh-CN"],
+      ["zh-Hans-CN;q=0.8,*;q=0.5", "zh-CN"],
+      ["zh-Hans-CN;q=0.5,*;q=0.8", "en-US"],
+    ]) {
+      expectRewrite(proxy(request("/", { "accept-language": language })), `/${locale}`);
+    }
+  });
+
+  test("falls back gracefully when every supported locale is excluded", () => {
+    for (const language of [
+      "*;q=0",
+      "en-US;q=0,zh-CN;q=0,*;q=0.5",
+      "en;q=0,zh;q=0,*;q=1",
+    ]) {
+      expectRewrite(proxy(request("/", { "accept-language": language })), "/en-US");
+    }
+  });
+
   test("valid private-use and Unicode extensions do not break matching", () => {
     for (const [language, locale] of [
       ["en-x-u-ca", "en-US"],
@@ -76,7 +119,7 @@ describe("F1: malformed language preferences remain controlled", () => {
   });
 
   test("keeps a supported locale cookie authoritative", () => {
-    for (const language of ["*", "en_US", "en-US"]) {
+    for (const language of ["*", "en_US", "en-US", "zh-CN;q=0,*;q=0.5", "*;q=0"]) {
       expectRewrite(
         proxy(request("/blog?view=all", {
           "accept-language": language,
@@ -96,7 +139,7 @@ describe("F1: malformed language preferences remain controlled", () => {
 
   test("keeps explicit locale paths authoritative and cacheable", () => {
     const response = proxy(request("/en-US/blog", {
-      "accept-language": "*",
+      "accept-language": "en-US;q=0,*;q=0.5",
       cookie: "locale=zh-CN",
     }));
     assert.equal(response.status, 200);
