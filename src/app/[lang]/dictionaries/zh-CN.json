@@ -102,6 +102,9 @@
             }
         }
     },
+    "opengraph_image": {
+        "invalid_dimensions": "宽度和高度必须是仅使用十进制数字表示的正整数，每边不超过 4096，总像素数不超过 4194304。"
+    },
     "navbar": {
         "blog": "博客",
         "toggle_theme": {
