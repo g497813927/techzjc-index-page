@@ -5,17 +5,18 @@
   "scripts": {
     "generate-licenses": "node ./scripts/generate-licenses.mjs",
     "prepare-env": "node ./scripts/prepare-env.mjs && npm run generate-licenses",
-    "test": "npm run test:prepare-env && npm run test:scanner-404 && npm run test:fc-smoke && npm run test:sanitize-paths && npm run test:browser-security",
+    "test": "npm run test:prepare-env && npm run test:scanner-404 && npm run test:fc-smoke && npm run test:sanitize-paths && npm run test:browser-security && npm run test:fuzz-regressions",
+    "test:fuzz-regressions": "node --loader ./scripts/fuzz-regressions/typescript-loader.mjs --test ./scripts/fuzz-regressions/*.test.mjs",
     "test:prepare-env": "node ./scripts/prepare-env.test.mjs",
     "test:scanner-404": "node --test ./scripts/scanner-404.test.mjs",
     "test:fc-smoke": "node --test ./scripts/fc-smoke.test.mjs",
     "test:sanitize-paths": "node --test ./scripts/sanitize-next-static-paths.test.mjs",
     "test:browser-security": "node --loader ./scripts/typescript-test-loader.mjs --test ./scripts/browser-security.test.mjs",
     "smoke:fc": "node ./scripts/fc-smoke.mjs",
-    "dev": "npm run prepare-env && next dev",
+    "dev": "npm run prepare-env && node --require ./src/app/scanner-404/trace-guard.cjs ./node_modules/next/dist/bin/next dev",
     "build": "npm run prepare-env && next build --webpack",
     "build:docker": "npm run prepare-env && next build --webpack && node ./scripts/sanitize-next-static-paths.mjs",
-    "start": "next start",
+    "start": "node --require ./src/app/scanner-404/trace-guard.cjs ./node_modules/next/dist/bin/next start",
     "lint": "eslint"
   },
   "dependencies": {
