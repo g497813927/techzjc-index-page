@@ -223,6 +223,9 @@
         "description": "您所访问的页面不存在，请检查输入的网址是否正确。",
         "go_back_home": "返回首页"
     },
+    "sharable_card": {
+        "invalid_qr_input": "二维码内容不能为空，也不能超过二维码容量。"
+    },
     "licenses": {
         "title": "此站点使用的开源项目：",
         "error_loading_licenses": "当前无法加载许可证信息。请稍后再试或联系网站管理员。",

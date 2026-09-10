@@ -223,6 +223,9 @@
         "description": "The page you are looking for does not exist. Please check if the URL you entered is correct.",
         "go_back_home": "Go back to Home Page"
     },
+    "sharable_card": {
+        "invalid_qr_input": "QR code text must not be empty or exceed the QR code's capacity."
+    },
     "licenses": {
         "title": "Open Source Projects used within this Site:",
         "error_loading_licenses": "Unable to load license information at this time. Please try again later or contact the site owner.",
