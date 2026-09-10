@@ -1,4 +1,7 @@
 {
+    "image_errors": {
+        "invalid_data": "图片数据无效"
+    },
     "metadata": {
         "lang": "zh-CN",
         "language_name": "简体中文",

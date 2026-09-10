@@ -1,4 +1,7 @@
 {
+    "image_errors": {
+        "invalid_data": "Invalid image data"
+    },
     "metadata": {
         "lang": "en-US",
         "language_name": "English (US)",
