@@ -9,7 +9,11 @@ function request(path, accept = "text/html") {
     headers: { host: "techzjc.com", "accept-language": "en-US", accept },
   });
 }
-const invalid = ["%", "%0", "%GG", "%FF", "%C0%AF", "%E4%B8", "%ED%A0%80", "%F4%90%80%80", "%00", "%0D%0A", "%7f"];
+const invalid = [
+  "%", "%0", "%GG", "%FF", "%C0%AF", "%E4%B8", "%ED%A0%80", "%F4%90%80%80",
+  "%00", "%0D%0A", "%7f", "%80", "%9F",
+  ...Array.from({ length: 0x20 }, (_, index) => encodeURIComponent(String.fromCharCode(0x80 + index))),
+];
 
 test("malformed and control-character paths fail before any rewrite", () => {
   for (const segment of invalid) {
@@ -25,7 +29,7 @@ test("malformed and control-character paths fail before any rewrite", () => {
 });
 
 test("valid Unicode, encoded percent and separators retain their original paths", () => {
-  for (const segment of ["%25", "%2525", "%252e%252e%252f", "%2F", "%5C", "%E4%B8%AD", "%F0%9F%98%80", "hello-world"]) {
+  for (const segment of ["%25", "%2525", "%252e%252e%252f", "%2F", "%5C", "%7e", "%C2%A0", "%E4%B8%AD", "%F0%9F%98%80", "hello-world"]) {
     const path = `/en-US/blog/${segment}`;
     assert.equal(hasValidPathEncoding(path), true, path);
     assert.equal(proxy(request(path)).headers.get("x-middleware-next"), "1");
@@ -35,10 +39,10 @@ test("valid Unicode, encoded percent and separators retain their original paths"
 });
 
 test("the path check does not interpret query values or change locale routing", () => {
-  const response = proxy(request("/?query=%FF&imageUrl=%00"));
+  const response = proxy(request("/?query=%FF&imageUrl=%00&control=%C2%80%C2%9F"));
   const destination = new URL(response.headers.get("x-middleware-rewrite"));
   assert.equal(destination.pathname, "/en-US");
-  assert.equal(destination.search, "?query=%FF&imageUrl=%00");
+  assert.equal(destination.search, "?query=%FF&imageUrl=%00&control=%C2%80%C2%9F");
   assert.equal(proxy(request("/api/healthz?query=%")).headers.get("x-middleware-next"), "1");
   assert.equal(proxy(request("/en-US")).headers.get("set-cookie"), null);
 });

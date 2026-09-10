@@ -4,10 +4,11 @@ export function hasValidPathEncoding(pathname: string): boolean {
     const decoded = decodeURIComponent(pathname);
     // Control characters cannot name a public route and can break downstream
     // URL/header construction even when their percent encoding is well formed.
-    return !Array.from(decoded).some((character) => {
+    for (const character of decoded) {
       const code = character.charCodeAt(0);
-      return code < 0x20 || code === 0x7f;
-    });
+      if (code < 0x20 || (code >= 0x7f && code <= 0x9f)) return false;
+    }
+    return true;
   } catch {
     return false;
   }
