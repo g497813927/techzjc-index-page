@@ -13,10 +13,10 @@
     "test:sanitize-paths": "node --test ./scripts/sanitize-next-static-paths.test.mjs",
     "test:browser-security": "node --loader ./scripts/typescript-test-loader.mjs --test ./scripts/browser-security.test.mjs",
     "smoke:fc": "node ./scripts/fc-smoke.mjs",
-    "dev": "npm run prepare-env && next dev",
+    "dev": "npm run prepare-env && node --require ./src/app/scanner-404/trace-guard.cjs ./node_modules/next/dist/bin/next dev",
     "build": "npm run prepare-env && next build --webpack",
     "build:docker": "npm run prepare-env && next build --webpack && node ./scripts/sanitize-next-static-paths.mjs",
-    "start": "next start",
+    "start": "node --require ./src/app/scanner-404/trace-guard.cjs ./node_modules/next/dist/bin/next start",
     "lint": "eslint"
   },
   "dependencies": {

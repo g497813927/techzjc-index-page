@@ -42,5 +42,6 @@ ENV BLOG_CONTENT_REVISION=$BLOG_CONTENT_REVISION
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/src/app/scanner-404/trace-guard.cjs ./trace-guard.cjs
 EXPOSE 9000
-CMD ["node", "server.js"]
+CMD ["node", "--require", "./trace-guard.cjs", "server.js"]
