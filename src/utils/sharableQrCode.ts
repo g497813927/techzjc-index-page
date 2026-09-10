@@ -13,7 +13,9 @@ export async function createSharableQrCode(text: string): Promise<string | null>
   } catch (error) {
     // qrcode exposes no typed capacity error. Do not misclassify renderer failures.
     if (error instanceof Error &&
-        error.message === 'The amount of data is too big to be stored in a QR Code') {
+        /^the amount of data is too big to be stored in a qr code[.!]?$/i.test(
+          error.message.trim().replace(/\s+/g, ' '),
+        )) {
       return null;
     }
     throw error;

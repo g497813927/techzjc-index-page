@@ -81,3 +81,24 @@ test('F4 font failures are not classified as QR input errors', async (t) => {
     await rm(emptyDirectory, { recursive: true, force: true });
   }
 });
+
+
+test('F4 tolerates cosmetic capacity-message changes without swallowing other errors', async (t) => {
+  let failure;
+  t.mock.method(QRCode, 'toDataURL', async () => { throw failure; });
+  for (const message of [
+    'The amount of data is too big to be stored in a QR Code.',
+    '  THE AMOUNT OF DATA IS TOO BIG TO BE STORED IN A QR CODE!  ',
+    'The amount of data is too big\n to be stored in a QR Code',
+  ]) {
+    failure = new Error(message);
+    assert.equal(await createSharableQrCode('valid text'), null);
+  }
+  for (const message of [
+    'QR Code renderer failed',
+    'The amount of data is too big to be stored in a QR Code renderer buffer',
+  ]) {
+    failure = new Error(message);
+    await assert.rejects(createSharableQrCode('valid text'), error => error === failure);
+  }
+});
