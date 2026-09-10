@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import http from "node:http";
 import https from "node:https";
 import net from "node:net";
@@ -9,6 +10,67 @@ import { test } from "node:test";
 
 const require = createRequire(import.meta.url);
 require("../../src/app/scanner-404/trace-guard.cjs");
+
+for (const mode of ["native", "non-enumerable"]) {
+  test(`the guard preserves inherited emit enumeration (${mode})`, () => {
+    execFileSync(process.execPath, ["--input-type=commonjs", "--eval", `
+      const assert = require("node:assert/strict");
+      const { EventEmitter } = require("node:events");
+      const http = require("node:http");
+      const https = require("node:https");
+      if (process.argv[2] === "non-enumerable") {
+        Object.defineProperty(EventEmitter.prototype, "emit", { enumerable: false });
+      }
+      const enumerable = Object.getOwnPropertyDescriptor(EventEmitter.prototype, "emit").enumerable;
+      const prototypes = [http.Server.prototype, https.Server.prototype];
+      const servers = [http.createServer(), https.createServer()];
+      function enumerableKeys(value) {
+        const keys = [];
+        for (const key in value) keys.push(key);
+        return keys.sort();
+      }
+      const subjects = [...prototypes, ...servers];
+      const before = subjects.map(enumerableKeys);
+      for (const keys of before) assert.equal(keys.includes("emit"), enumerable);
+
+      require(process.argv[1]);
+
+      subjects.forEach((subject, index) => {
+        assert.deepEqual(enumerableKeys(subject), before[index]);
+      });
+      for (const prototype of prototypes) {
+        assert.equal(Object.hasOwn(prototype, "emit"), true);
+        assert.equal(Object.getOwnPropertyDescriptor(prototype, "emit").enumerable, enumerable);
+      }
+      for (const server of servers) {
+        let received;
+        server.on("ordinary-event", function (...args) {
+          assert.equal(this, server);
+          received = args;
+        });
+        assert.equal(server.emit("ordinary-event", 42, "payload"), true);
+        assert.deepEqual(received, [42, "payload"]);
+        assert.equal(server.emit("unused-event"), false);
+
+        let dispatched = false;
+        let resumed = false;
+        let ended = false;
+        server.on("request", () => { dispatched = true; });
+        assert.equal(server.emit("request", {
+          method: "TRACE", resume() { resumed = true; },
+        }, {
+          writeHead(status) { assert.equal(status, 404); },
+          end() { ended = true; },
+        }), true);
+        assert.equal(dispatched, false);
+        assert.equal(resumed && ended, true);
+      }
+    `, require.resolve("../../src/app/scanner-404/trace-guard.cjs"), mode], {
+      encoding: "utf8",
+      timeout: 10_000,
+    });
+  });
+}
 
 test("TRACE is rejected before the first listener and does not disclose input", async () => {
   const received = [];

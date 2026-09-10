@@ -8,8 +8,17 @@ const installed = Symbol.for("techzjc.trace-request-guard");
 for (const prototype of [http.Server.prototype, https.Server.prototype]) {
   if (Object.hasOwn(prototype, installed)) continue;
   const emit = prototype.emit;
-  Object.defineProperty(prototype, installed, { value: true });
-  prototype.emit = function (event, ...args) {
+  // Preserve the original method's enumerability, including inherited methods.
+  // EventEmitter.emit is enumerable in current Node releases; it need not be
+  // enumerable in another runtime or after an earlier instrumentation preload.
+  let emitOwner = prototype;
+  while (emitOwner && !Object.hasOwn(emitOwner, "emit")) {
+    emitOwner = Object.getPrototypeOf(emitOwner);
+  }
+  const enumerable = emitOwner
+    ? Object.getOwnPropertyDescriptor(emitOwner, "emit").enumerable
+    : false;
+  const guardedEmit = function (event, ...args) {
     if (event === "upgrade" && args[0]?.method === "TRACE") {
       // Upgrade requests receive a socket rather than a ServerResponse.
       args[1].end("HTTP/1.1 404 Not Found\r\nConnection: close\r\nCache-Control: no-store, max-age=0\r\nContent-Length: 0\r\nX-Content-Type-Options: nosniff\r\n\r\n");
@@ -29,4 +38,8 @@ for (const prototype of [http.Server.prototype, https.Server.prototype]) {
     }
     return emit.call(this, event, ...args);
   };
+  Object.defineProperty(prototype, "emit", {
+    value: guardedEmit, enumerable, writable: true, configurable: true,
+  });
+  Object.defineProperty(prototype, installed, { value: true });
 }
