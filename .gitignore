@@ -48,3 +48,8 @@ public/LICENSES.json
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# Local agent state
+.agents/
+.codex/
+.qoder/
