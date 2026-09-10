@@ -1,0 +1,21 @@
+{
+  "package": "next",
+  "version": "16.3.0",
+  "description": "Keep the prerender route matcher input encoded so dynamic parameters are decoded exactly once.",
+  "files": [
+    {
+      "path": "dist/build/templates/app-page-runtime.js",
+      "from": "routeModule.match(resolvedPathname, prerenderManifest)",
+      "to": "routeModule.match(prepareResult.encodedResolvedPathname, prerenderManifest)",
+      "beforeSha256": "379ec94e6493f454cf8f21ead0bf43f366f911ba9f25b5e12e4fde0401dcca6e",
+      "afterSha256": "6338b0fd93a7999a44793db782c1a9ce05b24d4c50ac27682f66b1589c08d3a3"
+    },
+    {
+      "path": "dist/esm/build/templates/app-page-runtime.js",
+      "from": "routeModule.match(resolvedPathname, prerenderManifest)",
+      "to": "routeModule.match(prepareResult.encodedResolvedPathname, prerenderManifest)",
+      "beforeSha256": "3d3338d5bbd34a298d14026b385ac782153ef36a5068849bdac96beff0fc4a29",
+      "afterSha256": "ff630f7f7d94c6f06e4670c8d9c303332e117da5460ac78234fc3164cdb5bac3"
+    }
+  ]
+}

@@ -7,6 +7,8 @@ RUN apk add --no-cache libc6-compat
 FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
+COPY scripts/patch-next-prerender.mjs ./scripts/patch-next-prerender.mjs
+COPY patches/next-16.3.0-prerender.json ./patches/next-16.3.0-prerender.json
 
 RUN npm ci --omit=optional
 RUN npm install lightningcss --no-save
