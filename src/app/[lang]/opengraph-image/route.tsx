@@ -1,3 +1,5 @@
+import { getDictionary as getImageDictionary } from "../dictionaries";
+import { decodeImageDataUrl } from "@/utils/imageData.server";
 import 'server-only';
 import { ImageResponse } from "next/og";
 import { readFile } from 'node:fs/promises'
@@ -38,7 +40,10 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   } else {
     let safeURL: string | Response;
     if (background_image.startsWith("data:image/")) {
-      safeURL = encodeURI(background_image);
+      const dict = await getImageDictionary(lang);
+      const image = await decodeImageDataUrl(background_image, dict.image_errors.invalid_data);
+      if (image instanceof Response) return image;
+      safeURL = `data:${image.contentType};base64,${image.data.toString("base64")}`;
     } else {
       safeURL = convertToSafeImageUrl(background_image);
     }

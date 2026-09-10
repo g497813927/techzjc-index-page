@@ -56,30 +56,28 @@ export function convertToSafeImageUrl(urlString: string): string | Response {
   if (!isSafeImageUrl(urlString)) {
     return new Response("Unsafe image URL", { status: 400 });
   } else if (urlString.startsWith("data:image/")) {
-    // Check if data URL is too large (e.g. >5MB) to prevent DoS
-    const base64Data = urlString.split(",")[1] || "";
-    const byteLength = (base64Data.length * 3) / 4; // Approximate byte length of base64 data
-    if (byteLength > 5 * 1024 * 1024) { // 5MB limit
-      return new Response("Image size exceeds limit", { status: 413 });
-    }
-    // Check if it's a valid base64 string
-    try {
-        atob(base64Data);
-    } catch {
-        return new Response("Invalid base64 image data", { status: 400 });
-    }
-    // Then, check its type (allow only jpeg/png)
-    const mimeType = urlString.match(/^data:(image\/(jpeg|png));base64,/)?.[1];
-    if (!mimeType) {
+    const prefix = urlString.match(/^data:(image\/(jpeg|png));base64,/);
+    if (!prefix) {
       return new Response("Unsupported image type", { status: 415 });
     }
-    const safeBase64Data = base64Data.replace(/[^A-Za-z0-9+/=]/g, ""); // Sanitize base64 data
-    // Retrieve the sanitized MIME type and hardcode it in the returned data URL to prevent any tampering
-    if (mimeType === "image/jpeg" || mimeType === "image/png") {
-        return `data:${mimeType};base64,${safeBase64Data}`;
-    } else {
-        return new Response("Unsupported image type", { status: 415 });
+    // Keep this helper browser-safe. Actual image decoding happens on the server.
+    const base64Data = urlString.slice(prefix[0].length).replace(/[\t\n\f\r ]/g, "");
+    const maxBytes = 5 * 1024 * 1024;
+    if (base64Data.length > Math.ceil(maxBytes / 3) * 4) {
+      return new Response("Image size exceeds limit", { status: 413 });
     }
+    try {
+      const byteLength = atob(base64Data).length;
+      if (byteLength === 0) {
+        return new Response("Invalid base64 image data", { status: 400 });
+      }
+      if (byteLength > maxBytes) {
+        return new Response("Image size exceeds limit", { status: 413 });
+      }
+    } catch {
+      return new Response("Invalid base64 image data", { status: 400 });
+    }
+    return `data:${prefix[1]};base64,${base64Data}`;
   } else {
     const sanitizedURL = SantizeURL(urlString);
     if (!sanitizedURL) {
