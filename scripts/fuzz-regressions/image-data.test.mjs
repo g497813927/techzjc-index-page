@@ -88,10 +88,17 @@ for (const [name, handler, parameter] of routes) {
     }
   });
 
-  test(`${name} localizes invalid decoded image data`, async () => {
-    const response = await requestRoute(name, handler, parameter, dataUrl("png", Buffer.from("invalid")), "zh-CN");
-    assert.equal(response.status, 400);
-    assert.equal(await response.text(), "图片数据无效");
+  test(`${name} localizes syntax and decoding errors while preserving size and type errors`, async () => {
+    for (const [lang, invalidDataMessage] of [["en-US", "Invalid image data"], ["zh-CN", "图片数据无效"]]) {
+      for (const [label, input, status] of cases) {
+        const response = await requestRoute(name, handler, parameter, input, lang);
+        const context = `${lang}: ${label}`;
+        assert.equal(response.status, status, context);
+        const expectedMessage = status === 400 ? invalidDataMessage
+          : status === 413 ? "Image size exceeds limit" : "Unsupported image type";
+        assert.equal(await response.text(), expectedMessage, context);
+      }
+    }
   });
 }
 

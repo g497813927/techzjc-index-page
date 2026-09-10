@@ -10,7 +10,11 @@ export async function decodeImageDataUrl(
   outputFormat?: "jpeg",
 ): Promise<{ data: Buffer; contentType: string } | Response> {
   const safeUrl = convertToSafeImageUrl(imageUrl);
-  if (safeUrl instanceof Response) return safeUrl;
+  if (safeUrl instanceof Response) {
+    return safeUrl.status === 400
+      ? new Response(invalidDataMessage, { status: 400 })
+      : safeUrl;
+  }
   if (!safeUrl.startsWith("data:image/")) {
     return new Response(invalidDataMessage, { status: 400 });
   }
