@@ -102,6 +102,9 @@
             }
         }
     },
+    "opengraph_image": {
+        "invalid_dimensions": "Width and height must be positive whole numbers written with decimal digits, no greater than 4096 each, with at most 4194304 pixels in total."
+    },
     "navbar": {
         "blog": "Blog",
         "toggle_theme": {
