@@ -1,4 +1,5 @@
 import "server-only";
+import { Buffer } from "node:buffer";
 import sharp from "sharp";
 import { sanitizeRemoteImageUrl } from "./imageUtils";
 
@@ -48,10 +49,11 @@ export async function fetchRemoteImage(imageUrl: string): Promise<Response> {
     return new Response("Unsafe image URL", { status: 400 });
   }
 
-  let target: URL = initialTarget;
-  target.pathname = encodeURI(target.pathname);
-  const signal = AbortSignal.timeout(10_000);
   try {
+    let target: URL = initialTarget;
+    // Preserve the existing initial URL encoding; redirects retain their escapes.
+    target.pathname = encodeURI(target.pathname);
+    const signal = AbortSignal.timeout(10_000);
     for (let redirects = 0; redirects <= 5; redirects++) {
       const response = await fetch(target, { redirect: "manual", signal });
       if (!redirectStatuses.has(response.status)) {

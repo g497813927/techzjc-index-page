@@ -450,3 +450,29 @@ test('convert rejects remote and inline images whose JPEG output exceeds the byt
     });
   }
 });
+
+test('initial malformed escapes and lone surrogates keep controlled responses and trusted destinations', async t => {
+  const cases = [
+    ['bare percent', '/bare%.png', '/bare%25.png'],
+    ['short escape', '/short%2.png', '/short%252.png'],
+    ['nonhex escape', '/bad%GG.png', '/bad%25GG.png'],
+    ['incomplete UTF-8 escape', '/incomplete%E0%A4%A.png', '/incomplete%25E0%25A4%25A.png'],
+    ['encoded surrogate', '/encoded%ED%A0%80.png', '/encoded%25ED%25A0%2580.png'],
+    ['lone high surrogate', '/high\uD800.png', '/high%25EF%25BF%25BD.png'],
+    ['lone low surrogate', '/low\uDC00.png', '/low%25EF%25BF%25BD.png'],
+    ['existing valid escapes', '/escaped%20image%2Fname.png', '/escaped%2520image%252Fname.png'],
+  ];
+  const requests = interceptFetch(t, () => new Response(images.png, {
+    headers: { 'Content-Type': 'image/png' },
+  }));
+  for (const [label, path, expectedPath] of cases) {
+    await t.test(label, async () => {
+      requests.length = 0;
+      // Pass raw UTF-16 directly to the boundary: Request/searchParams would
+      // normalize lone surrogates before the URL policy gets to inspect them.
+      await assertImage(await fetchRemoteImage(`https://techzjc.com${path}`), 'png');
+      assert.deepEqual(requests.map(({ url }) => url.href), [`https://techzjc.com${expectedPath}`]);
+      assertGuardedRequests(requests);
+    });
+  }
+});
