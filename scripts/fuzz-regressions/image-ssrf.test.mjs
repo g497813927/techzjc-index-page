@@ -251,9 +251,10 @@ for (const route of routes) {
         const response = await requestRoute(route, `${path}/redirect.${extension}`);
         // ImageResponse is lazy: consume its stream before checking the private
         // server, otherwise unguarded image-renderer fetches can escape this test.
-        await response.arrayBuffer();
+        const body = await response.text();
         assert.equal(privateRequests, 0, 'redirect must not contact the private server');
-        assert.equal(response.status, extension === 'webp' && route[0] !== 'convert' ? 500 : 502);
+        assert.equal(response.status, 502);
+        assert.equal(body, 'Failed to fetch image');
         assert.equal(requests.length - before, 2);
         assertGuardedRequests(requests);
       });
@@ -342,12 +343,7 @@ test('all three routes stop oversized remote JPG and WebP bodies before renderin
         const { response, state } = oversizedStream();
         interceptFetch(subtest, () => response);
         const result = await requestRoute(route, `https://techzjc.com/oversized.${extension}`);
-        if (extension === 'webp' && route[0] !== 'convert') {
-          assert.equal(result.status, 500);
-          assert.equal(await result.text(), 'Failed to convert background image');
-        } else {
-          await assertTooLarge(result);
-        }
+        await assertTooLarge(result);
         assert.deepEqual(state, { pulls: 6, cancellations: 1 });
       });
     }

@@ -33,7 +33,7 @@ async function readBoundedImage(response: Response): Promise<Response> {
   } finally {
     reader.releaseLock();
   }
-  return new Response(new Uint8Array(Buffer.concat(chunks, size)), {
+  return new Response(Buffer.concat(chunks, size), {
     status: response.status,
     headers: { "Content-Type": response.headers.get("content-type") ?? "application/octet-stream" },
   });

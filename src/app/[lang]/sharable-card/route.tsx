@@ -39,9 +39,11 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png") && !background_image.startsWith("data:image/")) {
     try {
-      background_image = await convertToJpegBase64(
+      const convertedImage = await convertToJpegBase64(
         background_image
       );
+      if (convertedImage instanceof Response) return convertedImage;
+      background_image = convertedImage;
     } catch {
       return new Response(`Failed to convert background image`, {
         status: 500,
