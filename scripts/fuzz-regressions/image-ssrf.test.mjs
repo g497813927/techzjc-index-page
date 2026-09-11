@@ -413,3 +413,40 @@ test('a compact palette PNG cannot expand into an oversized inline image', async
   interceptFetch(t, () => new Response(compact, { headers: { 'Content-Type': 'image/png' } }));
   await assertTooLarge(await remoteImageToDataUrl('https://techzjc.com/palette.png'));
 });
+
+test('convert rejects remote and inline images whose JPEG output exceeds the byte limit', async t => {
+  const width = 3500;
+  const pixels = Buffer.alloc(width * width * 3);
+  const palette = [[0, 0, 0], [255, 255, 255], [255, 0, 255], [0, 255, 0]];
+  let seed = 1;
+  for (let i = 0; i < width * width; i++) {
+    seed ^= seed << 13;
+    seed ^= seed >>> 17;
+    seed ^= seed << 5;
+    const color = palette[seed & 3];
+    pixels[i * 3] = color[0];
+    pixels[i * 3 + 1] = color[1];
+    pixels[i * 3 + 2] = color[2];
+  }
+  // Four high-frequency colors compress well without loss, but produce a much
+  // larger quality-80 JPEG. Share the deterministic pixels between both inputs.
+  const image = sharp(pixels, { raw: { width, height: width, channels: 3 } });
+  const remoteWebp = await image.clone().webp({ lossless: true, effort: 0 }).toBuffer();
+  const inlinePng = await image.clone().png({ palette: true, colours: 4, dither: 0 }).toBuffer();
+  for (const [label, input] of [['remote WebP', remoteWebp], ['inline PNG', inlinePng]]) {
+    await t.test(label, async subtest => {
+      assert.ok(input.length < maxImageBytes, 'input must pass the download/inline byte budget');
+      const jpeg = await sharp(input).jpeg({ quality: 80 }).toBuffer();
+      assert.ok(jpeg.length > maxImageBytes, 'converted JPEG must exceed the output byte budget');
+      const remote = label === 'remote WebP';
+      const requests = interceptFetch(subtest, () => new Response(input, {
+        headers: { 'Content-Type': 'image/webp' },
+      }));
+      const url = remote ? 'https://techzjc.com/expanding.webp'
+        : `data:image/png;base64,${input.toString('base64')}`;
+      await assertTooLarge(await requestRoute(routes[0], url));
+      assert.equal(requests.length, remote ? 1 : 0);
+      assertGuardedRequests(requests);
+    });
+  }
+});
