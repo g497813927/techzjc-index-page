@@ -101,4 +101,6 @@ zero-width IPv6 `::` compression; its accommodation is narrowly checked in the
 worker and does not suppress other properties.
 
 Run `npm run test:fuzz-runner` for CLI, lifecycle, report, and interruption checks.
-The production regressions also remain part of `npm test`.
+`npm run test:fuzz-production` builds the real isolated site, runs an HTTP batch,
+and verifies reports, final health, and cleanup. Both are included in `npm test`,
+alongside the existing production regressions.
