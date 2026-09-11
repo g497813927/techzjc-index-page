@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -86,6 +87,17 @@ test("batch reports accumulate helper properties, HTTP statuses, and findings", 
     } });
 });
 
+test("a failed HTTP baseline is retained even before generated cases begin", () => {
+  const summary = emptySummary();
+  mergeBatch(summary, "http", { total: 0, failed: 1, overallPassed: false,
+    groups: {}, baselineResults: [{ path: "/api/healthz", status: 500, passed: false }] });
+  assert.equal(summary.batches, 1);
+  assert.equal(summary.failed, 1);
+  assert.equal(summary.baselineChecks, 1);
+  assert.equal(summary.httpCases, 0);
+  assert.deepEqual(summary.coverage, {});
+});
+
 test("malformed worker reports are rejected without counting incomplete work", () => {
   for (const report of [
     { ...helperReport(), totalCases: 0 }, { ...helperReport(), totalCases: NaN },
@@ -111,6 +123,55 @@ test("child output retains only the bounded tail", async (t) => {
   assert.equal(processInfo.log(), "x".repeat(61) + "END");
 });
 
+test("both HTTP workers accept bracketed IPv6 loopback and reach the server", { timeout: 15_000 }, async (t) => {
+  const requests = [];
+  const server = createServer((request, response) => {
+    requests.push({ path: request.url, host: request.headers.host, address: request.socket.remoteAddress });
+    response.writeHead(503, { "content-type": "text/plain", connection: "close" });
+    response.end("Intentional unavailable baseline for IPv6 transport verification");
+  });
+  try {
+    await new Promise((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(0, "::1", () => { server.removeListener("error", reject); resolve(); });
+    });
+  } catch (error) {
+    if (error.code === "EAFNOSUPPORT" || error.code === "EADDRNOTAVAIL") {
+      t.skip(`IPv6 loopback binding is unavailable: ${error.code}`);
+      return;
+    }
+    throw error;
+  }
+  t.after(() => new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve())));
+  const origin = `http://[::1]:${server.address().port}`;
+  assert.equal(new URL(origin).hostname, "[::1]");
+  for (const suite of ["http", "extended-http"]) {
+    await t.test(suite, async (t) => {
+      const start = requests.length;
+      const worker = managed(t, [join(root, `scripts/fuzz/${suite}.mjs`), "--base-url", origin, "--seed", "1", "--cases", "0", "--summary-only"]);
+      assert.equal(await waitChild(worker, `${suite} IPv6 baseline`, 5000), 1, worker.log());
+      const report = JSON.parse(worker.log());
+      assert.equal(report.suite, suite);
+      assert.equal(report.baseUrl, origin);
+      assert.equal(report.total, 0, "The intentionally failed baseline must stop the fuzz corpus");
+      assert.equal(report.failed, 1);
+      assert.equal(report.overallPassed, false);
+      assert.equal(report.baselineResults.length, 1);
+      assert.equal(report.baselineResults[0].status, 503);
+      assert.equal(report.baselineResults[0].passed, false);
+      assert.equal(report.baselineResults[0].error, undefined);
+      assert.equal(report.failures[0].result.status, 503);
+      assert.ok(report.failures[0].reasons.includes("server error 503"));
+      assert.ok(requests.length > start, "The worker must connect through IPv6, not reject the origin");
+      for (const request of requests.slice(start)) {
+        assert.equal(request.path, "/api/healthz");
+        assert.equal(request.host, new URL(origin).host);
+        assert.equal(request.address, "::1");
+      }
+    });
+  }
+});
+
 test("child waits detect timeout, abort, and signal exits and allow cleanup", async (t) => {
   await t.test("timeout", async (t) => {
     const processInfo = managed(t, ["-e", "setInterval(() => {}, 1000)"]);
@@ -134,6 +195,44 @@ test("child waits detect timeout, abort, and signal exits and allow cleanup", as
   });
 });
 
+test("cleanup retries transient group denial but reports persistent denial", { timeout: 4000 }, async (t) => {
+  await t.test("a closed parent does not hide transient descendant cleanup errors", async () => {
+    const signals = [];
+    const groupAttempts = { SIGTERM: 0, SIGKILL: 0 };
+    const processInfo = {
+      child: { pid: 123, exitCode: 0, signalCode: null },
+      done: Promise.resolve({ code: 0, signal: null }),
+      kill(signal) {
+        signals.push(signal);
+        if (++groupAttempts[signal] <= 2) {
+          throw Object.assign(new Error("Group contains an unreaped descendant"), { code: "EPERM" });
+        }
+        // The managed kill API returns normally when the group is gone (ESRCH).
+      },
+    };
+    await stopChild(processInfo, 1);
+    assert.equal(signals[0], "SIGTERM");
+    assert.deepEqual(groupAttempts, { SIGTERM: 3, SIGKILL: 3 }, "Cleanup must retry both signals instead of swallowing EPERM");
+  });
+  await t.test("persistent denial fails cleanup within three seconds", async () => {
+    let groupAttempts = 0;
+    const processInfo = {
+      child: { pid: 123, exitCode: 0, signalCode: null },
+      done: Promise.resolve({ code: 0, signal: null }),
+      kill(signal) {
+        if (signal === "SIGKILL") {
+          groupAttempts += 1;
+          throw Object.assign(new Error("Persistent group denial"), { code: "EPERM" });
+        }
+      },
+    };
+    const started = performance.now();
+    await assert.rejects(stopChild(processInfo, 1), { code: "EPERM" });
+    assert.ok(groupAttempts > 1);
+    assert.ok(performance.now() - started < 3000, "Cleanup retry must remain bounded");
+  });
+});
+
 test("cleanup stops a child and its process-group descendant", { skip: process.platform === "win32", timeout: 15_000 }, async (t) => {
   const program = `
     const { spawn } = require('node:child_process');
@@ -154,24 +253,28 @@ test("cleanup stops a child and its process-group descendant", { skip: process.p
   }, "Descendant survived process-group cleanup", 3000);
 });
 
-test("a one-second helper campaign completes and saves reproducible counts", { timeout: 30_000 }, async (t) => {
-  const output = await outputDirectory(t);
-  const processInfo = managed(t, [runner, "--suite", "helpers", "--duration", "1s", "--cases", "1", "--seed", "123", "--output", output], { cwd: root });
-  assert.equal(await waitChild(processInfo, "timed helper campaign", 25_000), 0, processInfo.log());
-  const summary = JSON.parse(await readFile(join(output, "summary.json"), "utf8"));
-  assert.equal(summary.status, "passed");
-  assert.equal(summary.cleanedUp, true);
-  assert.equal(summary.signal, null);
-  assert.equal(summary.failed, 0);
-  assert.ok(summary.batches >= 1);
-  assert.equal(summary.helperCases, summary.batches * 62);
-  assert.equal(summary.propertyChecks, summary.batches * 140);
-  assert.equal(summary.httpCases, 0);
-  assert.equal(summary.options.seed, 123);
-  assert.equal(summary.activeBatch, null);
-  const last = JSON.parse(await readFile(join(output, "last-helpers.json"), "utf8"));
-  assert.equal(last.seed, summary.lastBatch.seed);
-  assert.equal(last.overallPassed, true);
+test("timed helper campaigns complete at least one batch and save reproducible counts", { timeout: 30_000 }, async (t) => {
+  for (const duration of ["1s", "0.001s"]) {
+    await t.test(duration, async (t) => {
+      const output = await outputDirectory(t);
+      const processInfo = managed(t, [runner, "--suite", "helpers", "--duration", duration, "--cases", "1", "--seed", "123", "--output", output], { cwd: root });
+      assert.equal(await waitChild(processInfo, "timed helper campaign", 25_000), 0, processInfo.log());
+      const summary = JSON.parse(await readFile(join(output, "summary.json"), "utf8"));
+      assert.equal(summary.status, "passed");
+      assert.equal(summary.cleanedUp, true);
+      assert.equal(summary.signal, null);
+      assert.equal(summary.failed, 0);
+      assert.ok(summary.batches >= 1);
+      assert.equal(summary.helperCases, summary.batches * 62);
+      assert.equal(summary.propertyChecks, summary.batches * 140);
+      assert.equal(summary.httpCases, 0);
+      assert.equal(summary.options.seed, 123);
+      assert.equal(summary.activeBatch, null);
+      const last = JSON.parse(await readFile(join(output, "last-helpers.json"), "utf8"));
+      assert.equal(last.seed, summary.lastBatch.seed);
+      assert.equal(last.overallPassed, true);
+    });
+  }
 });
 
 test("Ctrl+C ends a forever helper campaign with saved counts and exit 130", { skip: process.platform === "win32", timeout: 30_000 }, async (t) => {

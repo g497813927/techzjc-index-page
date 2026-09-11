@@ -81,9 +81,9 @@ export function childProcess(args, { cwd, env, limit = LOG_LIMIT } = {}) {
       else process.kill(-child.pid, signal);
     } catch (error) {
       if (error.code === "ESRCH") return;
-      // A signal can race detached-process startup. Stop the owned child directly
-      // when its group is not yet signalable; stopChild retries the group after
-      // waiting, so descendants still receive the final escalation.
+      // On macOS an exited but not yet reaped child can make group signaling
+      // return EPERM before Node emits close. Signal the owned child directly;
+      // stopChild still retries the entire group after waiting for close.
       if (error.code === "EPERM" && child.exitCode === null && child.signalCode === null) {
         child.kill(signal);
         return;
@@ -97,12 +97,24 @@ export function childProcess(args, { cwd, env, limit = LOG_LIMIT } = {}) {
 
 export async function stopChild(processInfo, graceMs = 2000) {
   if (!processInfo?.child.pid) return;
-  processInfo.kill("SIGTERM");
+  // macOS can briefly return EPERM for a group containing only unreaped workers.
+  // Retry both signals; never treat a persistent denial as successful cleanup.
+  const signalGroup = async (signal) => {
+    const deadline = performance.now() + 2000;
+    for (;;) {
+      try { processInfo.kill(signal); return; }
+      catch (error) {
+        if (error.code !== "EPERM" || performance.now() >= deadline) throw error;
+        await new Promise((resolveDelay) => setTimeout(resolveDelay, 50));
+      }
+    }
+  };
+  await signalGroup("SIGTERM");
   let timer;
   await Promise.race([processInfo.done, new Promise((resolveDelay) => { timer = setTimeout(resolveDelay, graceMs); })]);
   clearTimeout(timer);
   // Kill the group even when its parent already exited: build workers may remain.
-  processInfo.kill("SIGKILL");
+  await signalGroup("SIGKILL");
   await processInfo.done;
 }
 
@@ -238,7 +250,10 @@ export async function run(options, root = ROOT) {
   const interrupt = (name) => {
     signalCount += 1;
     if (!signalName) { signalName = name; controller.abort(); }
-    for (const managed of processes) managed.kill(signalCount === 1 ? "SIGTERM" : "SIGKILL");
+    for (const managed of processes) {
+      try { managed.kill(signalCount === 1 ? "SIGTERM" : "SIGKILL"); }
+      catch { /* stopChild retries and verifies cleanup in finally. */ }
+    }
   };
   const onInt = () => interrupt("SIGINT"), onTerm = () => interrupt("SIGTERM");
   process.on("SIGINT", onInt); process.on("SIGTERM", onTerm);
