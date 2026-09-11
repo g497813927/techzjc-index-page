@@ -5,7 +5,7 @@
   "scripts": {
     "generate-licenses": "node ./scripts/generate-licenses.mjs",
     "prepare-env": "node ./scripts/prepare-env.mjs && npm run generate-licenses",
-    "test": "npm run test:prepare-env && npm run test:scanner-404 && npm run test:fc-smoke && npm run test:sanitize-paths && npm run test:browser-security && npm run test:fuzz-regressions && npm run test:next-prerender-patch && npm run test:blog-percent-http",
+    "test": "npm run test:prepare-env && npm run test:scanner-404 && npm run test:fc-smoke && npm run test:sanitize-paths && npm run test:browser-security && npm run test:fuzz-regressions && npm run test:next-prerender-patch && npm run test:blog-percent-http && npm run test:fuzz-runner",
     "test:fuzz-regressions": "node ./scripts/fuzz-regressions/run.mjs",
     "test:prepare-env": "node ./scripts/prepare-env.test.mjs",
     "test:scanner-404": "node --test ./scripts/scanner-404.test.mjs",
@@ -20,7 +20,11 @@
     "lint": "eslint",
     "postinstall": "node ./scripts/patch-next-prerender.mjs",
     "test:next-prerender-patch": "node --test ./scripts/patch-next-prerender.test.mjs",
-    "test:blog-percent-http": "node ./scripts/fuzz-regressions/blog-percent-fixture.mjs"
+    "test:blog-percent-http": "node ./scripts/fuzz-regressions/blog-percent-fixture.mjs",
+    "fuzz": "node ./scripts/fuzz.mjs",
+    "fuzz:http": "node ./scripts/fuzz.mjs --suite http",
+    "fuzz:helpers": "node ./scripts/fuzz.mjs --suite helpers",
+    "test:fuzz-runner": "node --test ./scripts/fuzz-runner.test.mjs"
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.8.10",

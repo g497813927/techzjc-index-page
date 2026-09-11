@@ -53,3 +53,6 @@ public/LICENSES.json
 .agents/
 .codex/
 .qoder/
+
+# Generated fuzz campaign reports
+/reports/fuzz/runs/
