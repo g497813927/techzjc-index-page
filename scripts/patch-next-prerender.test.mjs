@@ -63,7 +63,7 @@ test("completes a partially applied installation without changing the known patc
 test("rejects an unsupported Next.js version before changing either file", (t) => {
   const f = fixture(t);
   writeFileSync(join(f.nextDirectory, "package.json"), JSON.stringify({ name: "next", version: "16.3.1" }));
-  assert.throws(() => applyNextPrerenderPatch(f.nextDirectory, f.recipe), /Expected next@16\.3\.0, found next@16\.3\.1/);
+  assert.throws(() => applyNextPrerenderPatch(f.nextDirectory, f.recipe), /Expected next@16\.3\.4, found next@16\.3\.1/);
   assert.deepEqual(f.snapshot(), f.originals);
 });
 
