@@ -1,4 +1,4 @@
-export function sanitizeRemoteImageUrl(urlString: string): string | false {
+export function sanitizeRemoteImageUrl(urlString: string): URL | false {
   let imageURLObj: URL;
   try {
     imageURLObj = new URL(urlString);
@@ -40,7 +40,11 @@ export function sanitizeRemoteImageUrl(urlString: string): string | false {
     return false;
   }
   const safePort = port === "80" ? ":80" : port === "443" ? ":443" : "";
-  return `${protocol}//${hostname}${safePort}${path}`;
+  const safeUrl = new URL(`${protocol}//${hostname}${safePort}`);
+  // Assign the path as a component, never resolve it as a relative URL where
+  // a leading double slash could replace the trusted authority.
+  safeUrl.pathname = path;
+  return safeUrl;
 }
 
 export function isSafeImageUrl(urlString: string): boolean {
@@ -49,7 +53,7 @@ export function isSafeImageUrl(urlString: string): boolean {
     return true;
   }
   const sanitizedURL = sanitizeRemoteImageUrl(urlString);
-  return typeof sanitizedURL === "string";
+  return sanitizedURL !== false;
 }
 
 export function convertToSafeImageUrl(urlString: string): string | Response {
@@ -83,9 +87,6 @@ export function convertToSafeImageUrl(urlString: string): string | Response {
     if (!sanitizedURL) {
       return new Response("Invalid image URL", { status: 400 });
     }
-    if (typeof sanitizedURL !== "string") {
-      return new Response("Unsafe image URL", { status: 400 });
-    }
-    return encodeURI(sanitizedURL);
+    return encodeURI(sanitizedURL.href);
   }
 }

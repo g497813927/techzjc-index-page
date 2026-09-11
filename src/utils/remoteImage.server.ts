@@ -14,7 +14,8 @@ export async function fetchRemoteImage(imageUrl: string): Promise<Response> {
     return new Response("Unsafe image URL", { status: 400 });
   }
 
-  let target: string = encodeURI(initialTarget);
+  let target: URL = initialTarget;
+  target.pathname = encodeURI(target.pathname);
   const signal = AbortSignal.timeout(10_000);
   try {
     for (let redirects = 0; redirects <= 5; redirects++) {
@@ -33,7 +34,8 @@ export async function fetchRemoteImage(imageUrl: string): Promise<Response> {
       if (!safeDestination) return failedImage();
       // Keep redirect query strings and existing escapes, as native fetch does.
       // Only the validated path/query may vary; the authority is a fixed literal.
-      target = safeDestination + destination.search;
+      safeDestination.search = destination.search;
+      target = safeDestination;
     }
   } catch {
     return failedImage();
