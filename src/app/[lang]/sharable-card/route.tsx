@@ -7,7 +7,8 @@ import { join } from 'node:path'
 import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
-import { convertToSafeImageUrl, isSafeImageUrl } from '@/utils/imageUtils';
+import { isSafeImageUrl } from '@/utils/imageUtils';
+import { remoteImageToDataUrl } from '@/utils/remoteImage.server';
 import { createSharableQrCode } from '@/utils/sharableQrCode';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
@@ -39,8 +40,6 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png") && !background_image.startsWith("data:image/")) {
     try {
       background_image = await convertToJpegBase64(
-        req,
-        lang,
         background_image
       );
     } catch {
@@ -56,7 +55,7 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
       if (image instanceof Response) return image;
       safeURL = `data:${image.contentType};base64,${image.data.toString("base64")}`;
     } else {
-      safeURL = convertToSafeImageUrl(background_image);
+      safeURL = await remoteImageToDataUrl(background_image);
     }
     if (safeURL instanceof Response) {
       return safeURL; // Return the error response if URL is not safe

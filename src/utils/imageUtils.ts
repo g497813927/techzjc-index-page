@@ -1,4 +1,4 @@
-function SantizeURL(urlString: string): string | boolean {
+export function sanitizeRemoteImageUrl(urlString: string): string | false {
   let imageURLObj: URL;
   try {
     imageURLObj = new URL(urlString);
@@ -7,28 +7,27 @@ function SantizeURL(urlString: string): string | boolean {
   }
 
   // Validate URL components to mitigate SSRF
-  const protocol = imageURLObj.protocol;
+  const protocol = imageURLObj.protocol === "https:" ? "https:"
+    : imageURLObj.protocol === "http:" ? "http:" : null;
   const rawHostname = imageURLObj.hostname;
   const port = imageURLObj.port;
   const path = imageURLObj.pathname || "/";
 
   // Only allow http/https
-  if (protocol !== "http:" && protocol !== "https:") {
+  if (!protocol) {
     return false;
   }
 
   // Normalize hostname by removing any trailing dot
   const normalizedHostname = rawHostname.replace(/\.$/, "");
 
-  const whitelist_domains = [
-    "techzjc.com",
-    "static.techzjc.com",
-    "test-cn.techzjc.com",
-  ];
-
-  // Enforce hostname allow-list
-  if (!whitelist_domains.includes(normalizedHostname)) {
-    return false;
+  // Select a server-owned literal, never interpolate the supplied hostname.
+  let hostname: string;
+  switch (normalizedHostname) {
+    case "techzjc.com": hostname = "techzjc.com"; break;
+    case "static.techzjc.com": hostname = "static.techzjc.com"; break;
+    case "test-cn.techzjc.com": hostname = "test-cn.techzjc.com"; break;
+    default: return false;
   }
 
   // Disallow non-standard or explicit ports to avoid bypassing expected services
@@ -40,7 +39,8 @@ function SantizeURL(urlString: string): string | boolean {
   if (!path.startsWith("/") || path.includes("..")) {
     return false;
   }
-  return `${protocol}//${normalizedHostname}${port ? `:${port}` : ""}${path}`;
+  const safePort = port === "80" ? ":80" : port === "443" ? ":443" : "";
+  return `${protocol}//${hostname}${safePort}${path}`;
 }
 
 export function isSafeImageUrl(urlString: string): boolean {
@@ -48,7 +48,7 @@ export function isSafeImageUrl(urlString: string): boolean {
   if (urlString.startsWith("data:image/")) {
     return true;
   }
-  const sanitizedURL = SantizeURL(urlString);
+  const sanitizedURL = sanitizeRemoteImageUrl(urlString);
   return typeof sanitizedURL === "string";
 }
 
@@ -79,7 +79,7 @@ export function convertToSafeImageUrl(urlString: string): string | Response {
     }
     return `data:${prefix[1]};base64,${base64Data}`;
   } else {
-    const sanitizedURL = SantizeURL(urlString);
+    const sanitizedURL = sanitizeRemoteImageUrl(urlString);
     if (!sanitizedURL) {
       return new Response("Invalid image URL", { status: 400 });
     }

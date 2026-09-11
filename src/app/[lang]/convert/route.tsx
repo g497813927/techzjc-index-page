@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { convertToSafeImageUrl } from '@/utils/imageUtils';
+import { fetchRemoteImage } from '@/utils/remoteImage.server';
 import { decodeImageDataUrl } from '@/utils/imageData.server';
 import { getDictionary, hasLocale } from '../dictionaries';
 import { notFound } from 'next/navigation';
@@ -24,16 +24,10 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
         headers: { 'Content-Type': image.contentType },
       });
     }
-    const safeURL = convertToSafeImageUrl(imageUrl);
-    if (safeURL instanceof Response) {
-      return safeURL; // Return the error response if URL is not safe
-    }
-    console.log("Converting image from URL:", safeURL);
-
     // Fetch the WebP image
-    const response = await fetch(safeURL);
+    const response = await fetchRemoteImage(imageUrl);
     if (!response.ok) {
-      return new Response('Failed to fetch image', { status: 502 });
+      return response;
     }
     const webpBuffer = await response.arrayBuffer();
 
