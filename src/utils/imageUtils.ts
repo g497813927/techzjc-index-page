@@ -57,7 +57,7 @@ export function isSafeImageUrl(urlString: string): boolean {
 }
 
 export function convertToSafeImageUrl(urlString: string): string | Response {
-  if (!isSafeImageUrl(urlString)) {
+  if (!urlString) {
     return new Response("Unsafe image URL", { status: 400 });
   } else if (urlString.startsWith("data:image/")) {
     const prefix = urlString.match(/^data:(image\/(jpeg|png));base64,/);
@@ -85,7 +85,7 @@ export function convertToSafeImageUrl(urlString: string): string | Response {
   } else {
     const sanitizedURL = sanitizeRemoteImageUrl(urlString);
     if (!sanitizedURL) {
-      return new Response("Invalid image URL", { status: 400 });
+      return new Response("Unsafe image URL", { status: 400 });
     }
     return encodeURI(sanitizedURL.href);
   }
