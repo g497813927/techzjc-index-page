@@ -298,4 +298,7 @@ test("Ctrl+C ends a forever helper campaign with saved counts and exit 130", { s
   assert.ok(summary.batches >= 1);
   assert.equal(summary.helperCases, summary.batches * 62);
   assert.equal(summary.failed, 0);
+  const completed = JSON.parse(await readFile(join(output, "last-helpers.json"), "utf8"));
+  assert.equal(completed.overallPassed, true, "Interruption must preserve the latest completed worker report");
+  assert.equal(completed.seed, summary.lastBatch.seed);
 });

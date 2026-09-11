@@ -66,7 +66,10 @@ directory must be new so previous results cannot be overwritten.
 - `summary.json` is atomically updated after each batch: source commit, settings,
   elapsed time, completed counts, coverage, next seed, and stop reason.
 - `last-http.json`, `last-extended-http.json`, and `last-helpers.json` retain the
-  latest report per suite. A finding stops the run, preserving the failing inputs.
+  latest completed report per suite, atomically replaced only after a batch
+  finishes and its report validates. A finding stops the run, preserving the
+  failing inputs. `active-batch.json` may retain partial output after interruption
+  or a worker error; previous completed reports remain available.
 - `build.log`, `server.log`, and `worker.log` retain at most the last 2 MiB each.
 
 The runner retains aggregate totals and only the latest batch per suite, so

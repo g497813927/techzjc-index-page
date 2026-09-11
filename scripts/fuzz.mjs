@@ -312,17 +312,19 @@ export async function run(options, root = ROOT) {
         await startServer(); httpBatches = 0; summary.restarts += 1;
       }
       const output = join(options.output, `last-${suite}.json`);
-      await rm(output, { force: true });
+      const pendingOutput = join(options.output, "active-batch.json");
+      await rm(pendingOutput, { force: true });
       summary.activeBatch = { index: summary.batches, suite, seed, cases: options.cases };
       await snapshot();
-      const args = [join(root, `scripts/fuzz/${suite}.mjs`), "--seed", String(seed), "--cases", String(options.cases), "--output", output, "--summary-only"];
+      const args = [join(root, `scripts/fuzz/${suite}.mjs`), "--seed", String(seed), "--cases", String(options.cases), "--output", pendingOutput, "--summary-only"];
       if (suite !== "helpers") args.push("--base-url", summary.origin);
       current = launch(args, root);
       let code;
       try { code = await waitChild(current, `${suite} batch`, 120000, controller.signal); }
       finally { await stopChild(current); processes.delete(current); await writeFile(join(options.output, "worker.log"), current.log()); current = undefined; }
-      const report = JSON.parse(await readFile(output, "utf8"));
+      const report = JSON.parse(await readFile(pendingOutput, "utf8"));
       mergeBatch(summary, suite, report);
+      await rename(pendingOutput, output);
       summary.lastBatch = summary.activeBatch; summary.activeBatch = null;
       if (suite !== "helpers") httpBatches += 1;
       if (code !== 0 || !report.overallPassed) {
