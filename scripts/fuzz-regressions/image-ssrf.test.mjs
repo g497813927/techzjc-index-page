@@ -94,6 +94,8 @@ const forbiddenDirectUrls = [
   'https://techzjc.com@127.0.0.1/image.png',
   'https://techzjc.com:password@attacker.invalid/image.png',
   'https://techzjc.com:8443/image.png',
+  'https://techzjc.com:80/image.png',
+  'http://techzjc.com:443/image.png',
   'http://static.techzjc.com:0/image.png',
   'ftp://techzjc.com/image.png',
   'file:///etc/passwd',
@@ -123,6 +125,8 @@ const forbiddenRedirectLocations = [
   ['protocol-relative private host', '//127.0.0.1/private.png'],
   ['userinfo host confusion', 'https://techzjc.com:password@attacker.invalid/private.png'],
   ['nonstandard port', 'https://techzjc.com:8443/private.png'],
+  ['HTTPS on HTTP port', 'https://techzjc.com:80/private.png'],
+  ['HTTP on HTTPS port', 'http://techzjc.com:443/private.png'],
   ['malformed URL', 'http://[::1'],
   ['file URL', 'file:///etc/passwd'],
   ['image data URL', `data:image/png;base64,${images.png.toString('base64')}`],
@@ -161,7 +165,7 @@ test('five trusted redirects preserve relative URLs, approved hosts, HTTP upgrad
   const locations = [
     '../relative%20image.png?token=a%2Fb&percent=%25',
     '//static.techzjc.com/chain/cross%2Fimage.png?part=1%2F2',
-    expected[3],
+    'https://test-cn.techzjc.com:443/chain/secure%25image.png?sig=a%3Db',
     'https://user:password@techzjc.com/chain/auth%20image.png?key=a%2Bb',
     '/chain/final%2Fimage.png?last=%252F',
   ];
@@ -182,7 +186,7 @@ test('five trusted redirects preserve relative URLs, approved hosts, HTTP upgrad
   const requests = interceptFetch(t, (url, options) =>
     nativeFetch(new URL(url.pathname + url.search, origin), options));
   // Initial URL normalization historically drops queries and strips credentials.
-  await assertImage(await fetchRemoteImage('http://user:password@techzjc.com/chain/start.png?discarded=1'), 'png');
+  await assertImage(await fetchRemoteImage('http://user:password@techzjc.com:80/chain/start.png?discarded=1'), 'png');
   assert.deepEqual(requests.map(({ url }) => url.href), expected);
   assert.deepEqual(receivedPaths, expectedPaths);
   assertGuardedRequests(requests);

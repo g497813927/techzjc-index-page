@@ -30,8 +30,9 @@ export function sanitizeRemoteImageUrl(urlString: string): URL | false {
     default: return false;
   }
 
-  // Disallow non-standard or explicit ports to avoid bypassing expected services
-  if (port && port !== "80" && port !== "443") {
+  // WHATWG URL clears an explicit default port (HTTP 80 / HTTPS 443).
+  // Any remaining port selects a different service and must be rejected.
+  if (port) {
     return false;
   }
 
@@ -39,8 +40,7 @@ export function sanitizeRemoteImageUrl(urlString: string): URL | false {
   if (!path.startsWith("/") || path.includes("..")) {
     return false;
   }
-  const safePort = port === "80" ? ":80" : port === "443" ? ":443" : "";
-  const safeUrl = new URL(`${protocol}//${hostname}${safePort}`);
+  const safeUrl = new URL(`${protocol}//${hostname}`);
   // Assign the path as a component, never resolve it as a relative URL where
   // a leading double slash could replace the trusted authority.
   safeUrl.pathname = path;
