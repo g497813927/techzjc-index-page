@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
+import { gzipSync } from 'node:zlib';
 import test from 'node:test';
 import sharp from 'sharp';
-import { fetchRemoteImage } from '../../src/utils/remoteImage.server.ts';
+import { fetchRemoteImage, remoteImageToDataUrl } from '../../src/utils/remoteImage.server.ts';
 import { GET as convert } from '../../src/app/[lang]/convert/route.tsx';
 import { GET as openGraph } from '../../src/app/[lang]/opengraph-image/route.tsx';
 import { GET as sharableCard } from '../../src/app/[lang]/sharable-card/route.tsx';
@@ -259,3 +260,139 @@ for (const route of routes) {
     }
   });
 }
+
+const maxImageBytes = 5 * 1024 * 1024;
+
+function streamedResponse(chunks, headers = {}) {
+  const state = { pulls: 0, cancellations: 0 };
+  const body = new ReadableStream({
+    pull(controller) {
+      const chunk = chunks[state.pulls++];
+      if (chunk) controller.enqueue(chunk);
+      else controller.close();
+    },
+    cancel() { state.cancellations++; },
+  }, { highWaterMark: 0 });
+  return { response: new Response(body, { headers }), state };
+}
+
+function oversizedStream(headers) {
+  // The last chunk is a sentinel: rejection must cancel before requesting it.
+  const chunks = [...Array(5).fill(new Uint8Array(1024 * 1024)), new Uint8Array(1), new Uint8Array(64)];
+  return streamedResponse(chunks, headers);
+}
+
+async function assertTooLarge(response) {
+  assert.equal(response.status, 413);
+  assert.equal(await response.text(), 'Image size exceeds limit');
+}
+
+test('oversized Content-Length cancels the upstream body without reading it', async t => {
+  const { response, state } = oversizedStream({ 'Content-Length': String(maxImageBytes + 1) });
+  interceptFetch(t, () => response);
+  await assertTooLarge(await fetchRemoteImage('https://techzjc.com/oversized.png'));
+  assert.deepEqual(state, { pulls: 0, cancellations: 1 });
+});
+
+test('actual streamed bytes enforce the limit despite missing, false or invalid Content-Length', async t => {
+  for (const [label, headers] of [
+    ['missing', {}],
+    ['falsely small', { 'Content-Length': '1' }],
+    ['invalid', { 'Content-Length': 'unknown' }],
+  ]) {
+    await t.test(label, async subtest => {
+      const { response, state } = oversizedStream(headers);
+      interceptFetch(subtest, () => response);
+      await assertTooLarge(await fetchRemoteImage('https://techzjc.com/oversized.png'));
+      assert.deepEqual(state, { pulls: 6, cancellations: 1 });
+    });
+  }
+});
+
+test('an image exactly at the byte limit remains readable and fully decodable', async t => {
+  const paddedPng = Buffer.alloc(maxImageBytes);
+  images.png.copy(paddedPng);
+  const { response, state } = streamedResponse(
+    [paddedPng.subarray(0, 1024 * 1024), paddedPng.subarray(1024 * 1024)],
+    { 'Content-Length': String(maxImageBytes), 'Content-Type': 'image/png' },
+  );
+  interceptFetch(t, () => response);
+  const result = await fetchRemoteImage('https://techzjc.com/exact-limit.png');
+  assert.equal(result.status, 200);
+  const bytes = Buffer.from(await result.arrayBuffer());
+  assert.equal(bytes.length, maxImageBytes);
+  assert.deepEqual(bytes, paddedPng);
+  await sharp(bytes, { failOn: 'warning' }).raw().toBuffer();
+  assert.equal(state.cancellations, 0);
+});
+
+test('upstream stream read failures return a controlled fetch error', async t => {
+  interceptFetch(t, () => new Response(new ReadableStream({
+    pull(controller) { controller.error(new Error('fixture body read failed')); },
+  }, { highWaterMark: 0 })));
+  const response = await fetchRemoteImage('https://techzjc.com/broken.png');
+  assert.equal(response.status, 502);
+  assert.equal(await response.text(), 'Failed to fetch image');
+});
+
+test('all three routes stop oversized remote JPG and WebP bodies before rendering', async t => {
+  for (const route of routes) {
+    for (const extension of ['jpg', 'webp']) {
+      await t.test(`${route[0]}: ${extension}`, async subtest => {
+        const { response, state } = oversizedStream();
+        interceptFetch(subtest, () => response);
+        const result = await requestRoute(route, `https://techzjc.com/oversized.${extension}`);
+        if (extension === 'webp' && route[0] !== 'convert') {
+          assert.equal(result.status, 500);
+          assert.equal(await result.text(), 'Failed to convert background image');
+        } else {
+          await assertTooLarge(result);
+        }
+        assert.deepEqual(state, { pulls: 6, cancellations: 1 });
+      });
+    }
+  }
+});
+
+test('native HTTP gzip expansion is limited using decoded bytes, not compressed Content-Length', async t => {
+  const paddedPng = Buffer.alloc(maxImageBytes + 1);
+  images.png.copy(paddedPng);
+  const compressed = gzipSync(paddedPng);
+  assert.ok(compressed.length < maxImageBytes);
+  let serverRequests = 0;
+  const origin = await fixture(t, (_req, res) => {
+    serverRequests++;
+    res.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Content-Encoding': 'gzip',
+      'Content-Length': String(compressed.length),
+    }).end(compressed);
+  });
+  const nativeFetch = globalThis.fetch;
+  const requests = interceptFetch(t, (url, options) =>
+    nativeFetch(new URL(url.pathname, origin), options));
+  await assertTooLarge(await fetchRemoteImage('https://techzjc.com/compressed.png'));
+  assert.equal(serverRequests, 1);
+  assertGuardedRequests(requests);
+});
+
+test('a compact palette PNG cannot expand into an oversized inline image', async t => {
+  const width = 2100;
+  const pixels = Buffer.alloc(width * width * 3);
+  let seed = 1;
+  for (let i = 0; i < width * width; i++) {
+    seed ^= seed << 13;
+    seed ^= seed >>> 17;
+    seed ^= seed << 5;
+    const value = seed & 255;
+    pixels[i * 3] = value;
+    pixels[i * 3 + 1] = (value * 71) & 255;
+    pixels[i * 3 + 2] = (value * 149) & 255;
+  }
+  const compact = await sharp(pixels, { raw: { width, height: width, channels: 3 } })
+    .png({ palette: true, colours: 256, dither: 0 }).toBuffer();
+  assert.ok(compact.length < maxImageBytes);
+  assert.ok((await sharp(compact).png().toBuffer()).length > maxImageBytes);
+  interceptFetch(t, () => new Response(compact, { headers: { 'Content-Type': 'image/png' } }));
+  await assertTooLarge(await remoteImageToDataUrl('https://techzjc.com/palette.png'));
+});

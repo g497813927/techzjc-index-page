@@ -3,7 +3,41 @@ import sharp from "sharp";
 import { sanitizeRemoteImageUrl } from "./imageUtils";
 
 const redirectStatuses = new Set([301, 302, 303, 307, 308]);
+const maxImageBytes = 5 * 1024 * 1024;
 const failedImage = () => new Response("Failed to fetch image", { status: 502 });
+const oversizedImage = () => new Response("Image size exceeds limit", { status: 413 });
+
+async function readBoundedImage(response: Response): Promise<Response> {
+  const declaredLength = Number(response.headers.get("content-length"));
+  if (Number.isFinite(declaredLength) && declaredLength > maxImageBytes) {
+    await response.body?.cancel();
+    return oversizedImage();
+  }
+  if (!response.body) return failedImage();
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      // Fetch exposes decompressed bytes. Do not trust Content-Length alone.
+      if (size > maxImageBytes) {
+        await reader.cancel();
+        return oversizedImage();
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return new Response(new Uint8Array(Buffer.concat(chunks, size)), {
+    status: response.status,
+    headers: { "Content-Type": response.headers.get("content-type") ?? "application/octet-stream" },
+  });
+}
 
 /** Enforce the image origin policy before every request, including redirects. */
 export async function fetchRemoteImage(imageUrl: string): Promise<Response> {
@@ -21,7 +55,7 @@ export async function fetchRemoteImage(imageUrl: string): Promise<Response> {
     for (let redirects = 0; redirects <= 5; redirects++) {
       const response = await fetch(target, { redirect: "manual", signal });
       if (!redirectStatuses.has(response.status)) {
-        if (response.ok) return response;
+        if (response.ok) return await readBoundedImage(response);
         await response.body?.cancel();
         return failedImage();
       }
@@ -55,6 +89,7 @@ export async function remoteImageToDataUrl(
     const { format } = await image.metadata();
     const type = outputFormat ?? (format === "png" ? "png" : "jpeg");
     const data = await (type === "png" ? image.png() : image.jpeg({ quality: 80 })).toBuffer();
+    if (data.byteLength > maxImageBytes) return oversizedImage();
     return `data:image/${type};base64,${data.toString("base64")}`;
   } catch {
     return failedImage();
