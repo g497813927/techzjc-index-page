@@ -25,7 +25,7 @@ step. `npm run test:next-prerender-patch` checks the installer against disposabl
 fixtures, including idempotence and refusal to mutate files when either format
 has drifted.
 
-Next.js is pinned to `16.3.0` while this patch is needed. When upgrading:
+Next.js is pinned to `16.3.8` while this patch is needed. When upgrading:
 
 1. Check whether the upstream matcher now receives the encoded pathname.
 2. Run the production pathname regressions with the unpatched candidate version,
@@ -36,4 +36,5 @@ Next.js is pinned to `16.3.0` while this patch is needed. When upgrading:
    source and output hashes deliberately; do not weaken the checksum checks.
 
 The recipe's `from` and `to` values show the full code change. Its hashes refer to
-the published `next@16.3.0` package files.
+the published `next@16.3.8` package files. The recipe filename records the version
+where this workaround was introduced.
