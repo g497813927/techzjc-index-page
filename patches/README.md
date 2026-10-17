@@ -1,6 +1,6 @@
 # Next.js prerender pathname regression
 
-Next.js 16.4.2 fixes the double-decoding bug that required the local 16.3.0
+Next.js 16.4.2 fixes the double-decoding bug that required the local 16.3.x
 prerender patch. The version-specific recipe, installer, installer tests, and
 Docker copy steps have been removed. Dependencies now use the published runtime
 without local source changes.
