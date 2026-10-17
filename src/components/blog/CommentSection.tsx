@@ -1,10 +1,9 @@
 import dynamic from 'next/dynamic';
 
+const CommentComponent = process.env.NEXT_PUBLIC_ENABLE_COMMENTS === "true"
+  ? dynamic(() => import('./CommentComponent'))
+  : null;
+
 export default function CommentSection() {
-  if (process.env.NEXT_PUBLIC_ENABLE_COMMENTS !== "true") {
-    return null;
-  } else {
-    const CommentComponent = dynamic(() => import('./CommentComponent'));
-    return <CommentComponent />;
-  }
+  return CommentComponent ? <CommentComponent /> : null;
 }
