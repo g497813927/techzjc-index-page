@@ -32,10 +32,29 @@ const languages = ["", "en-US", "zh-CN", "fr-FR", "*", "en_US", "i-klingon", "x-
 const paths = ["/", "/en-US", "/zh-CN", "/blog", "/en-US/blog", "/en-US/markdown/blog", "/zh-CN/markdown/blog", "/en-US/markdown/blog/2026", "/en-US/markdown/blog/2026/01", "/en-US/markdown/blog/2026/01/23", "/en-US/blog/2026/01/23/missing", "/en-US/markdown/blog/2026/01/23/missing", "/scanner-404", "/missing-fuzz-route", "/.env", "/.git/config", "/wp-admin", "/test.php", "/%", "/%FF", "/%00", "/en-US/blog/%25", "/en-US/markdown/blog/%25", "/en-US/markdown/blog/2026/%0A", "/en-US/markdown/blog/2026/%E4%B8%AD", "/en-US/markdown/blog/2026/01/%E4%B8%AD", "/en-US/markdown/blog/2026/99/99/missing", "/en-US/markdown/blog/2026/01/23/%252e%252e%252fmissing", "/en-US/markdown/blog/2026/01/23/%2e%2e%2fmissing", "/en-US/markdown/blog/2026/01/23/%2525", "/en-US/markdown/blog/2026/01/23/%5c", "/en-US/markdown/blog/2026/01/23/%3Cscript%3Efuzz%3C%2Fscript%3E", "/en-US/markdown/blog/2026/01/23/" + "a".repeat(1024)];
 const validEvent = { version: 1, action: "blocked", trigger: "link", source: { protocol: "https:", hostname: "techzjc.com" }, destination: { protocol: "https:", hostname: "example.invalid" } };
 const bodies = ["", "{", "null", "true", "0", "\"x\"", "[]", "{}", "[null]", "[{}]", "{\"__proto__\":{\"polluted\":true}}", JSON.stringify(validEvent), JSON.stringify({ ...validEvent, source: [] }), JSON.stringify({ ...validEvent, version: "1" }), JSON.stringify({ "csp-report": { "blocked-uri": "javascript:fuzz", "document-uri": "https://example.invalid/private?secret=fuzz#fragment" } }), "[".repeat(128) + "0" + "]".repeat(128)];
+const unsupportedAction = {
+  method: "POST",
+  body: "[]",
+  headers: { "next-action": "cachefn", "content-type": "text/x-component", accept: "text/x-component" },
+  expected: [405],
+  emptyBody: true,
+  expectedHeaders: { allow: "GET, HEAD", "cache-control": "no-store" },
+};
 const baseline = [
   { path: "/api/healthz", expected: [200] },
   { path: "/.env", expected: [404] },
-  { path: "/en-US", expected: [200] },
+  { path: "/en-US", expected: [200], expectedType: "text/html" },
+  // Unknown Server Actions must not enter Next's RSC response renderer.
+  { path: "/en-US.rsc", ...unsupportedAction },
+  { path: "/en-US?_rsc=", ...unsupportedAction, headers: { ...unsupportedAction.headers, rsc: "1" } },
+  // Healthy page and RSC responses must survive the rejected requests.
+  { path: "/en-US", expected: [200], expectedType: "text/html" },
+  // Standalone routing keeps the suffix in the locale parameter and returns
+  // the existing RSC 404. The client navigation protocol below must stay 200.
+  { path: "/en-US.rsc", headers: { accept: "text/x-component" }, expected: [404], expectedType: "text/x-component" },
+  { path: "/en-US?_rsc=", headers: { accept: "text/x-component", rsc: "1" }, expected: [200], expectedType: "text/x-component", expectedBodyText: "Techzjc" },
+  { path: "/en-US?_rsc=", headers: { accept: "text/x-component", rsc: "1", "next-router-prefetch": "1" }, followRscRedirect: true, expected: [200], expectedType: "text/x-component", expectedBodyText: "Techzjc" },
+  { path: "/blog?_rsc=", headers: { accept: "text/x-component", rsc: "1" }, expected: [200], expectedType: "text/x-component", expectedBodyText: "Techzjc - Blog" },
   { path: "/en-US/markdown/blog", expected: [200] },
   { path: "/en-US/markdown/blog", headers: { accept: "text/markdown" }, expected: [200] },
   { path: query("/en-US/convert", { imageUrl: png }), expected: [200] },
@@ -43,6 +62,8 @@ const baseline = [
   { path: query("/en-US/sharable-card", { background_image: png, quotation: "Fuzz", link: "https://example.invalid" }), expected: [200] },
   { path: "/api/security/navigation", method: "POST", body: JSON.stringify(validEvent), headers: { origin: "http://techzjc.com" }, expected: [204] },
   { path: "/api/security/csp-report", method: "POST", body: "{\"csp-report\":{}}", expected: [204] },
+  { path: "/api/security/navigation", method: "POST", body: JSON.stringify(validEvent), headers: { origin: "http://techzjc.com", "next-action": "cachefn" }, expected: [204] },
+  { path: "/api/security/csp-report", method: "POST", body: "{\"csp-report\":{}}", headers: { "next-action": "cachefn" }, expected: [204] },
 ];
 for (const lang of languages) for (const path of ["/", "/missing-fuzz-route", "/en-US", "/.env"]) add("locale", path, { headers: { "accept-language": lang } });
 for (const path of paths) for (const accept of ["text/html", "text/markdown"]) add("path", path, { headers: { accept } });
@@ -97,7 +118,7 @@ for (const prefix of ["/en-US", "/zh-CN", ""]) {
   }
 }
 
-async function request(test) {
+async function requestOnce(test) {
   const started = performance.now();
   return new Promise((resolve) => {
     let settled = false;
@@ -105,14 +126,28 @@ async function request(test) {
     const headers = { host: base.host, "accept-language": "en-US", "user-agent": "site-index-local-fuzz/1", ...test.headers };
     if (headers.origin === "http://techzjc.com") headers.origin = base.origin;
     if (test.body !== undefined) {
-      headers["content-type"] = "application/json";
+      headers["content-type"] ??= "application/json";
       if (!test.chunked) headers["content-length"] = Buffer.byteLength(test.body);
     }
     const req = http.request({ hostname: base.hostname.replace(/^\[|\]$/g, ""), port: base.port || 80, method: test.method || "GET", path: test.path, headers, agent: false }, (res) => {
       const chunks = [];
       let bytes = 0;
-      res.on("data", (chunk) => { if (bytes < 512) chunks.push(chunk.subarray(0, 512 - bytes)); bytes += chunk.length; if (bytes > 4 * 1024 * 1024) { finish({ status: res.statusCode, error: "response exceeded 4 MiB" }); req.destroy(); } });
-      res.on("end", () => finish({ status: res.statusCode, bytes, type: res.headers["content-type"], location: res.headers.location, sample: /image\//.test(res.headers["content-type"] || "") ? "[image]" : Buffer.concat(chunks).toString("utf8") }));
+      const captureLimit = test.expectedBodyText ? 4 * 1024 * 1024 : 512;
+      res.on("data", (chunk) => { if (bytes < captureLimit) chunks.push(chunk.subarray(0, captureLimit - bytes)); bytes += chunk.length; if (bytes > 4 * 1024 * 1024) { finish({ status: res.statusCode, error: "response exceeded 4 MiB" }); req.destroy(); } });
+      res.on("end", () => {
+        const body = Buffer.concat(chunks).toString("utf8");
+        finish({
+          status: res.statusCode, bytes, type: res.headers["content-type"],
+          responseHeaders: Object.fromEntries(Object.keys(test.expectedHeaders || {}).map((name) => [name, res.headers[name]])),
+          location: res.headers.location,
+          sample: /image\//.test(res.headers["content-type"] || "") ? "[image]" : body.slice(0, 512),
+          ...(test.expectedBodyText ? {
+            bodyContainsExpectedText: body.includes(test.expectedBodyText),
+            // Flight can stream an error after committing HTTP 200.
+            hasRscError: /(?:^|\n)[\da-f]+:E\{/.test(body),
+          } : {}),
+        });
+      });
       res.on("error", (error) => finish({ status: res.statusCode, error: error.message }));
     });
     const deadline = setTimeout(() => { finish({ error: "15 second deadline exceeded" }); req.destroy(); }, 15000);
@@ -125,6 +160,29 @@ async function request(test) {
     } else if (test.body !== undefined) req.write(test.body);
     req.end();
   });
+}
+
+async function request(test) {
+  const result = await requestOnce(test);
+  if (!test.followRscRedirect || result.status !== 307 || result.error) return result;
+
+  // Next normalizes the prefetch cache key. Follow at most one redirect, only
+  // when it changes _rsc on the same loopback URL; all other redirects fail.
+  const original = new URL(test.path, base);
+  let target;
+  try { target = new URL(result.location, base); }
+  catch { return { ...result, error: "Invalid RSC normalization redirect" }; }
+  const originalQuery = new URLSearchParams(original.search);
+  const targetQuery = new URLSearchParams(target.search);
+  originalQuery.delete("_rsc");
+  targetQuery.delete("_rsc");
+  if (target.origin !== base.origin || target.username || target.password || target.hash ||
+      target.pathname !== original.pathname || !target.searchParams.get("_rsc") ||
+      targetQuery.toString() !== originalQuery.toString()) {
+    return { ...result, error: "Unexpected RSC normalization redirect" };
+  }
+  const response = await requestOnce({ ...test, path: target.pathname + target.search });
+  return { ...response, ms: result.ms + response.ms, normalizationRedirect: result.location };
 }
 const started = new Date().toISOString();
 const startedClock = performance.now();
@@ -140,6 +198,12 @@ function reasonsFor(test, result) {
   if (result.status >= 500) reasons.push(`server error ${result.status}`);
   if (test.expected && !test.expected.includes(result.status)) reasons.push(`expected ${test.expected}, got ${result.status}`);
   if (test.emptyBody && result.bytes !== 0) reasons.push("Expected an empty response body");
+  if (test.expectedType && result.type?.split(";")[0].trim().toLowerCase() !== test.expectedType) reasons.push(`expected content type ${test.expectedType}, got ${result.type}`);
+  if (test.expectedBodyText && !result.bodyContainsExpectedText) reasons.push(`expected response text: ${test.expectedBodyText}`);
+  if (test.expectedType === "text/x-component" && result.hasRscError) reasons.push("RSC response contains a streamed error");
+  for (const [name, value] of Object.entries(test.expectedHeaders || {})) {
+    if (result.responseHeaders?.[name] !== value) reasons.push(`expected ${name}: ${value}, got ${result.responseHeaders?.[name]}`);
+  }
   if (test.expectedLang && !result.sample?.includes(`<html lang="${test.expectedLang}"`)) reasons.push(`expected rendered HTML language ${test.expectedLang}`);
   return reasons;
 }

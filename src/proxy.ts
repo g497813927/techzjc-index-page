@@ -157,6 +157,19 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // This app has no Server Actions. Reject action POSTs before page rendering:
+  // Next can turn an unknown action's plain-text 404 into an RSC invariant error.
+  // Keep API/FC exemptions above, and allow ordinary RSC navigation/prefetches.
+  if (req.method === "POST" && req.headers.has("next-action")) {
+    return new NextResponse(null, {
+      status: 405,
+      headers: {
+        Allow: "GET, HEAD",
+        "Cache-Control": "no-store",
+      },
+    });
+  }
+
   // Add redirect for old index_en-US.html path so that
   // search engines can update their links
   if (pathname === "/index_en-US.html") {

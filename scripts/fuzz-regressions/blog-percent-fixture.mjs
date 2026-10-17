@@ -72,8 +72,8 @@ export function generateStaticParams() {
 }
 export default async function Page({ params }) {
   const { lang, slugOrYear, month, day, slug: encodedSlug } = await params;
-  // Next 16.3 exposes encoded render params here on both baseline and patched
-  // builds. Mirror getPostBySlug: decode the slug once for the content lookup.
+  // Next exposes encoded render params here. Mirror getPostBySlug: decode the
+  // slug once for the content lookup, separately from prerender matching.
   const slug = decodeURIComponent(encodedSlug);
   if (!['en-US', 'zh-CN'].includes(lang) || slugOrYear !== '2025' || month !== '01' || day !== '02' ||
       !['cached-post', 'on-demand-post', '%', '100%', '%GG', '%FF', '%25', '中文', '😀'].includes(slug)) notFound();

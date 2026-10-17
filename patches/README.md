@@ -1,40 +1,31 @@
-# Next.js prerender pathname patch
+# Next.js prerender pathname regression
 
-Next.js 16.3.0 passes an already decoded `resolvedPathname` to the App Router's
-prerender matcher. That matcher decodes dynamic parameters again. A valid request
-such as `/en-US/blog/2026/01/01/%25` consequently throws a decode error before the
-missing-post handler can return 404.
+Next.js 16.4.2 fixes the double-decoding bug that required the local 16.3.x
+prerender patch. The version-specific recipe, installer, installer tests, and
+Docker copy steps have been removed. Dependencies now use the published runtime
+without local source changes.
 
-`next-16.3.0-prerender.json` changes the matcher argument to
-`prepareResult.encodedResolvedPathname` in both CommonJS and ES module build
-templates. The decoded pathname remains in use for manifest lookups and cache
-keys. The patch does not change static-generation/ISR configuration or the blog
-route's rendering configuration.
+The old matcher extracted and decoded dynamic parameters from an already decoded
+`resolvedPathname`. A valid request such as
+`/en-US/blog/2026/01/01/%25` could therefore throw before the missing-post handler
+returned 404. In 16.4.2,
+`dist/server/route-modules/app-page/helpers/prerender-manifest-matcher.js` and its
+ES module counterpart use `getRouteRegex(...).re.test(pathname)` to check the
+route structure without decoding captures again.
 
-`npm install` and `npm ci` run `scripts/patch-next-prerender.mjs` through
-`postinstall`. The Docker dependency stage copies the script and recipe before
-installing dependencies. The installer has no package dependencies. It checks the
-exact Next.js version and both complete source-file SHA-256 hashes before writing
-either file, and also checks the resulting hashes. Running it again accepts the
-exact patched files without rewriting them. Unknown source content or versions
-fail the install with an explanatory error.
+The runtime intentionally continues passing decoded `resolvedPathname` to this
+matcher and uses it for manifest lookups and cache keys. Do not carry forward the
+old encoded-argument replacement: encoded static Unicode or percent-containing
+route prefixes would no longer match the decoded route structure correctly.
 
-If dependencies were installed with `--ignore-scripts`, explicitly run
-`npm run postinstall` before building. Never deploy a build that bypasses this
-step. `npm run test:next-prerender-patch` checks the installer against disposable
-fixtures, including idempotence and refusal to mutate files when either format
-has drifted.
+Keep `npm run test:blog-percent-http` and `npm run test:fuzz-production` when
+upgrading Next.js. The former builds a disposable production app and checks
+literal percent signs, percent escapes, Unicode, existing static posts,
+on-demand posts, repeated response bodies, cache headers, HEAD responses, and
+ETags. The latter checks real application routing, including malformed paths and
+unsupported Server Action requests. These behavior checks remain necessary even
+though no installation patch is required.
 
-Next.js is pinned to `16.3.8` while this patch is needed. When upgrading:
-
-1. Check whether the upstream matcher now receives the encoded pathname.
-2. Run the production pathname regressions with the unpatched candidate version,
-   including percent escapes, Unicode, existing static posts, and cache behavior.
-3. If the upstream release fixes the issue, remove the recipe, installer,
-   installer tests, `postinstall`/test entries, and Docker copy instructions in the
-   same upgrade. Otherwise review the source change and regenerate both exact
-   source and output hashes deliberately; do not weaken the checksum checks.
-
-The recipe's `from` and `to` values show the full code change. Its hashes refer to
-the published `next@16.3.8` package files. The recipe filename records the version
-where this workaround was introduced.
+The unmodified published 16.4.2 runtime passed the existing blog fixture's 360
+requests and 705 assertions, including 27 static/on-demand cache controls, before
+the patch was retired.
