@@ -48,3 +48,11 @@ public/LICENSES.json
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# Local agent state
+.agents/
+.codex/
+.qoder/
+
+# Generated fuzz campaign reports
+/reports/fuzz/runs/

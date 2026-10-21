@@ -1,4 +1,7 @@
 {
+    "image_errors": {
+        "invalid_data": "Invalid image data"
+    },
     "metadata": {
         "lang": "en-US",
         "language_name": "English (US)",
@@ -101,6 +104,9 @@
                 "description": "The requested blog post could not be found."
             }
         }
+    },
+    "opengraph_image": {
+        "invalid_dimensions": "Width and height must be positive whole numbers written with decimal digits, no greater than 4096 each, with at most 4194304 pixels in total."
     },
     "navbar": {
         "blog": "Blog",
@@ -222,6 +228,9 @@
         "page_not_found": "Page Not Found",
         "description": "The page you are looking for does not exist. Please check if the URL you entered is correct.",
         "go_back_home": "Go back to Home Page"
+    },
+    "sharable_card": {
+        "invalid_qr_input": "QR code text must not be empty or exceed the QR code's capacity."
     },
     "licenses": {
         "title": "Open Source Projects used within this Site:",

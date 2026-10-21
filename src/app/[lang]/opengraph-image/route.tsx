@@ -1,35 +1,39 @@
+import { getDictionary as getImageDictionary } from "../dictionaries";
+import { decodeImageDataUrl } from "@/utils/imageData.server";
 import 'server-only';
 import { ImageResponse } from "next/og";
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { hasLocale } from "../dictionaries";
+import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
-import { convertToSafeImageUrl, isSafeImageUrl } from '@/utils/imageUtils';
+import { isSafeImageUrl } from '@/utils/imageUtils';
+import { remoteImageToDataUrl } from '@/utils/remoteImage.server';
+import { parseOpenGraphDimensions } from '@/utils/openGraphDimensions';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
-  const size = { width: 1200, height: 630 };
   const { searchParams } = new URL(req.url);
+  const { lang } = await context.params;
+  if (!hasLocale(lang)) notFound();
+  const size = parseOpenGraphDimensions(searchParams);
+  if (!size) {
+    const dictionary = await getDictionary(lang);
+    return new Response(dictionary.opengraph_image.invalid_dimensions, { status: 400 });
+  }
   const title = searchParams.get("title") ?? "Techzjc";
   const defaultBackgroundImage = "https://techzjc.com/assets/image/hero-image-og.jpg";
   let background_image = searchParams.get("background_image") ?? defaultBackgroundImage;
   if (!isSafeImageUrl(background_image)) {
     background_image = defaultBackgroundImage;
   }
-  const width = searchParams.get("width") ?? size.width.toString();
-  size.width = parseInt(width);
-  const height = searchParams.get("height") ?? size.height.toString();
-  size.height = parseInt(height);
-  const { lang } = await context.params;
-  if (!hasLocale(lang)) notFound();
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png") && !background_image.startsWith("data:image/")) {
     try {
-      background_image = await convertToJpegBase64(
-        req,
-        lang,
+      const convertedImage = await convertToJpegBase64(
         background_image
       );
+      if (convertedImage instanceof Response) return convertedImage;
+      background_image = convertedImage;
     } catch {
       return new Response(`Failed to convert background image`, {
         status: 500,
@@ -38,9 +42,12 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   } else {
     let safeURL: string | Response;
     if (background_image.startsWith("data:image/")) {
-      safeURL = encodeURI(background_image);
+      const dict = await getImageDictionary(lang);
+      const image = await decodeImageDataUrl(background_image, dict.image_errors.invalid_data);
+      if (image instanceof Response) return image;
+      safeURL = `data:${image.contentType};base64,${image.data.toString("base64")}`;
     } else {
-      safeURL = convertToSafeImageUrl(background_image);
+      safeURL = await remoteImageToDataUrl(background_image);
     }
     if (safeURL instanceof Response) {
       return safeURL; // Return the error response if URL is not safe
@@ -119,8 +126,8 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
         </div>
       ),
       {
-        width: parseInt(width),
-        height: parseInt(height),
+        width: size.width,
+        height: size.height,
         fonts: loadedFontSettings
       }
     );

@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7
-FROM alpine AS base
-RUN apk add --no-cache nodejs npm git
+# Includes the October 2026 Node.js security fixes in every build/runtime stage.
+FROM node:24.22.1-alpine AS base
+RUN apk add --no-cache git
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat
@@ -42,5 +43,6 @@ ENV BLOG_CONTENT_REVISION=$BLOG_CONTENT_REVISION
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/src/app/scanner-404/trace-guard.cjs ./trace-guard.cjs
 EXPOSE 9000
-CMD ["node", "server.js"]
+CMD ["node", "--require", "./trace-guard.cjs", "server.js"]

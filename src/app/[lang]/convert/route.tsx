@@ -1,10 +1,28 @@
 import sharp from 'sharp';
-import { convertToSafeImageUrl } from '@/utils/imageUtils';
+import { fetchRemoteImage, MAX_REMOTE_IMAGE_BYTES } from '@/utils/remoteImage.server';
+import { decodeImageDataUrl } from '@/utils/imageData.server';
+import { getDictionary, hasLocale } from '../dictionaries';
+import { notFound } from 'next/navigation';
+
+function jpegResponse(data: Uint8Array): Response {
+  if (data.byteLength > MAX_REMOTE_IMAGE_BYTES) {
+    return new Response('Image size exceeds limit', { status: 413 });
+  }
+  // Conversion is already complete; stream the owned bytes without copying them.
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(data);
+      controller.close();
+    },
+  });
+  return new Response(body, { headers: { 'Content-Type': 'image/jpeg' } });
+}
 
 
 // API route to convert WebP image to JPEG
-// eslint-disable-next-line
-export async function GET(req: Request, res: any) {
+export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
+  const { lang } = await context.params;
+  if (!hasLocale(lang)) notFound();
   try {
     
     const { searchParams } = new URL(req.url);
@@ -12,16 +30,16 @@ export async function GET(req: Request, res: any) {
     if (!imageUrl) {
       return new Response('Missing imageUrl parameter', { status: 400 });
     }
-    const safeURL = convertToSafeImageUrl(imageUrl);
-    if (safeURL instanceof Response) {
-      return safeURL; // Return the error response if URL is not safe
+    if (imageUrl.startsWith('data:image/')) {
+      const dict = await getDictionary(lang);
+      const image = await decodeImageDataUrl(imageUrl, dict.image_errors.invalid_data, 'jpeg');
+      if (image instanceof Response) return image;
+      return jpegResponse(image.data);
     }
-    console.log("Converting image from URL:", safeURL);
-
     // Fetch the WebP image
-    const response = await fetch(safeURL);
+    const response = await fetchRemoteImage(imageUrl);
     if (!response.ok) {
-      return new Response('Failed to fetch image', { status: 502 });
+      return response;
     }
     const webpBuffer = await response.arrayBuffer();
 
@@ -30,12 +48,7 @@ export async function GET(req: Request, res: any) {
       .jpeg({ quality: 80 })
       .toBuffer();
 
-    // Response body expects a BodyInit; convert Node Buffer to Uint8Array
-    return new Response(new Uint8Array(jpgBuffer), {
-      headers: {
-        'Content-Type': 'image/jpeg',
-      },
-    });
+    return jpegResponse(jpgBuffer);
 
 
   } catch (error) {

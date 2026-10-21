@@ -1,12 +1,15 @@
+import { getDictionary as getImageDictionary } from "../dictionaries";
+import { decodeImageDataUrl } from "@/utils/imageData.server";
 import 'server-only';
 import { ImageResponse } from "next/og";
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import QRCode from 'qrcode'
-import { hasLocale } from "../dictionaries";
+import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 import { convertToJpegBase64 } from "@/utils/imageConvertHelper";
-import { convertToSafeImageUrl, isSafeImageUrl } from '@/utils/imageUtils';
+import { isSafeImageUrl } from '@/utils/imageUtils';
+import { remoteImageToDataUrl } from '@/utils/remoteImage.server';
+import { createSharableQrCode } from '@/utils/sharableQrCode';
 
 export async function GET(req: Request, context: { params: Promise<{ lang: string }> }) {
   const { searchParams } = new URL(req.url);
@@ -20,15 +23,27 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   // Get locale from path
   const { lang } = await context.params;
   if (!hasLocale(lang)) notFound();
+
+  let qrCodeDataURL: string | null;
+  try {
+    qrCodeDataURL = await createSharableQrCode(link);
+  } catch (error) {
+    console.error('Failed to generate QR code', error);
+    return new Response('Failed to generate the image', { status: 500 });
+  }
+  if (qrCodeDataURL === null) {
+    const dictionary = await getDictionary(lang);
+    return new Response(dictionary.sharable_card.invalid_qr_input, { status: 400 });
+  }
   
   // Check if background image is jpg or png, else convert to jpg
   if (!background_image.endsWith(".jpg") && !background_image.endsWith(".jpeg") && !background_image.endsWith(".png") && !background_image.startsWith("data:image/")) {
     try {
-      background_image = await convertToJpegBase64(
-        req,
-        lang,
+      const convertedImage = await convertToJpegBase64(
         background_image
       );
+      if (convertedImage instanceof Response) return convertedImage;
+      background_image = convertedImage;
     } catch {
       return new Response(`Failed to convert background image`, {
         status: 500,
@@ -37,9 +52,12 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
   } else {
     let safeURL: string | Response;
     if (background_image.startsWith("data:image/")) {
-      safeURL = encodeURI(background_image);
+      const dict = await getImageDictionary(lang);
+      const image = await decodeImageDataUrl(background_image, dict.image_errors.invalid_data);
+      if (image instanceof Response) return image;
+      safeURL = `data:${image.contentType};base64,${image.data.toString("base64")}`;
     } else {
-      safeURL = convertToSafeImageUrl(background_image);
+      safeURL = await remoteImageToDataUrl(background_image);
     }
     if (safeURL instanceof Response) {
       return safeURL; // Return the error response if URL is not safe
@@ -65,13 +83,6 @@ export async function GET(req: Request, context: { params: Promise<{ lang: strin
       name: 'NotoSansSC',
       data: font
     }];
-    const qrCodeDataURL = await QRCode.toDataURL(link, {
-      margin: 1,
-      width: 128,
-      color: {
-        light: '#ffffff00' // Transparent background
-      }
-    });
     return new ImageResponse(
       (
         <div style={{

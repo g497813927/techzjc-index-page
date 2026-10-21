@@ -1,4 +1,4 @@
-function SantizeURL(urlString: string): string | boolean {
+export function sanitizeRemoteImageUrl(urlString: string): URL | false {
   let imageURLObj: URL;
   try {
     imageURLObj = new URL(urlString);
@@ -7,32 +7,32 @@ function SantizeURL(urlString: string): string | boolean {
   }
 
   // Validate URL components to mitigate SSRF
-  const protocol = imageURLObj.protocol;
+  const protocol = imageURLObj.protocol === "https:" ? "https:"
+    : imageURLObj.protocol === "http:" ? "http:" : null;
   const rawHostname = imageURLObj.hostname;
   const port = imageURLObj.port;
   const path = imageURLObj.pathname || "/";
 
   // Only allow http/https
-  if (protocol !== "http:" && protocol !== "https:") {
+  if (!protocol) {
     return false;
   }
 
   // Normalize hostname by removing any trailing dot
   const normalizedHostname = rawHostname.replace(/\.$/, "");
 
-  const whitelist_domains = [
-    "techzjc.com",
-    "static.techzjc.com",
-    "test-cn.techzjc.com",
-  ];
-
-  // Enforce hostname allow-list
-  if (!whitelist_domains.includes(normalizedHostname)) {
-    return false;
+  // Select a server-owned literal, never interpolate the supplied hostname.
+  let hostname: string;
+  switch (normalizedHostname) {
+    case "techzjc.com": hostname = "techzjc.com"; break;
+    case "static.techzjc.com": hostname = "static.techzjc.com"; break;
+    case "test-cn.techzjc.com": hostname = "test-cn.techzjc.com"; break;
+    default: return false;
   }
 
-  // Disallow non-standard or explicit ports to avoid bypassing expected services
-  if (port && port !== "80" && port !== "443") {
+  // WHATWG URL clears an explicit default port (HTTP 80 / HTTPS 443).
+  // Any remaining port selects a different service and must be rejected.
+  if (port) {
     return false;
   }
 
@@ -40,7 +40,11 @@ function SantizeURL(urlString: string): string | boolean {
   if (!path.startsWith("/") || path.includes("..")) {
     return false;
   }
-  return `${protocol}//${normalizedHostname}${port ? `:${port}` : ""}${path}`;
+  const safeUrl = new URL(`${protocol}//${hostname}`);
+  // Assign the path as a component, never resolve it as a relative URL where
+  // a leading double slash could replace the trusted authority.
+  safeUrl.pathname = path;
+  return safeUrl;
 }
 
 export function isSafeImageUrl(urlString: string): boolean {
@@ -48,46 +52,41 @@ export function isSafeImageUrl(urlString: string): boolean {
   if (urlString.startsWith("data:image/")) {
     return true;
   }
-  const sanitizedURL = SantizeURL(urlString);
-  return typeof sanitizedURL === "string";
+  const sanitizedURL = sanitizeRemoteImageUrl(urlString);
+  return sanitizedURL !== false;
 }
 
 export function convertToSafeImageUrl(urlString: string): string | Response {
-  if (!isSafeImageUrl(urlString)) {
+  if (!urlString) {
     return new Response("Unsafe image URL", { status: 400 });
   } else if (urlString.startsWith("data:image/")) {
-    // Check if data URL is too large (e.g. >5MB) to prevent DoS
-    const base64Data = urlString.split(",")[1] || "";
-    const byteLength = (base64Data.length * 3) / 4; // Approximate byte length of base64 data
-    if (byteLength > 5 * 1024 * 1024) { // 5MB limit
-      return new Response("Image size exceeds limit", { status: 413 });
-    }
-    // Check if it's a valid base64 string
-    try {
-        atob(base64Data);
-    } catch {
-        return new Response("Invalid base64 image data", { status: 400 });
-    }
-    // Then, check its type (allow only jpeg/png)
-    const mimeType = urlString.match(/^data:(image\/(jpeg|png));base64,/)?.[1];
-    if (!mimeType) {
+    const prefix = urlString.match(/^data:(image\/(jpeg|png));base64,/);
+    if (!prefix) {
       return new Response("Unsupported image type", { status: 415 });
     }
-    const safeBase64Data = base64Data.replace(/[^A-Za-z0-9+/=]/g, ""); // Sanitize base64 data
-    // Retrieve the sanitized MIME type and hardcode it in the returned data URL to prevent any tampering
-    if (mimeType === "image/jpeg" || mimeType === "image/png") {
-        return `data:${mimeType};base64,${safeBase64Data}`;
-    } else {
-        return new Response("Unsupported image type", { status: 415 });
+    // Keep this helper browser-safe. Actual image decoding happens on the server.
+    const base64Data = urlString.slice(prefix[0].length).replace(/[\t\n\f\r ]/g, "");
+    const maxBytes = 5 * 1024 * 1024;
+    if (base64Data.length > Math.ceil(maxBytes / 3) * 4) {
+      return new Response("Image size exceeds limit", { status: 413 });
     }
+    try {
+      const byteLength = atob(base64Data).length;
+      if (byteLength === 0) {
+        return new Response("Invalid base64 image data", { status: 400 });
+      }
+      if (byteLength > maxBytes) {
+        return new Response("Image size exceeds limit", { status: 413 });
+      }
+    } catch {
+      return new Response("Invalid base64 image data", { status: 400 });
+    }
+    return `data:${prefix[1]};base64,${base64Data}`;
   } else {
-    const sanitizedURL = SantizeURL(urlString);
+    const sanitizedURL = sanitizeRemoteImageUrl(urlString);
     if (!sanitizedURL) {
-      return new Response("Invalid image URL", { status: 400 });
-    }
-    if (typeof sanitizedURL !== "string") {
       return new Response("Unsafe image URL", { status: 400 });
     }
-    return encodeURI(sanitizedURL);
+    return encodeURI(sanitizedURL.href);
   }
 }

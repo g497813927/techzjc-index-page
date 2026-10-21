@@ -1,4 +1,7 @@
 {
+    "image_errors": {
+        "invalid_data": "图片数据无效"
+    },
     "metadata": {
         "lang": "zh-CN",
         "language_name": "简体中文",
@@ -101,6 +104,9 @@
                 "description": "未能找到所请求的博客文章。"
             }
         }
+    },
+    "opengraph_image": {
+        "invalid_dimensions": "宽度和高度必须是仅使用十进制数字表示的正整数，每边不超过 4096，总像素数不超过 4194304。"
     },
     "navbar": {
         "blog": "博客",
@@ -222,6 +228,9 @@
         "page_not_found": "无法找到页面",
         "description": "您所访问的页面不存在，请检查输入的网址是否正确。",
         "go_back_home": "返回首页"
+    },
+    "sharable_card": {
+        "invalid_qr_input": "二维码内容不能为空，也不能超过二维码容量。"
     },
     "licenses": {
         "title": "此站点使用的开源项目：",

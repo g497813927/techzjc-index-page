@@ -110,7 +110,13 @@ export function normalizeHostname(value: string | null | undefined): string {
     const parsed = new URL(
       firstValue.includes("://") ? firstValue : `https://${firstValue}`,
     );
-    return parsed.hostname.toLowerCase().replace(/\.$/, "");
+    const hostname = parsed.hostname.toLowerCase();
+    // One DNS root dot is valid; repeatedly trimming malformed suffixes can
+    // change both canonical URLs and host trust on a later normalization pass.
+    if (hostname.endsWith("..")) {
+      return "";
+    }
+    return hostname.replace(/\.$/, "");
   } catch {
     return "";
   }
@@ -149,6 +155,9 @@ function parseHostAuthority(
   }
 
   const authorityHostname = match[1];
+  if (authorityHostname.endsWith("..")) {
+    return null;
+  }
   const hostname = authorityHostname.replace(/\.$/, "");
   const authority = port
     ? `${authorityHostname}:${port}`
