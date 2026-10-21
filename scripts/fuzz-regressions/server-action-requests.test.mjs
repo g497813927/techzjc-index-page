@@ -78,11 +78,15 @@ test("the FC invoke POST keeps its existing exemption", () => {
   }
 });
 
-test("ordinary page POSTs and Markdown GET negotiation remain unchanged", () => {
+test("ordinary page POSTs pass through and Markdown GETs redirect without caching", () => {
   const ordinaryPost = proxy(request("/en-US", { method: "POST" }));
   assert.equal(ordinaryPost.headers.get("x-middleware-next"), "1");
   const markdown = proxy(request("/en-US", { headers: { accept: "text/markdown" } }));
-  assert.equal(markdown.headers.get("x-middleware-rewrite"), "https://techzjc.com/en-US/markdown");
+  assert.equal(markdown.status, 307);
+  assert.equal(markdown.headers.get("location"), "https://techzjc.com/en-US/markdown");
+  assert.equal(markdown.headers.get("x-middleware-rewrite"), null);
+  assert.equal(markdown.headers.get("cache-control"), "no-store");
+  assert.equal(markdown.headers.get("vary"), "Accept");
 });
 
 test("path validation and scanner routing still take precedence over action rejection", () => {
