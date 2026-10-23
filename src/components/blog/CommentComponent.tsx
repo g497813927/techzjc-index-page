@@ -1,14 +1,14 @@
 "use client";
-import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+
+type GiscusComponent = (typeof import('@giscus/react'))['default'];
 
 function isBot(ua: string) {
     return /(bot|yandex|spider|slurp|Google-InspectionTool)/i.test(ua);
 }
 
 export default function CommentComponent() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [Giscus, setGiscusStatus] = useState<any>(null);
+    const [Giscus, setGiscusStatus] = useState<GiscusComponent | null>(null);
     const [theme, setTheme] = useState<"light" | "dark">(
         typeof window !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark"
             ? "dark"
@@ -25,6 +25,23 @@ export default function CommentComponent() {
         return () => observer.disconnect();
     }, []);
 
+    useEffect(() => {
+        if (process.env.NODE_ENV !== "production" ||
+            process.env.NEXT_PUBLIC_ENABLE_COMMENTS !== "true" ||
+            isBot(navigator.userAgent)) {
+            return;
+        }
+
+        let active = true;
+        const loadComments = async () => {
+            const { default: Giscus } = await import('@giscus/react');
+            await import('./CommentComponentCSS');
+            if (active) setGiscusStatus(() => Giscus);
+        };
+        void loadComments();
+        return () => { active = false; };
+    }, []);
+
     if (process.env.NODE_ENV !== "production") {
         return null;
     } else if (process.env.NEXT_PUBLIC_ENABLE_COMMENTS !== "true") {
@@ -35,17 +52,6 @@ export default function CommentComponent() {
         if (is_bot_ua) {
             return null;
         } else {
-            const loadComments = async () => {
-                const { default: Giscus } = await import('@giscus/react');
-                setGiscusStatus(() => Giscus);
-                dynamic(() => import('./CommentComponentCSS'), { ssr: false });
-            };
-
-            // eslint-disable-next-line
-            useEffect(() => {
-                loadComments();
-            }, [loadComments]);
-            
             if (!Giscus) {
                 return (
                     <em className='comment-section'>

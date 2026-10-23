@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7
-FROM alpine AS base
-RUN apk add --no-cache nodejs npm git
+# Includes the October 2026 Node.js security fixes in every build/runtime stage.
+FROM node:24.22.1-alpine AS base
+RUN apk add --no-cache git
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat

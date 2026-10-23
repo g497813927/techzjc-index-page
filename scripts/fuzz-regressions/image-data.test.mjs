@@ -109,10 +109,7 @@ test("allowlisted remote JPG/PNG, default fallback, and WebP conversion still re
   t.mock.method(globalThis, "fetch", async (input, options) => {
     const url = new URL(typeof input === "string" ? input : input.url ?? input.href);
     requested.push(url.href);
-    if (url.origin === "http://localhost" && url.pathname === "/en-US/convert") {
-      assert.equal(new Headers(options?.headers).get("x-origin-auth"), "image-data-regression-only");
-      return convert(new Request(url, options), { params: Promise.resolve({ lang: "en-US" }) });
-    }
+    assert.equal(new Headers(options?.headers).get("x-origin-auth"), null);
     assert.equal(url.origin, "https://techzjc.com");
     const format = url.pathname.endsWith(".webp") ? "webp" : url.pathname.endsWith(".png") ? "png" : "jpeg";
     return new Response(new Uint8Array({ webp, png, jpeg }[format]), {
@@ -133,7 +130,7 @@ test("allowlisted remote JPG/PNG, default fallback, and WebP conversion still re
     }
     assert.ok(requested.some((url) => url.endsWith("hero-image-og.jpg")));
     assert.ok(requested.some((url) => url.endsWith(".webp")));
-    assert.ok(requested.some((url) => new URL(url).pathname === "/en-US/convert"));
+    assert.ok(requested.every((url) => new URL(url).pathname !== "/en-US/convert"));
   } finally {
     if (previousToken === undefined) delete process.env.CDN_ORIGIN_AUTH;
     else process.env.CDN_ORIGIN_AUTH = previousToken;
