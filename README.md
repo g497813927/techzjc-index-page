@@ -16,6 +16,10 @@ npm ci
 
 CI reads `.nvmrc`, and every Docker stage uses `node:24.22.1-alpine`. Keep these versions aligned when updating Node.js. The package engine range also selects Node 24 on Vercel, where minor and patch versions are managed by the platform. Rebuild and redeploy existing containers to apply runtime fixes; changing npm packages alone does not update Node.js.
 
+## TypeScript compilers
+
+`npm run typecheck` uses the TypeScript 7 native compiler. Both production build commands run this check after Next.js generates its route types. The `typescript` dependency aliases Microsoft's TypeScript 6 compatibility package because ESLint, the Next.js editor plugin, and the test loaders still use its JavaScript compiler API. The native compiler is installed separately as `@typescript/native`, following [Microsoft's side-by-side setup](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0). Keep both dependencies until those API consumers support TypeScript 7.
+
 ## Any suggestions or issues?
 
 Feel free to open an issue or a pull request!
