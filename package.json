@@ -17,8 +17,9 @@
     "test:browser-security": "node --loader ./scripts/typescript-test-loader.mjs --test ./scripts/browser-security.test.mjs",
     "smoke:fc": "node ./scripts/fc-smoke.mjs",
     "dev": "npm run prepare-env && node --require ./src/app/scanner-404/trace-guard.cjs ./node_modules/next/dist/bin/next dev",
-    "build": "npm run prepare-env && next build --webpack",
-    "build:docker": "npm run prepare-env && next build --webpack && node ./scripts/sanitize-next-static-paths.mjs",
+    "build": "npm run prepare-env && next build --webpack && npm run typecheck",
+    "build:docker": "npm run prepare-env && next build --webpack && npm run typecheck && node ./scripts/sanitize-next-static-paths.mjs",
+    "typecheck": "tsc --noEmit",
     "start": "node --require ./src/app/scanner-404/trace-guard.cjs ./node_modules/next/dist/bin/next start",
     "lint": "eslint",
     "test:blog-percent-http": "node ./scripts/fuzz-regressions/blog-percent-fixture.mjs",
@@ -67,6 +68,7 @@
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.1",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "@next/bundle-analyzer": "^16.4.2",
     "@tailwindcss/postcss": "^4",
     "@types/estree": "^1.0.9",
@@ -82,7 +84,7 @@
     "eslint": "^10.13.0",
     "eslint-config-next": "^16.4.2",
     "tailwindcss": "^4",
-    "typescript": "^6"
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "overrides": {
     "@eslint/eslintrc": {
