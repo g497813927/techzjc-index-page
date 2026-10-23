@@ -88,6 +88,7 @@ ${dict['metadata']['contacts']['children'].map(contact => `- [${contact.label}](
             "Content-Signal": "ai-train=yes, search=yes, ai-input=yes",
             "X-Robots-Tag": "noindex, follow",
             "Cache-Control": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800",
+            "Vary": "Accept",
             "Link": `<${canonicalUrl}>; rel="canonical"${alternate_languages.map(lang => `, <${lang.href}>; rel="alternate"; hreflang="${lang.hrefLang}"`).join("")}, <${baseUrl}/>; rel="alternate"; hreflang="x-default"`,
             "Content-Type": "text/markdown; charset=utf-8"
         },

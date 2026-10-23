@@ -149,20 +149,43 @@ describe("F1: malformed language preferences remain controlled", () => {
     assert.equal(response.headers.get("cache-control"), null);
   });
 
-  test("preserves Markdown rewriting for fallback, cookie, and explicit locale", () => {
-    for (const [pathname, cookie, expected] of [
-      ["/blog", "", "/en-US/markdown/blog"],
-      ["/blog", "locale=zh-CN", "/zh-CN/markdown/blog"],
-      ["/en-US/blog", "locale=zh-CN", "/en-US/markdown/blog"],
+  test("redirects negotiated Markdown without caching for fallback, cookie, and explicit locale", () => {
+    for (const [pathname, language, cookie, expected] of [
+      ["/blog", "*", "", "/en-US/markdown/blog"],
+      ["/blog", "zh-CN", "", "/zh-CN/markdown/blog"],
+      ["/blog", "*", "locale=zh-CN", "/zh-CN/markdown/blog"],
+      ["/en-US/blog", "zh-CN", "locale=zh-CN", "/en-US/markdown/blog"],
+      ["/zh-CN/blog", "en-US", "locale=en-US", "/zh-CN/markdown/blog"],
+      ["/markdown/blog", "*", "", "/en-US/markdown/blog"],
+      ["/markdown/blog", "*", "locale=zh-CN", "/zh-CN/markdown/blog"],
     ]) {
-      expectRewrite(
-        proxy(request(pathname, {
-          "accept-language": "*",
-          accept: "text/markdown",
-          cookie,
-        })),
-        expected,
-      );
+      const query = "?view=all&query=%FF&path=%252F";
+      const response = proxy(request(`${pathname}${query}`, {
+        "accept-language": language,
+        accept: "text/markdown",
+        cookie,
+      }));
+      assert.equal(response.status, 307);
+      assert.equal(response.headers.get("location"), `https://techzjc.com${expected}${query}`);
+      assert.equal(response.headers.get("x-middleware-rewrite"), null);
+      assert.equal(response.headers.get("cache-control"), "no-store");
+      assert.equal(response.headers.get("vary"), "Accept");
+      assert.equal(response.headers.get("set-cookie"), null);
+    }
+  });
+
+  test("explicit Markdown URLs pass through without redirect loops", () => {
+    for (const locale of ["en-US", "zh-CN"]) {
+      for (const path of ["/markdown", "/markdown/blog", "/markdown/licenses"]) {
+        for (const accept of ["text/markdown", "text/html"]) {
+          const response = proxy(request(`/${locale}${path}`, { accept }));
+          assert.equal(response.status, 200);
+          assert.equal(response.headers.get("x-middleware-next"), "1");
+          assert.equal(response.headers.get("location"), null);
+          assert.equal(response.headers.get("x-middleware-rewrite"), null);
+          assert.equal(response.headers.get("set-cookie"), null);
+        }
+      }
     }
   });
 

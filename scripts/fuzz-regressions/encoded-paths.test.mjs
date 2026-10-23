@@ -34,7 +34,11 @@ test("valid Unicode, encoded percent and separators retain their original paths"
     assert.equal(hasValidPathEncoding(path), true, path);
     assert.equal(proxy(request(path)).headers.get("x-middleware-next"), "1");
     const markdown = proxy(request(path, "text/markdown"));
-    assert.equal(new URL(markdown.headers.get("x-middleware-rewrite")).pathname, `/en-US/markdown/blog/${segment}`);
+    assert.equal(markdown.status, 307);
+    assert.equal(markdown.headers.get("location"), `https://techzjc.com/en-US/markdown/blog/${segment}`);
+    assert.equal(markdown.headers.get("x-middleware-rewrite"), null);
+    assert.equal(markdown.headers.get("cache-control"), "no-store");
+    assert.equal(markdown.headers.get("vary"), "Accept");
   }
 });
 
