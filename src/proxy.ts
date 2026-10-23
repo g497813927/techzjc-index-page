@@ -12,6 +12,13 @@ const locales = ["zh-CN", "en-US"];
 
 const TRUSTED_ORIGINS = ["cdn.techzjc.net"];
 
+function redirectToMarkdown(url: URL): NextResponse {
+  const response = NextResponse.redirect(url);
+  response.headers.set("Cache-Control", "no-store");
+  response.headers.set("Vary", "Accept");
+  return response;
+}
+
 function getLocale(request: { headers: Headers }): string {
   const ranges = (request.headers.get("accept-language") || "")
     .split(",")
@@ -193,15 +200,15 @@ export function proxy(req: NextRequest) {
     // If markdown is requested, head to /markdown route handler
     if (isMarkdownRequested) {
       const url = req.nextUrl.clone();
-      // Check if pathname starts with /{locale}/markdown, if not, rewrite to /{locale}/markdown/{rest_of_path}
+      // Keep negotiated representations on distinct externally visible URLs so
+      // a shared cache cannot store markdown under the canonical HTML URL.
       if (pathname.startsWith(`/${locale}/markdown`)) {
-        url.pathname = pathname;
-      } else {
-        const localePrefix = `/${locale}`;
-        const restOfPath = pathname.slice(localePrefix.length);
-        url.pathname = `${localePrefix}/markdown${restOfPath}`;
+        return NextResponse.next();
       }
-      return NextResponse.rewrite(url);
+      const localePrefix = `/${locale}`;
+      const restOfPath = pathname.slice(localePrefix.length);
+      url.pathname = `${localePrefix}/markdown${restOfPath}`;
+      return redirectToMarkdown(url);
     }
     return NextResponse.next();
   }
@@ -219,7 +226,9 @@ export function proxy(req: NextRequest) {
       }
     }
     url.pathname = `/${preferredLocale}${pathname}`;
-    return NextResponse.rewrite(url);
+    return isMarkdownRequested
+      ? redirectToMarkdown(url)
+      : NextResponse.rewrite(url);
   }
   const url = req.nextUrl.clone();
   if (isMarkdownRequested) {
@@ -228,7 +237,9 @@ export function proxy(req: NextRequest) {
     }
   }
   url.pathname = `/${locale}${pathname}`;
-  return NextResponse.rewrite(url);
+  return isMarkdownRequested
+    ? redirectToMarkdown(url)
+    : NextResponse.rewrite(url);
 }
 
 export const config = {
