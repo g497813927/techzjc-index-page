@@ -49,7 +49,7 @@
     "highlight.js": "^11.12.0",
     "license-checker": "^25.0.1",
     "lightningcss": "1.33.0",
-    "motion": "^13.1.1",
+    "motion": "^14.7.1",
     "negotiator": "^1.0.0",
     "next": "16.4.3",
     "next-mdx-remote": "^6.0.0",
