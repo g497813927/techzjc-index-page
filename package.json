@@ -64,7 +64,7 @@
   "optionalDependencies": {
     "@giscus/react": "^3.1.0",
     "@tailwindcss/oxide-linux-x64-gnu": "^4.2.4",
-    "lightningcss-linux-x64-gnu": "^1.32.0"
+    "lightningcss-linux-x64-gnu": "^1.33.0"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.1",
