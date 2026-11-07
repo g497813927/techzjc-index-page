@@ -10,6 +10,7 @@ export async function GET() {
     {
       status: "ok",
       service: "techzjc-index",
+      nodeVersion: process.versions.node,
       region:
         process.env.VERCEL_REGION ??
         process.env.FC_REGION ??
