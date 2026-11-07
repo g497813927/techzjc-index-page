@@ -6,7 +6,7 @@ This is the index page for Techzjc's personal site using React + TypeScript + Ne
 
 ## Node.js runtime
 
-Use Node.js 24.22.1 or a newer 24.x release. This is the minimum patched 24.x version for the [October 2026 security release](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases).
+Use Node.js 26.13.0 or a newer 26.x release. [Node.js 26.13.0 is the Lithium LTS release](https://nodejs.org/en/blog/release/v26.13.0) and includes the October 2026 security fixes.
 
 ```sh
 nvm install
@@ -14,7 +14,7 @@ nvm use
 npm ci
 ```
 
-CI reads `.nvmrc`, and every Docker stage uses `node:24.22.1-alpine`. Keep these versions aligned when updating Node.js. The package engine range also selects Node 24 on Vercel, where minor and patch versions are managed by the platform. Rebuild and redeploy existing containers to apply runtime fixes; changing npm packages alone does not update Node.js.
+CI reads `.nvmrc`, and every Docker stage uses `node:26.13.0-alpine`. Keep these versions aligned when updating Node.js. The package engine range also selects Node 26 on Vercel, where minor and patch versions are managed by the platform. Rebuild and redeploy existing containers to apply runtime fixes; changing npm packages alone does not update Node.js.
 
 ## TypeScript compilers
 
