@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+import { buildSentryDataCollection } from "./lib/sentryDataCollection";
 
 const isGlobalBuild =
   process.env.NEXT_PUBLIC_VERCEL_ENV === "true" &&
@@ -12,7 +13,7 @@ const sendDefaultPii = process.env.SENTRY_SEND_DEFAULT_PII === "true";
 if (isGlobalBuild && dsn) {
   Sentry.init({
     dsn,
-    sendDefaultPii,
+    dataCollection: buildSentryDataCollection(sendDefaultPii),
     tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
   });
 }

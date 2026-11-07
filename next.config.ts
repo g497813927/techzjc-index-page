@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
+import { withSentryConfig } from "@sentry/nextjs/config";
 import bundleAnalyzer from "@next/bundle-analyzer";
 import { buildContentSecurityPolicy } from "./src/lib/browserSecurity";
 
@@ -94,14 +94,9 @@ export default shouldApplySentryBuildPlugin
       project: sentryProject,
       silent: !process.env.CI,
       widenClientFileUpload: true,
+      applicationKey: sentryApplicationKey,
       webpack: {
         automaticVercelMonitors: enableAutomaticVercelMonitors,
-        unstable_sentryWebpackPluginOptions: {
-          applicationKey: sentryApplicationKey,
-        },
-      },
-      _experimental: {
-        turbopackApplicationKey: sentryApplicationKey,
       },
       ...(process.env.SENTRY_AUTH_TOKEN
         ? { authToken: process.env.SENTRY_AUTH_TOKEN }

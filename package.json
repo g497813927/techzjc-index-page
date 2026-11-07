@@ -14,7 +14,7 @@
     "test:scanner-404": "node --test ./scripts/scanner-404.test.mjs",
     "test:fc-smoke": "node --test ./scripts/fc-smoke.test.mjs",
     "test:sanitize-paths": "node --test ./scripts/sanitize-next-static-paths.test.mjs",
-    "test:browser-security": "node --loader ./scripts/typescript-test-loader.mjs --test ./scripts/browser-security.test.mjs",
+    "test:browser-security": "node --loader ./scripts/typescript-test-loader.mjs --test ./scripts/browser-security.test.mjs ./scripts/sentry-data-collection.test.mjs",
     "smoke:fc": "node ./scripts/fc-smoke.mjs",
     "dev": "npm run prepare-env && node --require ./src/app/scanner-404/trace-guard.cjs ./node_modules/next/dist/bin/next dev",
     "build": "npm run prepare-env && next build --webpack && npm run typecheck",
@@ -40,7 +40,7 @@
     "@mdx-js/react": "3.1.1",
     "@next/mdx": "^16.4.2",
     "@next/third-parties": "^16.4.3",
-    "@sentry/nextjs": "^10.76.2",
+    "@sentry/nextjs": "^11.11.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "figlet": "^1.11.4",
@@ -94,7 +94,7 @@
     "eslint": {
       "ajv": "6.14.0"
     },
-    "minimatch": ">=10.2.1",
+    "minimatch@>=7 <11.0.1": "^11.0.1",
     "postcss": "^8.5.10"
   },
   "browserslist": [
