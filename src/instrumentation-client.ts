@@ -3,6 +3,7 @@ import {
   init,
   thirdPartyErrorFilterIntegration,
 } from "@/lib/sentryClientRuntime";
+import { buildSentryDataCollection } from "@/lib/sentryDataCollection";
 
 type RouterTransitionStartArgs = Parameters<
   typeof captureRouterTransitionStart
@@ -275,7 +276,7 @@ function initializeSentry() {
 
   init({
     dsn: clientDsn,
-    sendDefaultPii,
+    dataCollection: buildSentryDataCollection(sendDefaultPii),
     tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
     integrations: [
       thirdPartyErrorFilterIntegration({
