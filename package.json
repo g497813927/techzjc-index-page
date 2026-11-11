@@ -69,7 +69,7 @@
   "devDependencies": {
     "@eslint/compat": "^2.1.1",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "@next/bundle-analyzer": "^16.4.2",
+    "@next/bundle-analyzer": "^16.4.5",
     "@tailwindcss/postcss": "^4",
     "@types/estree": "^1.0.9",
     "@types/ms": "^2.1.0",
