@@ -1,10 +1,44 @@
 # syntax=docker/dockerfile:1.7
-# Includes the October 2026 Node.js security fixes in every build/runtime stage.
-FROM node:26.13.0-alpine AS base
-RUN apk add --no-cache git
+# Includes the November 2026 Node.js security fixes in every build/runtime stage.
+FROM alpine:3.24 AS base
+ENV NODE_VERSION=26.13.1
+
+# Bootstrap the official release while Docker Hub's Node image publication lags.
+# Keep both archive checksums aligned with NODE_VERSION and nodejs.org SHASUMS256.txt.
+RUN addgroup -g 1000 node \
+    && adduser -u 1000 -G node -s /bin/sh -D node \
+    && apk add --no-cache git libatomic libstdc++ libc6-compat \
+    && apk add --no-cache --virtual .node-download-deps curl xz \
+    && arch="$(apk --print-arch)" \
+    && case "$arch" in \
+      x86_64) archive="node-v${NODE_VERSION}-linux-x64-musl.tar.xz"; checksum="c2ade3fc8a670f0b110eb68c020026daf1ac57b4fceed1ca471106fc144d8720" ;; \
+      aarch64) archive="node-v${NODE_VERSION}.tar.xz"; checksum="a7f6204ff63b6a2cd274d48903285abb86ed53a99070e532d4c2fd787457d9e6" ;; \
+      *) echo "Unsupported Node.js architecture: $arch" >&2; exit 1 ;; \
+    esac \
+    && curl --fail --show-error --location --retry 3 \
+      "https://nodejs.org/dist/v${NODE_VERSION}/${archive}" -o "/tmp/${archive}" \
+    && printf '%s  %s\n' "$checksum" "/tmp/${archive}" | sha256sum -c - \
+    && if [ "$arch" = "x86_64" ]; then \
+      tar -xJf "/tmp/${archive}" -C /usr/local --strip-components=1 --no-same-owner; \
+    else \
+      apk add --no-cache --virtual .node-source-deps \
+        binutils-gold g++ gcc libgcc linux-headers make python3 py-setuptools rust cargo \
+      && tar -xJf "/tmp/${archive}" -C /tmp \
+      && cd "/tmp/node-v${NODE_VERSION}" \
+      && ./configure \
+      && make -j2 \
+      && make install \
+      && cd / \
+      && rm -rf "/tmp/node-v${NODE_VERSION}" \
+      && apk del .node-source-deps; \
+    fi \
+    && rm "/tmp/${archive}" \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+    && apk del .node-download-deps \
+    && test "$(node --version)" = "v${NODE_VERSION}" \
+    && npm --version
 WORKDIR /app
 
-RUN apk add --no-cache libc6-compat
 FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./

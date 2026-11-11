@@ -6,7 +6,7 @@ This is the index page for Techzjc's personal site using React + TypeScript + Ne
 
 ## Node.js runtime
 
-Use Node.js 26.13.0 or a newer 26.x release. [Node.js 26.13.0 is the Lithium LTS release](https://nodejs.org/en/blog/release/v26.13.0) and includes the October 2026 security fixes.
+Use Node.js 26.13.1 or a newer 26.x release. This is the minimum patched 26.x version for the [November 2026 security release](https://nodejs.org/en/blog/vulnerability/november-2026-security-releases).
 
 ```sh
 nvm install
@@ -14,7 +14,9 @@ nvm use
 npm ci
 ```
 
-CI reads `.nvmrc`, and every Docker stage uses `node:26.13.0-alpine`. Keep these versions aligned when updating Node.js. The package engine range also selects Node 26 on Vercel, where minor and patch versions are managed by the platform. Rebuild and redeploy existing containers to apply runtime fixes; changing npm packages alone does not update Node.js.
+CI reads `.nvmrc`, and every Docker stage uses Node.js 26.13.1 on Alpine 3.24. The Dockerfile installs the official Node.js release with pinned SHA-256 checksums so security updates do not depend on Docker Hub image publication. AMD64 uses the official musl binary; ARM64 builds the verified source archive, following the [Node.js Alpine image recipe](https://github.com/nodejs/docker-node/blob/main/26/alpine3.24/Dockerfile). Keep the runtime versions and archive checksums aligned when updating Node.js.
+
+The package engine range also selects Node 26 on Vercel, where minor and patch versions are managed by the platform. Rebuild and redeploy existing containers to apply runtime fixes; changing npm packages alone does not update Node.js. Verify the actual `nodeVersion` at `/api/healthz` after deployment, including on Vercel.
 
 ## TypeScript compilers
 
