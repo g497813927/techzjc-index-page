@@ -30,7 +30,7 @@
     "test:fuzz-production": "node --test ./scripts/fuzz-production.test.mjs"
   },
   "dependencies": {
-    "@formatjs/intl-localematcher": "^0.8.10",
+    "@formatjs/intl-localematcher": "^0.10.1",
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/free-brands-svg-icons": "^7.3.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
