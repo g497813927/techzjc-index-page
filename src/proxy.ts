@@ -56,7 +56,13 @@ function getLocale(request: { headers: Headers }): string {
       // Keep negative regional ranges scoped: en-GB;q=0 does not reject en-US.
       return [preference];
     }
-    const supported = match([baseName], eligibleLocales, "");
+    // When best fit rejects a different script (e.g. zh-TW vs zh-CN),
+    // keep the site's available translation in the requested language.
+    const language = new Intl.Locale(baseName).language;
+    const fallback = eligibleLocales.find(
+      (locale) => new Intl.Locale(locale).language === language,
+    );
+    const supported = match([baseName], eligibleLocales, fallback ?? "");
     if (!supported) return [];
 
     // Supported locales keep their exact specificity. Other positive variants
